@@ -29,6 +29,8 @@ namespace WizardChess{
 
 			if(status){
 				Console.WriteLine("Valid!");
+				game.movePiece(startCoordinates[0],startCoordinates[1],endCoordinates[0],endCoordinates[1]);
+				game.printNodes();
 			}else{
 				Console.WriteLine("Invalid!");
 			}
@@ -91,6 +93,14 @@ namespace WizardChess{
 			
 			
 		}
+		// to move the piece once verified
+		public void movePiece(int startX, int startY, int endX, int endY){
+			grid[endX,endY] = grid[startX,startY];
+			grid[startX,startY] = null;
+
+		}
+
+
 
 		// To take a coordinate input into something readable
 		// Returns an array where val[0]=x, val[1]=y

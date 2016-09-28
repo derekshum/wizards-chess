@@ -43,13 +43,12 @@ namespace WizardChess{
 		}
 
 		public virtual List<int[]> getAllowedMotionVector(){
-			List<int[]> test = new List<int[]>();
-			return test; 
-			
+	
+			return new List<int[]>();
 		}
+			
 		public virtual List<int[]> getAttackMotionVectors(){
-			List<int[]> test = new List<int[]>();
-			return test;
+			return new List<int[]>();
 		}
 		
 
