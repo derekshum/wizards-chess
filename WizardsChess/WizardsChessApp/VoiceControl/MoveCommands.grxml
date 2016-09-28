@@ -13,20 +13,21 @@
 	</rule>
 	
 	<rule id="moveCommand">
-		<item repeat="0-1"> move <tag> out.command = "move"; </tag> </item>
+		<item repeat="0-1"> move </item>
+		<tag> out.command = "move"; </tag>
 		<one-of>
 			<item>
 				<ruleref uri="PiecesAndPositions.grxml#piece" />
-				<tag> out.piece = rules.piece; </tag>
+				<tag> out.piece = rules.latest(); </tag>
 			</item>
 			<item>
 				<ruleref uri="PiecesAndPositions.grxml#position"/>
-				<tag> out.position = rules.position; </tag>
+				<tag> out.position = rules.latest(); </tag>
 			</item>
 		</one-of>
 		<item> to </item>
 		<ruleref uri="PiecesAndPositions.grxml#position"/>
-		<tag> out.destination = rules.position </tag>
+		<tag> out.destination = rules.latest(); </tag>
 	</rule>
 	
 </grammar>

@@ -14,7 +14,7 @@ namespace WizardsChessApp.VoiceControl
 		YesNoCommands
 	}
 
-	static class CommandConstraints
+	static class CommandConstraintsGenerator
 	{
 		public static async Task<IList<ISpeechRecognitionConstraint>> GetConstraintsAsync()
 		{
@@ -24,8 +24,8 @@ namespace WizardsChessApp.VoiceControl
 			var yesNoFileTask = StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///VoiceControl/YesNoCommands.grxml")).AsTask();
 			await Task.WhenAll(commandsFileTask, yesNoFileTask);
 
-			moveGrammar = new SpeechRecognitionGrammarFileConstraint(commandsFileTask.Result, k_moveCommands);
-			yesNoGrammar = new SpeechRecognitionGrammarFileConstraint(yesNoFileTask.Result, k_yesNoCommands);
+			var moveGrammar = new SpeechRecognitionGrammarFileConstraint(commandsFileTask.Result, k_moveCommands);
+			var yesNoGrammar = new SpeechRecognitionGrammarFileConstraint(yesNoFileTask.Result, k_yesNoCommands);
 
 			grammarList.Add(moveGrammar);
 			grammarList.Add(yesNoGrammar);
@@ -33,38 +33,30 @@ namespace WizardsChessApp.VoiceControl
 			return grammarList;
 		}
 
-		public static void EnableGrammar(GrammarConstraints grammar)
+		public static void EnableGrammar(IList<ISpeechRecognitionConstraint> constraints, GrammarConstraints constraintTag, bool enable)
 		{
-			switch (grammar)
+			string tag;
+			switch (constraintTag)
 			{
 				case GrammarConstraints.MoveCommands:
-					moveGrammar.IsEnabled = true;
+					tag = k_moveCommands;
 					break;
 				case GrammarConstraints.YesNoCommands:
-					yesNoGrammar.IsEnabled = true;
+					tag = k_yesNoCommands;
 					break;
 				default:
-					break;
+					throw new ArgumentException($"No such grammar constraint: {constraintTag}");
 			}
-		}
 
-		public static void DisableGrammar(GrammarConstraints grammar)
-		{
-			switch (grammar)
+			foreach (var constraint in constraints)
 			{
-				case GrammarConstraints.MoveCommands:
-					moveGrammar.IsEnabled = false;
-					break;
-				case GrammarConstraints.YesNoCommands:
-					yesNoGrammar.IsEnabled = false;
-					break;
-				default:
-					break;
+				if (constraint.Tag == tag)
+				{
+					constraint.IsEnabled = enable;
+					return;
+				}
 			}
 		}
-
-		private static ISpeechRecognitionConstraint moveGrammar;
-		private static ISpeechRecognitionConstraint yesNoGrammar;
 
 		private static readonly string k_moveCommands = "moveCommands";
 		private static readonly string k_yesNoCommands = "yesNoCommands";
