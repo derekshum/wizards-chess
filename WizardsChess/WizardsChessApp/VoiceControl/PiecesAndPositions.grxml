@@ -16,9 +16,9 @@
 	
 	<rule id="position" scope="public">
 		<ruleref uri="#letter"/>
-		<tag> out.letter = rule.latest(); </tag>
 		<ruleref uri="#number"/>
-		<tag> out.number = rule.latest(); </tag>
+		<tag> out.letter = rules.letter; </tag>
+		<tag> out.number = rules.number; </tag>
 	</rule>
 	
 	<rule id="letter" scope="public">

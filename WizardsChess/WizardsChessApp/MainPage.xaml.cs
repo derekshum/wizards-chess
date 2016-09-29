@@ -35,12 +35,20 @@ namespace WizardsChessApp
 			var cmdRecognizer = await CommandRecognizer.CreateAsync();
 			var result = await cmdRecognizer.RecognizeSpeechAsync();
 
-			foreach (var property in result.SemanticInterpretation.Properties)
+			if (result.Status == Windows.Media.SpeechRecognition.SpeechRecognitionResultStatus.Success)
 			{
-				System.Diagnostics.Debug.WriteLine($"Key: {property.Key} Value: {property.Value}");
-			}
+				foreach (var property in result.SemanticInterpretation.Properties)
+				{
+					System.Diagnostics.Debug.WriteLine($"Retrieved Key: {property.Key}");
 
-			System.Diagnostics.Debug.WriteLine(result.Text + "\nConfidence: " + result.Confidence);
+					foreach (var innerProp in property.Value)
+					{
+						System.Diagnostics.Debug.WriteLine($"\tValue: {innerProp}");
+					}
+				}
+
+				System.Diagnostics.Debug.WriteLine(result.Text + "\nConfidence: " + result.Confidence);
+			}
 		}
 	}
 }

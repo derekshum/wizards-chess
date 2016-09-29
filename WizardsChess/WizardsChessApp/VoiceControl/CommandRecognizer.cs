@@ -32,7 +32,7 @@ namespace WizardsChessApp.VoiceControl
 
 		protected async Task<SpeechRecognitionCompilationResult> SetupConstraintsAsync()
 		{
-			var grammarConstraints = await CommandConstraintsGenerator.GetConstraintsAsync();
+			var grammarConstraints = await SpeechConstraints.GetConstraintsAsync();
 			foreach (var constraint in grammarConstraints)
 			{
 				SpeechRecognizer_.Constraints.Add(constraint);
@@ -41,6 +41,5 @@ namespace WizardsChessApp.VoiceControl
 		}
 
 		private SpeechRecognizer SpeechRecognizer_;
-		private Task<SpeechRecognitionCompilationResult> ConstraintsTask_;
 	}
 }

@@ -8,13 +8,14 @@ using Windows.Storage;
 
 namespace WizardsChessApp.VoiceControl
 {
-	enum GrammarConstraints
+	enum GrammarMode
 	{
 		MoveCommands,
-		YesNoCommands
+		YesNoCommands,
+		PieceConfirmation
 	}
 
-	static class CommandConstraintsGenerator
+	static class SpeechConstraints
 	{
 		public static async Task<IList<ISpeechRecognitionConstraint>> GetConstraintsAsync()
 		{
@@ -22,27 +23,33 @@ namespace WizardsChessApp.VoiceControl
 
 			var commandsFileTask = StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///VoiceControl/MoveCommands.grxml")).AsTask();
 			var yesNoFileTask = StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///VoiceControl/YesNoCommands.grxml")).AsTask();
-			await Task.WhenAll(commandsFileTask, yesNoFileTask);
+			var pieceConfirmationTask = StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///VoiceControl/PieceConfirmation.grxml")).AsTask();
+			await Task.WhenAll(commandsFileTask, yesNoFileTask, pieceConfirmationTask);
 
 			var moveGrammar = new SpeechRecognitionGrammarFileConstraint(commandsFileTask.Result, k_moveCommands);
 			var yesNoGrammar = new SpeechRecognitionGrammarFileConstraint(yesNoFileTask.Result, k_yesNoCommands);
+			var pieceConfirmationGrammar = new SpeechRecognitionGrammarFileConstraint(pieceConfirmationTask.Result, k_pieceConfirmationCommands);
 
 			grammarList.Add(moveGrammar);
 			grammarList.Add(yesNoGrammar);
+			grammarList.Add(pieceConfirmationGrammar);
 
 			return grammarList;
 		}
 
-		public static void EnableGrammar(IList<ISpeechRecognitionConstraint> constraints, GrammarConstraints constraintTag, bool enable)
+		public static void EnableGrammar(IList<ISpeechRecognitionConstraint> constraints, GrammarMode constraintTag, bool enable)
 		{
 			string tag;
 			switch (constraintTag)
 			{
-				case GrammarConstraints.MoveCommands:
+				case GrammarMode.MoveCommands:
 					tag = k_moveCommands;
 					break;
-				case GrammarConstraints.YesNoCommands:
+				case GrammarMode.YesNoCommands:
 					tag = k_yesNoCommands;
+					break;
+				case GrammarMode.PieceConfirmation:
+					tag = k_pieceConfirmationCommands;
 					break;
 				default:
 					throw new ArgumentException($"No such grammar constraint: {constraintTag}");
@@ -60,5 +67,6 @@ namespace WizardsChessApp.VoiceControl
 
 		private static readonly string k_moveCommands = "moveCommands";
 		private static readonly string k_yesNoCommands = "yesNoCommands";
+		private static readonly string k_pieceConfirmationCommands = "pieceConfirmation";
 	}
 }

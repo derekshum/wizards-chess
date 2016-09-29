@@ -3,18 +3,18 @@
 <grammar version="1.0" xml:lang="en-ca" root="rootRule" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
 	<rule id="rootRule">
 		<one-of>
-			<item> <ruleref uri="#resetCommand"/> </item>
-			<item> <ruleref uri="#moveCommand"/> </item>
+			<item> reset <tag> out.action = "reset"; </tag> </item>
+			<item> undo <tag> out.action = "undo"; </tag> </item>
+			<item> 
+				<ruleref uri="#moveCommand"/>
+				<tag> out = rules.latest(); </tag>
+			</item>
 		</one-of>
-	</rule>
-	
-	<rule id="resetCommand">
-		<item> reset <tag> out.command = "reset"; </tag> </item>
 	</rule>
 	
 	<rule id="moveCommand">
 		<item repeat="0-1"> move </item>
-		<tag> out.command = "move"; </tag>
+		<tag> out.action = "move"; </tag>
 		<one-of>
 			<item>
 				<ruleref uri="PiecesAndPositions.grxml#piece" />
@@ -22,12 +22,14 @@
 			</item>
 			<item>
 				<ruleref uri="PiecesAndPositions.grxml#position"/>
-				<tag> out.position = rules.latest(); </tag>
+				<tag> out.positionLetter = rules.latest().letter; </tag>
+				<tag> out.positionNumber = rules.latest().number; </tag>
 			</item>
 		</one-of>
 		<item> to </item>
 		<ruleref uri="PiecesAndPositions.grxml#position"/>
-		<tag> out.destination = rules.latest(); </tag>
+		<tag> out.destinationLetter = rules.latest().letter; </tag>
+		<tag> out.destinationNumber = rules.latest().number; </tag>
 	</rule>
 	
 </grammar>
