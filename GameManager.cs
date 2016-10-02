@@ -12,81 +12,95 @@ namespace WizardChess{
 			GameManager game = new GameManager();
 			game.initialize();
 			game.printNodes();
+			game.playGame();
+		}
 
 
+		// Global variables
+		bool team1Turn = true;
+
+		// To play the game
+		public void playGame(){
+			Console.WriteLine("Blue Goes first");
+
+			bool execute = false;
 			while(true){
 				Console.WriteLine("Enter Start Location");
 				string Start = Console.ReadLine();
 				Console.WriteLine("Enter End Location");
 				string End = Console.ReadLine();
 
-				int[] startCoordinates = game.getFormattedCoordinate(Start);
-				int[] endCoordinates = game.getFormattedCoordinate(End);
+				int[] startCoordinates = getFormattedCoordinate(Start);
+				int[] endCoordinates = getFormattedCoordinate(End);
 
-				bool status = game.checkMoveValidity(startCoordinates,endCoordinates);
+				// Get team of piece to check if it's their turn
+				String teamName = grid[startCoordinates[0],startCoordinates[1]].getTeamName();
 
-				Console.WriteLine("Move from "+Start+" to "+End+" is: ");
+				if(teamName=="Team1" && team1Turn){
+					execute=true;
+				}else if(teamName=="Team2" && !team1Turn){
+					execute=true;
+				}
+				
+				if(execute){
+					bool status = checkMoveValidity(startCoordinates,endCoordinates);
 
-				if(status){
-					Console.WriteLine("Valid!");
-					game.movePiece(startCoordinates[0],startCoordinates[1],endCoordinates[0],endCoordinates[1]);
-					game.printNodes();
+					Console.WriteLine("Move from "+Start+" to "+End+" is: ");
+
+					if(status){
+						Console.WriteLine("Valid!");
+						movePiece(startCoordinates[0],startCoordinates[1],endCoordinates[0],endCoordinates[1]);
+						printNodes();
+
+						if(team1Turn){
+							team1Turn=false;
+							}else{
+							team1Turn=true;
+						}
+
+
+					}else{
+						Console.WriteLine("Invalid!");
+						printNodes();
+					}
+					// reset variables 
+					execute=false;
+			
 				}else{
-					Console.WriteLine("Invalid!");
+					Console.Write("You cannot move. It is ");
+					if(team1Turn){
+						Console.Write(" Blues Turn\n");
+					}else{
+						Console.Write(" Reds Turn\n");
+					}
+					printNodes();
 				}
 
 			}
-			
-
-			//string Start = "G1";
-			//string End = "F3";
-
-			
-
-			// Get what piece is at the input location
-			//string pieceName = (grid[startCoordinates[0],startCoordinates[1]]).getName();
-			//Console.WriteLine(startCoordinates[0]+" "+startCoordinates[1]);
-			//Console.WriteLine(endCoordinates[0]+" "+endCoordinates[1]);
-			
-
-			// We get an input such as "A3 --> A5". Ex. A8 Sequence is (8,A)--> 8,0
-
 		}
+
 
 		// To see if move valid
 		public bool checkMoveValidity(int[] startCoordinates, int[] endCoordinates){
 			bool isValidMove = false;
 
 			// Get piece at input location
-
 			ChessPiece startPiece = grid[startCoordinates[0],startCoordinates[1]];
 			ChessPiece endPiece = grid[endCoordinates[0],endCoordinates[1]];
 			
-
-		
 			// To hold object values
 			string startPieceName;
 			string startPieceTeam;
 			string endPieceTeam;
 			bool attemptMoveCheck = false;
 
-			// To hold if possible to move there or not
-			bool placementValid = false;
-
 			// To break if objects in the way
 			bool objectsInWay = false;
-
-			// To hold onto movement vectors
-			int vectorX;
-			int vectorY;
-			
-
-			List<int[]> allowedMoveSets = new List<int[]>();
-			List<int[]> specialMoveSets = new List<int[]>();
 
 			// // check if valid move then check if anything blocking seperatly
 			if (startPiece != null){
 				startPieceName = startPiece.getName();
+				Console.WriteLine(startPieceName);
 				startPieceTeam = startPiece.getTeamName();
 
 
@@ -94,7 +108,7 @@ namespace WizardChess{
 				if(endPiece != null){
 					// if is not a friently piece can move there
 					endPieceTeam = endPiece.getTeamName();
-					if(endPieceTeam!=startPieceName){
+					if(endPieceTeam!=startPieceTeam){
 						attemptMoveCheck = true;
 					}
 
@@ -104,9 +118,6 @@ namespace WizardChess{
 				if(attemptMoveCheck){
 					// This tile is empty, we can look into moving here
 					List<int[]> allowedMoveVectors = startPiece.getAllowedMotionVector();
-
-					// generate a list of allowed moves
-					List<int[]>  allowedTiles = new List<int[]>();
 
 					// given start and end coordinates, let us subtract to get vector
 					int xVector = endCoordinates[0]-startCoordinates[0];
@@ -124,10 +135,6 @@ namespace WizardChess{
 						}else{
 							// All of these can have variants of allowed movement vectors
 							foreach (int[] vector in allowedMoveVectors){
-								// Check to make sure coordinates are multiples 
-								//Console.WriteLine(xVector+" "+yVector);
-								//Console.WriteLine(vector[0]+" "+vector[1]);
-								//Console.WriteLine("mod "+5%3+" "+vector[1]%yVector);
 
 								if(startPieceName=="Bishop"){
 									if(xVector!=0 && yVector !=0){
@@ -135,9 +142,6 @@ namespace WizardChess{
 											// Check for collisions here
 											if(checkCollisions(startCoordinates,endCoordinates,vector)){
 												isValidMove=true;
-												break;
-											}else{
-												objectsInWay=true;
 												break;
 											}
 											
@@ -157,33 +161,15 @@ namespace WizardChess{
 
 												isValidMove=true;
 												break;
-											}else{
-												objectsInWay=true;
-												break;
 											}
 										}
-									}else if(xVector==0 && yVector!=0){
+									}else if((xVector==0 && yVector!=0)||(yVector==0 && xVector!=0)){
 										//Console.WriteLine("X Dir");
+										
 										if(checkCollisions(startCoordinates,endCoordinates,vector)){
 
 
 											isValidMove = true;
-											break;
-										}else{
-											objectsInWay=true;
-											break;
-										}
-										
-									}else if(yVector==0 && xVector!=0){
-										//Console.WriteLine("Y Dir");
-										if(checkCollisions(startCoordinates,endCoordinates,vector)){
-
-
-											isValidMove=true;
-											break;
-
-										}else{
-											objectsInWay=true;
 											break;
 										}
 										
@@ -191,37 +177,25 @@ namespace WizardChess{
 								}
 
 								if(startPieceName=="Rook"){
-									if(xVector==0 && yVector!=0){
-										//Console.WriteLine("X Dir");
-										if(checkCollisions(startCoordinates,endCoordinates,vector)){
-
-
-											isValidMove = true;
-											break;
-										}else{
-											objectsInWay=true;
-											break;
-										}
+									if((xVector==0 && yVector!=0)||(yVector==0 && xVector!=0)){
 										
-									}else if(yVector==0 && xVector!=0){
-										//Console.WriteLine("Y Dir");
-										if(checkCollisions(startCoordinates,endCoordinates,vector)){
-
-
-											isValidMove=true;
-											break;
-
-										}else{
-											objectsInWay=true;
-											break;
-										}
+										// Only run if relevant to this particular search
+										
+											if(checkCollisions(startCoordinates,endCoordinates,vector)){
+												isValidMove = true;
+												break;
+											}
+											/*
+											else{
+												objectsInWay=true;
+												break;
+											}
+											*/
+										
+										
 										
 									}
-								}
-
-								
-
-							
+								}	
 								
 							}
 						}
@@ -232,20 +206,12 @@ namespace WizardChess{
 						}
 					}
 
-					
-
-
-
 				}
 
 			}else{
 				Console.WriteLine("Piece 1 doesn't exist. Valid input needed to proceed");
 			}
 
-			
-
-			//string startPiece = grid[startCoordinates[0],startCoordinates[1]].getName();
-			//string endPiece = grid[endCoordinates[0],endCoordinates[1]].getName();
 			return isValidMove;
 			
 			
@@ -256,6 +222,8 @@ namespace WizardChess{
 		// output if any collisions. True if okay to move
 		public bool checkCollisions(int[] startCoordinates,int[] endCoordinates,int[] vector){
 			bool ableToMove = true;
+
+
 
 			int xIncrementer=0;
 			int yIncrementer=0;
@@ -276,39 +244,45 @@ namespace WizardChess{
 				yIncrementer=0;
 			}
 
-			if(Math.Abs(vector[0])>Math.Abs(vector[1])){
-				incrementsNeededToCheck=Math.Abs(vector[0]);
+			// The vectors above depend on the team
+			// Currently configured for team2, so much switch if team 1
+			/*
+			if(grid[startCoordinates[0],startCoordinates[1]].getTeamName()=="Team1"){
+				xIncrementer = xIncrementer*-1;
+				yIncrementer = yIncrementer*-1;
+			}	
+			*/		
+
+			if(Math.Abs(endCoordinates[0]-startCoordinates[0])>Math.Abs(endCoordinates[1]-startCoordinates[1])){
+				incrementsNeededToCheck=Math.Abs(endCoordinates[0]-startCoordinates[0]);
 			}else{
-				incrementsNeededToCheck=Math.Abs(vector[1]);
+				incrementsNeededToCheck=Math.Abs(endCoordinates[1]-startCoordinates[1]);
 			}
 
-			Console.WriteLine("incrementsNeededToCheck "+incrementsNeededToCheck);
-			Console.WriteLine("xdir "+xIncrementer);
-			Console.WriteLine("ydir "+yIncrementer);
-			Console.WriteLine("startX "+startCoordinates[0]+" startY "+startCoordinates[1]);
-			Console.WriteLine("endX "+endCoordinates[0]+" endY "+endCoordinates[1]);
-
+			
 			int X = startCoordinates[0];
 			int Y = startCoordinates[1];
+			Console.WriteLine("Original "+X+" "+Y);
+			Console.WriteLine("Incrementers "+xIncrementer+" "+yIncrementer);
 			for(int i=0; i< incrementsNeededToCheck;i++){
 				X += xIncrementer;
 				Y += yIncrementer;
+				Console.WriteLine(X+" "+Y);
+				
+				// ensure values in grid()
+				if(X<0 || X>7 || Y<0 || Y>7){
+					ableToMove=false;
+					break;
+				}
+				
+				
 				if(grid[X,Y]!=null){
+					Console.WriteLine(grid[X,Y].getName());
 					Console.WriteLine("Stuff in WAY!");
 					ableToMove=false;
 					break;
 				}
 			}
-			/*
-			for(int i=startCoordinates[0];i!=endCoordinates[0];i+=xIncrementer){
-				for(int j=startCoordinates[1];j!=endCoordinates[1];j+=yIncrementer){
-					Console.WriteLine(i+" "+j);
-					if(grid[i,j]!=null){
-						ableToMove=false;
-					}
-				}
-			}
-			*/
 
 			return ableToMove;
 		}
@@ -451,7 +425,6 @@ namespace WizardChess{
 			int ASCIIA = 64;
 
 			for(int k=-1; k< grid.GetLength(0);k++){
-				string output = "";
 				for(int j=-1; j < grid.GetLength(1);j++){
 					if (k==-1){
 						if(j==-1){
