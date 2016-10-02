@@ -242,16 +242,7 @@ namespace WizardChess{
 				yIncrementer=1;
 			}else{
 				yIncrementer=0;
-			}
-
-			// The vectors above depend on the team
-			// Currently configured for team2, so much switch if team 1
-			/*
-			if(grid[startCoordinates[0],startCoordinates[1]].getTeamName()=="Team1"){
-				xIncrementer = xIncrementer*-1;
-				yIncrementer = yIncrementer*-1;
 			}	
-			*/		
 
 			if(Math.Abs(endCoordinates[0]-startCoordinates[0])>Math.Abs(endCoordinates[1]-startCoordinates[1])){
 				incrementsNeededToCheck=Math.Abs(endCoordinates[0]-startCoordinates[0]);
@@ -262,12 +253,9 @@ namespace WizardChess{
 			
 			int X = startCoordinates[0];
 			int Y = startCoordinates[1];
-			Console.WriteLine("Original "+X+" "+Y);
-			Console.WriteLine("Incrementers "+xIncrementer+" "+yIncrementer);
 			for(int i=0; i< incrementsNeededToCheck;i++){
 				X += xIncrementer;
 				Y += yIncrementer;
-				Console.WriteLine(X+" "+Y);
 				
 				// ensure values in grid()
 				if(X<0 || X>7 || Y<0 || Y>7){
@@ -275,9 +263,7 @@ namespace WizardChess{
 					break;
 				}
 				
-				
 				if(grid[X,Y]!=null){
-					Console.WriteLine(grid[X,Y].getName());
 					Console.WriteLine("Stuff in WAY!");
 					ableToMove=false;
 					break;
@@ -288,6 +274,8 @@ namespace WizardChess{
 		}
 
 		// to move the piece once verified
+		// input: start, and end coordinates
+		// output: void
 		public void movePiece(int startX, int startY, int endX, int endY){
 			grid[endX,endY] = grid[startX,startY];
 			grid[endX,endY].setMoved();
@@ -296,19 +284,8 @@ namespace WizardChess{
 
 		}
 
-		// Given a start coordinate pair, end coordinate pair, and modiifying vector, returns if the vector modifies start to end
-		public bool checkTransform(int[] startCoordinates, int[] endCoordinates,int[] vector){
-			bool success= false;
 
-			if((startCoordinates[0]+vector[0]==endCoordinates[0]) && (startCoordinates[1]+vector[1]==endCoordinates[1])){
-				success = true;			
-			}
-			return success;
-		}
-
-
-
-		// To take a coordinate input into something readable
+		// To take a coordinate input and turn into something readable
 		// Returns an array where val[0]=x, val[1]=y
 		// Depreciated. Morgan will be parsing inputs
 		public int[] getFormattedCoordinate(string coordinate){
@@ -352,10 +329,6 @@ namespace WizardChess{
 				default:
 					Console.WriteLine("Invalid move was given");
 					break;
-
-				
-
-
 
 			}
 			XFinal = Int32.Parse(XRaw);
@@ -419,6 +392,7 @@ namespace WizardChess{
 
 
 		}
+
 
 		public void printNodes(){
 
