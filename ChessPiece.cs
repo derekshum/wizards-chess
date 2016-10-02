@@ -63,6 +63,7 @@ namespace WizardChess{
 	class Pawn: ChessPiece{
 		public Pawn(string name, String tn): base(name,tn){
 			// if the other team we flip these vectors
+
 			if(tn=="Team1"){
 				allowedMotionVectors.Add(new int[]{1,0});
 				specialMotionVectors.Add(new int[]{2,0});
@@ -123,41 +124,82 @@ namespace WizardChess{
 		// contains motions of allowed chess piece
 		List<int[]> allowedMotionVectors = new List<int[]>();
 
-		// contains attack motion vectors
-		List<int[]> attackMotionVectors = new List<int[]>();
+		
 
 		public override List<int[]> getAllowedMotionVector(){
 			return allowedMotionVectors;
 		}
-		public override List<int[]> getAttackMotionVectors(){
-			return attackMotionVectors;
-		}
+		
 
 	}
 
 	class Rook: ChessPiece{
 		public Rook(string name, string tn): base(name,tn){
-			
+			allowedMotionVectors.Add(new int[]{-1,0});
+			allowedMotionVectors.Add(new int[]{0,-1});
+			allowedMotionVectors.Add(new int[]{1,0});
+			allowedMotionVectors.Add(new int[]{0,1});
 		}	
+		// contains motions of allowed chess piece
+		List<int[]> allowedMotionVectors = new List<int[]>();
+
+		public override List<int[]> getAllowedMotionVector(){
+			return allowedMotionVectors;
+		}
 
 	}
 
 	class Bishop: ChessPiece{
 		public Bishop(string name, string tn): base(name,tn){
-			
+			allowedMotionVectors.Add(new int[]{-1,-1});
+			allowedMotionVectors.Add(new int[]{1,1});
+			allowedMotionVectors.Add(new int[]{1,-1});
+			allowedMotionVectors.Add(new int[]{-1,1});
+		}
+		// contains motions of allowed chess piece
+		List<int[]> allowedMotionVectors = new List<int[]>();
+
+		public override List<int[]> getAllowedMotionVector(){
+			return allowedMotionVectors;
 		}
 
 	}
 
 	class Queen: ChessPiece{
 		public Queen(string name, string tn): base(name,tn){
-			
+			allowedMotionVectors.Add(new int[]{-1,-1});
+			allowedMotionVectors.Add(new int[]{1,1});
+			allowedMotionVectors.Add(new int[]{1,-1});
+			allowedMotionVectors.Add(new int[]{-1,1});
+			allowedMotionVectors.Add(new int[]{-1,0});
+			allowedMotionVectors.Add(new int[]{0,-1});
+			allowedMotionVectors.Add(new int[]{1,0});
+			allowedMotionVectors.Add(new int[]{0,1});
+		}
+		// contains motions of allowed chess piece
+		List<int[]> allowedMotionVectors = new List<int[]>();
+
+		public override List<int[]> getAllowedMotionVector(){
+			return allowedMotionVectors;
 		}
 	}
 
 	class King: ChessPiece{
 		public King(string name, string tn): base(name,tn){
-			
+			allowedMotionVectors.Add(new int[]{-1,-1});
+			allowedMotionVectors.Add(new int[]{1,1});
+			allowedMotionVectors.Add(new int[]{1,-1});
+			allowedMotionVectors.Add(new int[]{-1,1});
+			allowedMotionVectors.Add(new int[]{-1,0});
+			allowedMotionVectors.Add(new int[]{0,-1});
+			allowedMotionVectors.Add(new int[]{1,0});
+			allowedMotionVectors.Add(new int[]{0,1});
+		}
+		// contains motions of allowed chess piece
+		List<int[]> allowedMotionVectors = new List<int[]>();
+
+		public override List<int[]> getAllowedMotionVector(){
+			return allowedMotionVectors;
 		}
 
 	}
