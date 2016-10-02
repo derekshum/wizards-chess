@@ -9,21 +9,22 @@ namespace WizardChess{
 		protected string Name;
 		protected int xCoordinate;
 		protected int yCoordinate;
-		protected bool Team1;
+		protected string teamName;
 		protected bool moveForward;
 		protected bool unmoved;
 
 		
-		public ChessPiece(string name, bool team1){
+		public ChessPiece(string name, string tn){
 			Name = name;
-			
-			if(team1){
-				Team1 = true;
+				
+			if(tn =="Team1"){
+				teamName = "Team1";
 				moveForward = true;
 			}else{
-				Team1 = false;
+				teamName = "Team2";
 				moveForward = false;
 			}
+			
 			unmoved = true;
 		}
 		public void setCoordinates(int xcoor, int ycoor){
@@ -42,6 +43,10 @@ namespace WizardChess{
 			return unmoved;
 		}
 
+		public string getTeamName(){
+			return teamName;
+		}
+
 		public virtual List<int[]> getAllowedMotionVector(){
 	
 			return new List<int[]>();
@@ -56,9 +61,9 @@ namespace WizardChess{
 	}
 
 	class Pawn: ChessPiece{
-		public Pawn(string name, bool team1): base(name,team1){
+		public Pawn(string name, String tn): base(name,tn){
 			// if the other team we flip these vectors
-			if(team1){
+			if(tn=="Team1"){
 				allowedMotionVectors.Add(new int[]{1,0});
 				specialMotionVectors.Add(new int[]{2,0});
 				attackMotionVectors.Add(new int[]{1,1});
@@ -69,6 +74,7 @@ namespace WizardChess{
 				attackMotionVectors.Add(new int[]{-1,-1});
 				attackMotionVectors.Add(new int[]{1,-1});
 			}
+			
 		}
 
 		// contains motions of allowed chess piece
@@ -98,7 +104,7 @@ namespace WizardChess{
 	}
 
 	class Knight: ChessPiece{
-		public Knight(string name, bool team1): base(name,team1){
+		public Knight(string name, string tn): base(name,tn){
 			// if the other team we flip these vectors
 			
 			allowedMotionVectors.Add(new int[]{-2,-1});
@@ -130,27 +136,27 @@ namespace WizardChess{
 	}
 
 	class Rook: ChessPiece{
-		public Rook(string name, bool team1): base(name,team1){
+		public Rook(string name, string tn): base(name,tn){
 			
 		}	
 
 	}
 
 	class Bishop: ChessPiece{
-		public Bishop(string name, bool team1): base(name,team1){
+		public Bishop(string name, string tn): base(name,tn){
 			
 		}
 
 	}
 
 	class Queen: ChessPiece{
-		public Queen(string name, bool team1): base(name,team1){
+		public Queen(string name, string tn): base(name,tn){
 			
 		}
 	}
 
 	class King: ChessPiece{
-		public King(string name, bool team1): base(name,team1){
+		public King(string name, string tn): base(name,tn){
 			
 		}
 
