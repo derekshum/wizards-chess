@@ -73,6 +73,9 @@ namespace WizardChess{
 			// To hold if possible to move there or not
 			bool placementValid = false;
 
+			// To break if objects in the way
+			bool objectsInWay = false;
+
 			// To hold onto movement vectors
 			int vectorX;
 			int vectorY;
@@ -105,24 +108,132 @@ namespace WizardChess{
 					// generate a list of allowed moves
 					List<int[]>  allowedTiles = new List<int[]>();
 
-					// Check to see if the move is possible (in constraints of piece movement allowment)
-					foreach (int[] vector in allowedMoveVectors){
-						placementValid = checkTransform(startCoordinates,endCoordinates,vector);
-						if(placementValid){
-							vectorX=vector[0];
-							vectorY=vector[1];
+					// given start and end coordinates, let us subtract to get vector
+					int xVector = endCoordinates[0]-startCoordinates[0];
+					int yVector = endCoordinates[1]-startCoordinates[1];
+
+					// Check to see if move is possible in constraints of piece movement allowment
+					foreach (int[] allocatedMoveSet in allowedMoveVectors){
+						// if pawn, knight, king, need exact
+						if(startPieceName=="Pawn" || startPieceName=="Knight" || startPieceName=="King"){
+							foreach (int[] vector in allowedMoveVectors){
+								if(vector[0]==xVector && vector[1]==yVector){
+									isValidMove = true;
+								}
+							}
+						}else{
+							// All of these can have variants of allowed movement vectors
+							foreach (int[] vector in allowedMoveVectors){
+								// Check to make sure coordinates are multiples 
+								//Console.WriteLine(xVector+" "+yVector);
+								//Console.WriteLine(vector[0]+" "+vector[1]);
+								//Console.WriteLine("mod "+5%3+" "+vector[1]%yVector);
+
+								if(startPieceName=="Bishop"){
+									if(xVector!=0 && yVector !=0){
+										if(xVector%vector[0]==yVector%vector[1]){
+											// Check for collisions here
+											if(checkCollisions(startCoordinates,endCoordinates,vector)){
+												isValidMove=true;
+												break;
+											}else{
+												objectsInWay=true;
+												break;
+											}
+											
+										}
+									}
+								}
+
+
+								if(startPieceName=="Queen"){
+									Console.WriteLine(xVector);
+									Console.WriteLine(yVector);
+									if(xVector!= 0 && yVector!=0){
+										//Console.WriteLine("Diag");
+										if(Math.Abs(xVector) == Math.Abs(yVector)){
+											// Check for collisions here
+											if(checkCollisions(startCoordinates,endCoordinates,vector)){
+
+												isValidMove=true;
+												break;
+											}else{
+												objectsInWay=true;
+												break;
+											}
+										}
+									}else if(xVector==0 && yVector!=0){
+										//Console.WriteLine("X Dir");
+										if(checkCollisions(startCoordinates,endCoordinates,vector)){
+
+
+											isValidMove = true;
+											break;
+										}else{
+											objectsInWay=true;
+											break;
+										}
+										
+									}else if(yVector==0 && xVector!=0){
+										//Console.WriteLine("Y Dir");
+										if(checkCollisions(startCoordinates,endCoordinates,vector)){
+
+
+											isValidMove=true;
+											break;
+
+										}else{
+											objectsInWay=true;
+											break;
+										}
+										
+									}
+								}
+
+								if(startPieceName=="Rook"){
+									if(xVector==0 && yVector!=0){
+										//Console.WriteLine("X Dir");
+										if(checkCollisions(startCoordinates,endCoordinates,vector)){
+
+
+											isValidMove = true;
+											break;
+										}else{
+											objectsInWay=true;
+											break;
+										}
+										
+									}else if(yVector==0 && xVector!=0){
+										//Console.WriteLine("Y Dir");
+										if(checkCollisions(startCoordinates,endCoordinates,vector)){
+
+
+											isValidMove=true;
+											break;
+
+										}else{
+											objectsInWay=true;
+											break;
+										}
+										
+									}
+								}
+
+								
+
+							
+								
+							}
+						}
+						if(isValidMove){
+							break;
+						}else if(objectsInWay){
 							break;
 						}
 					}
 
-					// Check to make sure no collissions if these apply
-					if(placementValid){
-						if(startPieceName=="Pawn" || startPieceName=="Rook" || startPieceName=="Bishop" || startPieceName=="Queen"){
+					
 
-						}else{
-							isValidMove = true;
-						}
-					}
 
 
 				}
@@ -139,6 +250,69 @@ namespace WizardChess{
 			
 			
 		}
+
+		// To check whether there will be collisions
+		// Input Start coordinate, end coordinates, vector
+		// output if any collisions. True if okay to move
+		public bool checkCollisions(int[] startCoordinates,int[] endCoordinates,int[] vector){
+			bool ableToMove = true;
+
+			int xIncrementer=0;
+			int yIncrementer=0;
+			int incrementsNeededToCheck = 0;
+
+			if(vector[0]>0){
+				xIncrementer=1;
+			}else if(vector[0]<0){
+				xIncrementer=-1;
+			}else{
+				xIncrementer=0;
+			}
+			if(vector[1]>0){
+				yIncrementer = -1;
+			}else if(vector[1]<0){
+				yIncrementer=1;
+			}else{
+				yIncrementer=0;
+			}
+
+			if(Math.Abs(vector[0])>Math.Abs(vector[1])){
+				incrementsNeededToCheck=Math.Abs(vector[0]);
+			}else{
+				incrementsNeededToCheck=Math.Abs(vector[1]);
+			}
+
+			Console.WriteLine("incrementsNeededToCheck "+incrementsNeededToCheck);
+			Console.WriteLine("xdir "+xIncrementer);
+			Console.WriteLine("ydir "+yIncrementer);
+			Console.WriteLine("startX "+startCoordinates[0]+" startY "+startCoordinates[1]);
+			Console.WriteLine("endX "+endCoordinates[0]+" endY "+endCoordinates[1]);
+
+			int X = startCoordinates[0];
+			int Y = startCoordinates[1];
+			for(int i=0; i< incrementsNeededToCheck;i++){
+				X += xIncrementer;
+				Y += yIncrementer;
+				if(grid[X,Y]!=null){
+					Console.WriteLine("Stuff in WAY!");
+					ableToMove=false;
+					break;
+				}
+			}
+			/*
+			for(int i=startCoordinates[0];i!=endCoordinates[0];i+=xIncrementer){
+				for(int j=startCoordinates[1];j!=endCoordinates[1];j+=yIncrementer){
+					Console.WriteLine(i+" "+j);
+					if(grid[i,j]!=null){
+						ableToMove=false;
+					}
+				}
+			}
+			*/
+
+			return ableToMove;
+		}
+
 		// to move the piece once verified
 		public void movePiece(int startX, int startY, int endX, int endY){
 			grid[endX,endY] = grid[startX,startY];
