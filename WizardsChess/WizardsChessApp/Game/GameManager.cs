@@ -1,34 +1,25 @@
 using System;
 using System.Collections.Generic;
+using WizardsChessApp.Game.Pieces;
 
 // To control the motions
-namespace WizardChess{
+namespace WizardsChessApp.Game {
 	
-	class GameManager{
-		// To test only
-		public static void Main(){
-			
-			// Initiialize a game
-			GameManager game = new GameManager();
-			game.initialize();
-			game.printNodes();
-			game.playGame();
-		}
-
-
+	class GameManager
+	{
 		// Global variables
-		bool team1Turn = true;
+		private static ChessTeam Turn = ChessTeam.White;
 
 		// To play the game
 		public void playGame(){
-			Console.WriteLine("Blue Goes first");
+			System.Diagnostics.Debug.WriteLine("Blue Goes first");
 
 			bool execute = false;
 			while(true){
-				Console.WriteLine("Enter Start Location");
-				string Start = Console.ReadLine();
-				Console.WriteLine("Enter End Location");
-				string End = Console.ReadLine();
+				System.Diagnostics.Debug.WriteLine("Enter Start Location");
+				string Start = System.Diagnostics.Debug.ReadLine();
+				System.Diagnostics.Debug.WriteLine("Enter End Location");
+				string End = System.Diagnostics.Debug.ReadLine();
 
 				int[] startCoordinates = getFormattedCoordinate(Start);
 				int[] endCoordinates = getFormattedCoordinate(End);
@@ -45,10 +36,10 @@ namespace WizardChess{
 				if(execute){
 					bool status = checkMoveValidity(startCoordinates,endCoordinates);
 
-					Console.WriteLine("Move from "+Start+" to "+End+" is: ");
+					System.Diagnostics.Debug.WriteLine("Move from "+Start+" to "+End+" is: ");
 
 					if(status){
-						Console.WriteLine("Valid!");
+						System.Diagnostics.Debug.WriteLine("Valid!");
 						movePiece(startCoordinates[0],startCoordinates[1],endCoordinates[0],endCoordinates[1]);
 						printNodes();
 
@@ -60,18 +51,18 @@ namespace WizardChess{
 
 
 					}else{
-						Console.WriteLine("Invalid!");
+						System.Diagnostics.Debug.WriteLine("Invalid!");
 						printNodes();
 					}
 					// reset variables 
 					execute=false;
 			
 				}else{
-					Console.Write("You cannot move. It is ");
+					System.Diagnostics.Debug.Write("You cannot move. It is ");
 					if(team1Turn){
-						Console.Write(" Blues Turn\n");
+						System.Diagnostics.Debug.Write(" Blues Turn\n");
 					}else{
-						Console.Write(" Reds Turn\n");
+						System.Diagnostics.Debug.Write(" Reds Turn\n");
 					}
 					printNodes();
 				}
@@ -81,7 +72,7 @@ namespace WizardChess{
 
 
 		// To see if move valid
-		public bool checkMoveValidity(int[] startCoordinates, int[] endCoordinates){
+		public bool CheckMoveValidity(Position startCoordinates, int[] endCoordinates){
 			bool isValidMove = false;
 
 			// Get piece at input location
@@ -100,7 +91,7 @@ namespace WizardChess{
 			// // check if valid move then check if anything blocking seperatly
 			if (startPiece != null){
 				startPieceName = startPiece.getName();
-				Console.WriteLine(startPieceName);
+				System.Diagnostics.Debug.WriteLine(startPieceName);
 				startPieceTeam = startPiece.getTeamName();
 
 
@@ -151,10 +142,10 @@ namespace WizardChess{
 
 
 								if(startPieceName=="Queen"){
-									Console.WriteLine(xVector);
-									Console.WriteLine(yVector);
+									System.Diagnostics.Debug.WriteLine(xVector);
+									System.Diagnostics.Debug.WriteLine(yVector);
 									if(xVector!= 0 && yVector!=0){
-										//Console.WriteLine("Diag");
+										//System.Diagnostics.Debug.WriteLine("Diag");
 										if(Math.Abs(xVector) == Math.Abs(yVector)){
 											// Check for collisions here
 											if(checkCollisions(startCoordinates,endCoordinates,vector)){
@@ -164,7 +155,7 @@ namespace WizardChess{
 											}
 										}
 									}else if((xVector==0 && yVector!=0)||(yVector==0 && xVector!=0)){
-										//Console.WriteLine("X Dir");
+										//System.Diagnostics.Debug.WriteLine("X Dir");
 										
 										if(checkCollisions(startCoordinates,endCoordinates,vector)){
 
@@ -209,12 +200,10 @@ namespace WizardChess{
 				}
 
 			}else{
-				Console.WriteLine("Piece 1 doesn't exist. Valid input needed to proceed");
+				System.Diagnostics.Debug.WriteLine("Piece 1 doesn't exist. Valid input needed to proceed");
 			}
 
 			return isValidMove;
-			
-			
 		}
 
 		// To check whether there will be collisions
@@ -264,7 +253,7 @@ namespace WizardChess{
 				}
 				
 				if(grid[X,Y]!=null){
-					Console.WriteLine("Stuff in WAY!");
+					System.Diagnostics.Debug.WriteLine("Stuff in WAY!");
 					ableToMove=false;
 					break;
 				}
@@ -281,7 +270,6 @@ namespace WizardChess{
 			grid[endX,endY].setMoved();
 
 			grid[startX,startY] = null;
-
 		}
 
 
@@ -327,7 +315,7 @@ namespace WizardChess{
 					YFinal = 8;
 					break;
 				default:
-					Console.WriteLine("Invalid move was given");
+					System.Diagnostics.Debug.WriteLine("Invalid move was given");
 					break;
 
 			}
@@ -341,59 +329,6 @@ namespace WizardChess{
 
 		}
 
-		// To hold the game of chess ( our matrix)
-		protected ChessPiece[,] grid = new ChessPiece[8,8];
-
-		// to initialize a game of chess
-		public void initialize(){
-			// initialize the rooks
-			grid[0,0]=new Rook("Rook","Team1");
-			grid[0,7]=new Rook("Rook","Team1");
-			grid[7,0]=new Rook("Rook","Team2");
-			grid[7,7]=new Rook("Rook","Team2");
-
-			// initialize the knights
-			grid[0,1]=new Knight("Knight","Team1");
-			grid[0,6]=new Knight("Knight","Team1");
-			grid[7,1]=new Knight("Knight","Team2");
-			grid[7,6]=new Knight("Knight","Team2");
-
-			// initialize the Bishops
-			grid[0,2]=new Bishop("Bishop","Team1");
-			grid[0,5]=new Bishop("Bishop","Team1");
-			grid[7,2]=new Bishop("Bishop","Team2");
-			grid[7,5]=new Bishop("Bishop","Team2");
-
-			// initialize the Kings
-			grid[0,4]=new King("King","Team1");
-			grid[7,4]=new King("King","Team2");
-
-			// initialize the Kings
-			grid[0,3]=new Queen("Queen","Team1");
-			grid[7,3]=new Queen("Queen","Team2");
-
-			// initialize pawns
-			for (int i=1; i< 7; i+=5){
-				for (int k = 0; k< 8; k++){
-					if(i==1){
-						grid[i,k] = new Pawn("Pawn","Team1");
-					}else{
-						grid[i,k] = new Pawn("Pawn","Team2");
-					}
-					
-				}
-
-			}
-			
-			
-			
-
-			
-
-
-		}
-
-
 		public void printNodes(){
 
 			int ASCIIA = 64;
@@ -403,23 +338,23 @@ namespace WizardChess{
 					if (k==-1){
 						if(j==-1){
 							//output+= " |           | ";
-							Console.Write(" |           | ");
+							System.Diagnostics.Debug.Write(" |           | ");
 						}else{	
 							//output+=" |    "+(char)ASCIIA+"     | ";
-							Console.Write(" |    "+(char)ASCIIA+"     | ");
+							System.Diagnostics.Debug.Write(" |    "+(char)ASCIIA+"     | ");
 						}
 						ASCIIA++;
 
 					}else{
 						if(j ==-1 && k ==-1){
-							Console.Write(" |          | ");
+							System.Diagnostics.Debug.Write(" |          | ");
 							
 						}else if(j==-1){
-							Console.Write(" |     "+(k+1)+"     | ");
+							System.Diagnostics.Debug.Write(" |     "+(k+1)+"     | ");
 						}else{
 							if(grid[k,j] ==null){
 								//output+=" |          | ";
-								Console.Write(" |          | ");
+								System.Diagnostics.Debug.Write(" |          | ");
 							}else{
 								string spacer = grid[k,j].getName();
 								int spacerIndex = 0;
@@ -428,23 +363,23 @@ namespace WizardChess{
 									spacer+=" ";
 								}
 								//output+= " |"+spacer+"| ";
-								Console.Write(" |");
+								System.Diagnostics.Debug.Write(" |");
 								string team = grid[k,j].getTeamName();
 								if(team=="Team1"){
-									Console.ForegroundColor = ConsoleColor.Blue;
+									System.Diagnostics.Debug.ForegroundColor = ConsoleColor.Blue;
 								}else{
-									Console.ForegroundColor = ConsoleColor.Red;
+									System.Diagnostics.Debug.ForegroundColor = ConsoleColor.Red;
 								}
-								Console.Write(spacer);
-								Console.ResetColor();
-								Console.Write("| ");
+								System.Diagnostics.Debug.Write(spacer);
+								System.Diagnostics.Debug.ResetColor();
+								System.Diagnostics.Debug.Write("| ");
 							}
 						}
 
 					}
 				}
-				//Console.WriteLine(output);
-				Console.Write("\n");
+				//System.Diagnostics.Debug.WriteLine(output);
+				System.Diagnostics.Debug.Write("\n");
 			}
 		}
 

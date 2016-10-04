@@ -103,11 +103,10 @@
     <Compile Include="Game\Pieces\King.cs" />
     <Compile Include="Game\Pieces\Knight.cs" />
     <Compile Include="Game\PieceType.cs" />
-    <Compile Include="CommandConversion\Position.cs" />
+    <Compile Include="Game\Position.cs" />
     <Compile Include="Game\ChessBoard.cs" />
     <Compile Include="Game\ChessTeam.cs" />
     <Compile Include="Game\Pieces\ChessPiece.cs" />
-    <Compile Include="Game\GameManager.cs" />
     <Compile Include="Game\Pieces\Pawn.cs" />
     <Compile Include="Game\Pieces\Queen.cs" />
     <Compile Include="Game\Pieces\Rook.cs" />

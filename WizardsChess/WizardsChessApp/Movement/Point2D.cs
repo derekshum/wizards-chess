@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WizardsChessApp.Game;
 
 namespace WizardsChessApp.Movement
 {
@@ -41,6 +42,10 @@ namespace WizardsChessApp.Movement
 			}
 			return base.Equals(obj);
 		}
+
+		public override string ToString() => $"[{X}, {Y}]";
+
+		public override int GetHashCode() => 37 * Y + X;
 
 		public static Point2D operator -(Point2D p) => new Point2D(-p.X, -p.Y);
 		public static Point2D operator +(Point2D origin, Vector2D v) => new Point2D(origin.X + v.X, origin.Y + v.Y);

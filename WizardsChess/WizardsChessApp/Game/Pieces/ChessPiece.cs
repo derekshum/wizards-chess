@@ -20,9 +20,14 @@ namespace WizardsChessApp.Game.Pieces {
 
 		public bool CanJump { get; protected set; }
 
+		public string ToShortString()
+		{
+			return Team.ToString().Substring(0, 1) + "-" + type.ToString().Substring(0, 1);
+		}
+
 		public override string ToString()
 		{
-			return Team.ToString() + " " + type.ToString();
+			return Team.ToString() + "-" + type.ToString();
 		}
 
 		public abstract IReadOnlyList<Vector2D> GetAllowedMotionVectors();
