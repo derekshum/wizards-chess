@@ -98,13 +98,24 @@
     <Compile Include="CommandConversion\Action.cs" />
     <Compile Include="CommandConversion\Command.cs" />
     <Compile Include="CommandConversion\MoveCommand.cs" />
-    <Compile Include="CommandConversion\Piece.cs" />
+    <Compile Include="Game\Pieces\Bishop.cs" />
+    <Compile Include="Game\Pieces\DirectionalChessPiece.cs" />
+    <Compile Include="Game\Pieces\King.cs" />
+    <Compile Include="Game\Pieces\Knight.cs" />
+    <Compile Include="Game\PieceType.cs" />
     <Compile Include="CommandConversion\Position.cs" />
-    <Compile Include="Game\ChessPiece.cs" />
+    <Compile Include="Game\ChessBoard.cs" />
+    <Compile Include="Game\ChessTeam.cs" />
+    <Compile Include="Game\Pieces\ChessPiece.cs" />
     <Compile Include="Game\GameManager.cs" />
+    <Compile Include="Game\Pieces\Pawn.cs" />
+    <Compile Include="Game\Pieces\Queen.cs" />
+    <Compile Include="Game\Pieces\Rook.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Movement\Point2D.cs" />
+    <Compile Include="Movement\Vector2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VoiceControl\SpeechConstraints.cs" />
     <Compile Include="VoiceControl\CommandRecognizer.cs" />

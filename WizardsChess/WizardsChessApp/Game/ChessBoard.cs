@@ -4,15 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChessApp.CommandConversion
+namespace WizardsChessApp.Game
 {
-	enum Piece
+	class ChessBoard
 	{
-		King,
-		Queen,
-		Knight,
-		Bishop,
-		Castle,
-		Pawn
+		public const int Size = 8;
 	}
 }

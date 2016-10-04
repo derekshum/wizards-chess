@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WizardsChessApp.Game;
 
 namespace WizardsChessApp.CommandConversion
 {
@@ -27,7 +28,7 @@ namespace WizardsChessApp.CommandConversion
 			{
 				if (commandParams.TryGetValue("piece", out paramsList))
 				{
-					Piece = getPiece(paramsList.FirstOrDefault());
+					Piece = PieceTypeMethods.Parse(paramsList.FirstOrDefault());
 				}
 				var destLetter = commandParams["destinationLetter"];
 				var destNumber = commandParams["destinationNumber"];
@@ -63,29 +64,8 @@ namespace WizardsChessApp.CommandConversion
 			return false;
 		}
 
-		public Piece? Piece { get; set; }
+		public PieceType? Piece { get; set; }
 		public Position Position { get; set; }
 		public Position Destination { get; set; }
-
-		private Piece getPiece(string piece)
-		{
-			switch (piece)
-			{
-				case "king":
-					return CommandConversion.Piece.King;
-				case "queen":
-					return CommandConversion.Piece.Queen;
-				case "knight":
-					return CommandConversion.Piece.Knight;
-				case "bishop":
-					return CommandConversion.Piece.Bishop;
-				case "castle":
-					return CommandConversion.Piece.Castle;
-				case "pawn":
-					return CommandConversion.Piece.Pawn;
-				default:
-					throw new ArgumentException($"Could not convert string \"{piece}\" to a Piece enum.");
-			}
-		}
 	}
 }

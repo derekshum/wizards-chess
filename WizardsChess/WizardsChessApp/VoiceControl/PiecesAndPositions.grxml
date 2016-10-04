@@ -5,8 +5,8 @@
 	<rule id="piece" scope="public">
 		<one-of>
 			<item> pawn <tag> out = "pawn"; </tag> </item>
-			<item> rook <tag> out = "castle"; </tag> </item>
-			<item> castle <tag> out = "castle"; </tag> </item>
+			<item> rook <tag> out = "rook"; </tag> </item>
+			<item> castle <tag> out = "rook"; </tag> </item>
 			<item> bishop <tag> out = "bishop"; </tag> </item>
 			<item> knight <tag> out = "knight"; </tag> </item>
 			<item> queen <tag> out = "queen"; </tag> </item>
