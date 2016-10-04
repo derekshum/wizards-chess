@@ -18,7 +18,7 @@ namespace WizardsChessApp.CommandConversion
 			IReadOnlyList<string> paramsList;
 			if (commandParams.TryGetValue("action", out paramsList))
 			{
-				Action = getAction(paramsList.FirstOrDefault());
+				Action = ActionMethods.Parse(paramsList.FirstOrDefault());
 			}
 			else
 			{
@@ -27,26 +27,5 @@ namespace WizardsChessApp.CommandConversion
 		}
 
 		public Action Action { get; set; }
-
-		private Action getAction(string action)
-		{
-			switch (action)
-			{
-				case "move":
-					return Action.Move;
-				case "reset":
-					return Action.Reset;
-				case "undo":
-					return Action.Undo;
-				case "yes":
-					return Action.Yes;
-				case "no":
-					return Action.No;
-				case "pieceConfirmation":
-					return Action.ConfirmPiece;
-				default:
-					throw new ArgumentException($"Cannot convert string \"{action}\" to an Action enum.");
-			}
-		}
 	}
 }
