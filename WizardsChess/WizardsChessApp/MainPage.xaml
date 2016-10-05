@@ -5,9 +5,130 @@
     xmlns:local="using:WizardsChessApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:WizardsChessApp.AppDebugging"
+	xmlns:controls="using:WizardsChessApp.AppDebugging.Controls"
     mc:Ignorable="d">
 
+	<Page.Resources>
+		<Style TargetType="TextBlock" x:Key="ChessText">
+			<Setter Property="FontSize" Value="22"/>
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+		</Style>
+		<Style TargetType="TextBlock" BasedOn="{StaticResource ChessText}" x:Key="ChessTitle">
+			<Setter Property="FontWeight" Value="Bold" />
+		</Style>
+		<Style TargetType="TextBlock" BasedOn="{StaticResource ChessTitle}" x:Key="ChessRowTitle">
+			<Setter Property="Margin" Value="0, 0, 0, 3" />
+			<Setter Property="HorizontalAlignment" Value="Right" />
+		</Style>
+	</Page.Resources>
+	
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-		<Button HorizontalAlignment="Center" Click="Button_Click" >Record Voice</Button>
-    </Grid>
+		<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
+			<Button HorizontalAlignment="Center" Click="Button_Click" Margin="0,0,0,0">Give Command</Button>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 30, 0, 0">
+				<VisualStateManager.VisualStateGroups>
+					<VisualStateGroup>
+						<VisualState>
+							<VisualState.StateTriggers>
+								<StateTrigger IsActive="{Binding GameManager.IsError}" />
+							</VisualState.StateTriggers>
+							<VisualState.Setters>
+								<Setter Target="StateText.Foreground" Value="Red" />
+							</VisualState.Setters>
+						</VisualState>
+					</VisualStateGroup>
+				</VisualStateManager.VisualStateGroups>
+				<TextBlock FontSize="20">State: </TextBlock>
+				<TextBlock x:Name="StateText" FontSize="20" Foreground="Green" Text="{x:Bind GameManager.State}" />
+			</StackPanel>
+			<Grid HorizontalAlignment="Center" Margin="0, 30, 0, 0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="30"/>
+					<ColumnDefinition Width="30"/>
+					<ColumnDefinition Width="30"/>
+					<ColumnDefinition Width="30"/>
+					<ColumnDefinition Width="30"/>
+					<ColumnDefinition Width="30"/>
+					<ColumnDefinition Width="30"/>
+					<ColumnDefinition Width="30"/>
+					<ColumnDefinition Width="30"/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+				</Grid.RowDefinitions>
+
+				<!-- Row Titles -->
+				<TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource ChessRowTitle}">8</TextBlock>
+				<TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource ChessRowTitle}">7</TextBlock>
+				<TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource ChessRowTitle}">6</TextBlock>
+				<TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource ChessRowTitle}">5</TextBlock>
+				<TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource ChessRowTitle}">4</TextBlock>
+				<TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource ChessRowTitle}">3</TextBlock>
+				<TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource ChessRowTitle}">2</TextBlock>
+				<TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource ChessRowTitle}">1</TextBlock>
+
+				<!-- Column Titles -->
+				<TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource ChessTitle}">A</TextBlock>
+				<TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource ChessTitle}">B</TextBlock>
+				<TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource ChessTitle}">C</TextBlock>
+				<TextBlock Grid.Row="0" Grid.Column="4" Style="{StaticResource ChessTitle}">D</TextBlock>
+				<TextBlock Grid.Row="0" Grid.Column="5" Style="{StaticResource ChessTitle}">E</TextBlock>
+				<TextBlock Grid.Row="0" Grid.Column="6" Style="{StaticResource ChessTitle}">F</TextBlock>
+				<TextBlock Grid.Row="0" Grid.Column="7" Style="{StaticResource ChessTitle}">G</TextBlock>
+				<TextBlock Grid.Row="0" Grid.Column="8" Style="{StaticResource ChessTitle}">H</TextBlock>
+
+				<controls:GridItemsControl Grid.Row="1" Grid.Column="1" Grid.RowSpan="8" Grid.ColumnSpan="8"
+							  ItemsSource="{x:Bind GameManager.Pieces}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<Grid Background="Gray">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition />
+									<ColumnDefinition />
+									<ColumnDefinition />
+									<ColumnDefinition />
+									<ColumnDefinition />
+									<ColumnDefinition />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+								</Grid.RowDefinitions>
+							</Grid>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="vm:ObservableChessPiece">
+							<TextBlock Text="{x:Bind Path=Symbol}" Foreground="{x:Bind Path=Color}" />
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+					<ItemsControl.ItemContainerStyle>
+						<Style TargetType="ContentPresenter">
+							<Setter Property="HorizontalAlignment" Value="Center" />
+							<Setter Property="HorizontalContentAlignment" Value="Center" />
+							<Setter Property="VerticalAlignment" Value="Center" />
+							<Setter Property="VerticalContentAlignment" Value="Center" />
+						</Style>
+					</ItemsControl.ItemContainerStyle>
+				</controls:GridItemsControl>
+			</Grid>
+		</StackPanel>
+	</Grid>
 </Page>

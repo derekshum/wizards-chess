@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using WizardsChessApp.AppDebugging;
 using WizardsChessApp.VoiceControl;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -25,6 +26,7 @@ namespace WizardsChessApp
     {
         public MainPage()
         {
+			GameManager = new VisualGameManager();
             this.InitializeComponent();
 		}
 
@@ -50,5 +52,7 @@ namespace WizardsChessApp
 				System.Diagnostics.Debug.WriteLine(result.Text + "\nConfidence: " + result.Confidence);
 			}
 		}
+
+		public VisualGameManager GameManager { get; set; }
 	}
 }

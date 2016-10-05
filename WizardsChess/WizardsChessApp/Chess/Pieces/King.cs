@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardsChessApp.Movement;
 
-namespace WizardsChessApp.Game.Pieces
+namespace WizardsChessApp.Chess.Pieces
 {
 	class King : ChessPiece
 	{

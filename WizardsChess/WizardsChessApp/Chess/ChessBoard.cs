@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WizardsChessApp.CommandConversion;
-using WizardsChessApp.Game.Pieces;
+using WizardsChessApp.Chess.Pieces;
 using WizardsChessApp.Movement;
 
-namespace WizardsChessApp.Game
+namespace WizardsChessApp.Chess
 {
-	class ChessBoard
+	public class ChessBoard
 	{
 		public ChessBoard()
 		{
@@ -187,7 +187,7 @@ namespace WizardsChessApp.Game
 
 		public const int Size = 8;
 
-		private ChessPiece[,] boardMatrix;
+		internal ChessPiece[,] boardMatrix;
 		private IDictionary<ChessTeam, ISet<ChessPiece>> deadPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
 		{
 			{ChessTeam.White, new HashSet<ChessPiece>()},

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChessApp.Game
+namespace WizardsChessApp.Chess
 {
-	enum PieceType
+	public enum PieceType
 	{
 		King,
 		Queen,
@@ -16,7 +16,7 @@ namespace WizardsChessApp.Game
 		Pawn
 	}
 
-	static class PieceTypeMethods
+	public static class PieceTypeMethods
 	{
 		public static PieceType Parse(string pieceName)
 		{

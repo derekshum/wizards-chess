@@ -95,27 +95,31 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AppDebugging\Controls\GridItemsControl.cs" />
+    <Compile Include="AppDebugging\ObservableChessBoard.cs" />
+    <Compile Include="AppDebugging\ObservableChessPiece.cs" />
     <Compile Include="CommandConversion\Action.cs" />
     <Compile Include="CommandConversion\Command.cs" />
     <Compile Include="CommandConversion\MoveCommand.cs" />
-    <Compile Include="Game\Pieces\Bishop.cs" />
-    <Compile Include="Game\Pieces\DirectionalChessPiece.cs" />
-    <Compile Include="Game\Pieces\King.cs" />
-    <Compile Include="Game\Pieces\Knight.cs" />
-    <Compile Include="Game\PieceType.cs" />
-    <Compile Include="Game\Position.cs" />
-    <Compile Include="Game\ChessBoard.cs" />
-    <Compile Include="Game\ChessTeam.cs" />
-    <Compile Include="Game\Pieces\ChessPiece.cs" />
-    <Compile Include="Game\Pieces\Pawn.cs" />
-    <Compile Include="Game\Pieces\Queen.cs" />
-    <Compile Include="Game\Pieces\Rook.cs" />
+    <Compile Include="Chess\Pieces\Bishop.cs" />
+    <Compile Include="Chess\Pieces\DirectionalChessPiece.cs" />
+    <Compile Include="Chess\Pieces\King.cs" />
+    <Compile Include="Chess\Pieces\Knight.cs" />
+    <Compile Include="Chess\PieceType.cs" />
+    <Compile Include="Chess\Position.cs" />
+    <Compile Include="Chess\ChessBoard.cs" />
+    <Compile Include="Chess\ChessTeam.cs" />
+    <Compile Include="Chess\Pieces\ChessPiece.cs" />
+    <Compile Include="Chess\Pieces\Pawn.cs" />
+    <Compile Include="Chess\Pieces\Queen.cs" />
+    <Compile Include="Chess\Pieces\Rook.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Movement\Point2D.cs" />
     <Compile Include="Movement\Vector2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AppDebugging\VisualGameManager.cs" />
     <Compile Include="VoiceControl\SpeechConstraints.cs" />
     <Compile Include="VoiceControl\CommandRecognizer.cs" />
   </ItemGroup>

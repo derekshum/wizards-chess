@@ -35,7 +35,7 @@ namespace WizardsChessApp.CommandConversion
 				case "pieceConfirmation":
 					return Action.ConfirmPiece;
 				default:
-					throw new ArgumentException($"Cannot convert string \"{action}\" to an Action enum.");
+					throw new ArgumentException($"Cannot convert string \"{actionStr}\" to an Action enum.");
 			}
 		}
 	}

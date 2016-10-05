@@ -9,7 +9,7 @@ namespace WizardsChessApp.Movement
 	// This is a value type, meaning it is passed by value, not by reference.
 	// Because it is a small value, this is generally a good thing.
 	// It is immutable to avoid confusion when updating values and having to propagate those changes elsewhere.
-	struct Vector2D
+	public struct Vector2D
 	{
 		public Vector2D(int x, int y)
 		{

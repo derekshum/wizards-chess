@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChessApp.Game
+namespace WizardsChessApp.Chess
 {
-	enum ChessTeam
+	public enum ChessTeam
 	{
 		White,
 		Black

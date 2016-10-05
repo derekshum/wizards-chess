@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChessApp.Game;
+using WizardsChessApp.Chess;
 
 namespace WizardsChessApp.Movement
 {
 	// This is a value type, meaning it is passed by value, not by reference.
 	// Because it is a small value, this is generally a good thing.
 	// It is immutable to avoid confusion when updating values and having to propagate those changes elsewhere.
-	struct Point2D
+	public struct Point2D
 	{
 		public Point2D(int x, int y)
 		{

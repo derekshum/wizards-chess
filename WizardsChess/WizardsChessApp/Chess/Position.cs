@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardsChessApp.Movement;
 
-namespace WizardsChessApp.Game
+namespace WizardsChessApp.Chess
 {
-	enum ColumnLetter
+	public enum ColumnLetter
 	{
 		A = 0,
 		B = 1,
@@ -19,7 +19,7 @@ namespace WizardsChessApp.Game
 		H = 7
 	}
 
-	struct Position
+	public struct Position
 	{
 		public Position(string posLetter, string posNumber)
 		{

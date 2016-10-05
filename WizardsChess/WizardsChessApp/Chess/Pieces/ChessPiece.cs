@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using WizardsChessApp.Movement;
 
 // Board arranged in A-H, 1-8. where A-H is replaced by 9-16
-namespace WizardsChessApp.Game.Pieces {
-	abstract class ChessPiece{
+namespace WizardsChessApp.Chess.Pieces {
+	public abstract class ChessPiece{
 		protected PieceType type;
 
 		public ChessPiece(ChessTeam team){
@@ -20,9 +20,9 @@ namespace WizardsChessApp.Game.Pieces {
 
 		public bool CanJump { get; protected set; }
 
-		public string ToShortString()
+		public virtual string ToShortString()
 		{
-			return Team.ToString().Substring(0, 1) + "-" + type.ToString().Substring(0, 1);
+			return /*Team.ToString().Substring(0, 1) + "-" + */type.ToString().Substring(0, 1);
 		}
 
 		public override string ToString()

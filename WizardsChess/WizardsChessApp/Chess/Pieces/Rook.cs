@@ -5,25 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardsChessApp.Movement;
 
-namespace WizardsChessApp.Game.Pieces
+namespace WizardsChessApp.Chess.Pieces
 {
-	class Bishop : ChessPiece
+	class Rook : ChessPiece
 	{
-		public Bishop(ChessTeam team) : base(team)
+		public Rook(ChessTeam team) : base(team)
 		{
-			type = PieceType.Bishop;
+			type = PieceType.Rook;
+
 			if (allowedMotionVectors.Count == 0)
 			{
 				for (int move = 1; move <= ChessBoard.Size; move++)
 				{
-					allowedMotionVectors.Add(new Vector2D(move, move));
-					allowedMotionVectors.Add(new Vector2D(move, -move));
-					allowedMotionVectors.Add(new Vector2D(-move, move));
-					allowedMotionVectors.Add(new Vector2D(-move, -move));
+					allowedMotionVectors.Add(new Vector2D(move, 0));
+					allowedMotionVectors.Add(new Vector2D(-move, 0));
+					allowedMotionVectors.Add(new Vector2D(0, move));
+					allowedMotionVectors.Add(new Vector2D(0, -move));
 				}
 			}
 		}
 
+		// contains motions of allowed chess piece
 		private static List<Vector2D> allowedMotionVectors = new List<Vector2D>();
 
 		public override IReadOnlyList<Vector2D> GetAllowedMotionVectors()
