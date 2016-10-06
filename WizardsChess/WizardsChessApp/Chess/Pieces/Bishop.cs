@@ -11,7 +11,7 @@ namespace WizardsChessApp.Chess.Pieces
 	{
 		public Bishop(ChessTeam team) : base(team)
 		{
-			type = PieceType.Bishop;
+			Type = PieceType.Bishop;
 			if (allowedMotionVectors.Count == 0)
 			{
 				for (int move = 1; move <= ChessBoard.Size; move++)

@@ -11,7 +11,7 @@ namespace WizardsChessApp.Chess.Pieces
 	{
 		public Knight(ChessTeam team) : base(team)
 		{
-			type = PieceType.Knight;
+			Type = PieceType.Knight;
 			CanJump = true;
 		}
 

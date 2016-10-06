@@ -11,7 +11,7 @@ namespace WizardsChessApp.Chess.Pieces
 	{
 		public Queen(ChessTeam team) : base(team)
 		{
-			type = PieceType.Queen;
+			Type = PieceType.Queen;
 			if (allowedMotionVectors.Count == 0)
 			{
 				for (int move = 1; move <= ChessBoard.Size; move++)

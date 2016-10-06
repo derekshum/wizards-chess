@@ -7,7 +7,7 @@ using WizardsChessApp.Chess;
 
 namespace WizardsChessApp.CommandConversion
 {
-	class MoveCommand : Command
+	public class MoveCommand : Command
 	{
 		public MoveCommand(Command command) : base(command)
 		{

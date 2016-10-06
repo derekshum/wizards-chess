@@ -32,7 +32,7 @@ namespace WizardsChessApp
 
 		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
-			await GameManager.ListenForCommandAsync();
+			await GameManager.PerformCommandAsync();
 		}
 
 		public VisualGameManager GameManager { get; set; }

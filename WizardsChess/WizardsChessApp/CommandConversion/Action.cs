@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WizardsChessApp.CommandConversion
 {
-	enum Action
+	public enum Action
 	{
 		Move,
 		Reset,
@@ -16,7 +16,7 @@ namespace WizardsChessApp.CommandConversion
 		ConfirmPiece
 	}
 
-	static class ActionMethods
+	public static class ActionMethods
 	{
 		public static Action Parse(string actionStr)
 		{

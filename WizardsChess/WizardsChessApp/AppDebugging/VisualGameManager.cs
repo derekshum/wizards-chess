@@ -21,47 +21,63 @@ namespace WizardsChessApp.AppDebugging
 			chessBoard = new ObservableChessBoard(board);
 		}
 
-		public async Task ListenForCommandAsync()
+		public async Task PerformCommandAsync()
 		{
-			IsError = false;
-			State = "Ok";
+			try
+			{
+				State = "Listening";
+				var cmd = await listenForCommandAsync();
+				State = "Processing";
+
+				if (cmd.Action == CommandConversion.Action.Move)
+				{
+					await performMoveIfValidAsync(cmd as MoveCommand);
+				}
+
+				IsError = false;
+				State = "Ok";
+			}
+			catch (Exception e)
+			{
+				IsError = true;
+				State = e.Message;
+			}
+		}
+
+		private async Task<Command> listenForCommandAsync()
+		{
 			if (cmdRecognizer == null)
 			{
 				cmdRecognizer = await CommandRecognizer.CreateAsync();
 			}
 
-			var voiceCommand = await cmdRecognizer.RecognizeSpeechAsync();
+			return await cmdRecognizer.RecognizeMoveAsync();
+		}
 
-			if (voiceCommand.Status != Windows.Media.SpeechRecognition.SpeechRecognitionResultStatus.Success)
-			{
-				IsError = true;
-				State = voiceCommand.Status.ToString();
-				return;
-			}
-
-			var cmd = new Command(voiceCommand.SemanticInterpretation.Properties);
-
-			if (cmd.Action != CommandConversion.Action.Move)
-			{
-				IsError = true;
-				State = $"Received command with action {cmd.Action} instead of Move";
-				return;
-			}
-
-			State = voiceCommand.Text;
-			var moveCmd = new MoveCommand(voiceCommand.SemanticInterpretation.Properties);
+		private async Task performMoveIfValidAsync(MoveCommand moveCmd)
+		{
 			if (moveCmd.Piece.HasValue)
 			{
-				IsError = true;
-				State = $"Cannot determine the selected piece at this time.";
-				return;
-			}
+				var possibleStartPositions = board.FindPotentialPiecesForMove(moveCmd.Piece.Value, moveCmd.Destination);
+				if (possibleStartPositions.Count == 0)
+				{
+					throw new InvalidOperationException($"Could not find a possible starting piece of type {moveCmd.Piece.Value} going to {moveCmd.Destination}");
+				}
+				else if (possibleStartPositions.Count == 1)
+				{
+					moveCmd.Position = possibleStartPositions.First();
+				}
+				else
+				{
+					var cmd = await cmdRecognizer.ConfirmPieceSelectionAsync(moveCmd.Piece.Value, possibleStartPositions.ToList());
+					var confirmationCmd = cmd as ConfirmPieceCommand;
+					if (confirmationCmd == null)
+					{
+						throw new Exception("Could not confirm which piece was meant to move.");
+					}
 
-			if (!board.IsMoveValid(moveCmd.Position, moveCmd.Destination))
-			{
-				IsError = true;
-				State = $"Invalid move";
-				return;
+					moveCmd.Position = confirmationCmd.Position;
+				}
 			}
 
 			board.MovePiece(moveCmd.Position, moveCmd.Destination);

@@ -11,7 +11,7 @@ namespace WizardsChessApp.Chess.Pieces
 	{
 		public Pawn(ChessTeam team) : base(team)
 		{
-			type = PieceType.Pawn;
+			Type = PieceType.Pawn;
 		}
 
 		// contains motions of allowed chess piece

@@ -11,7 +11,7 @@ namespace WizardsChessApp.Chess.Pieces
 	{
 		public King(ChessTeam team) : base(team)
 		{
-			type = PieceType.King;
+			Type = PieceType.King;
 		}
 
 		private static IReadOnlyList<Vector2D> allowedMotionVectors = new List<Vector2D>()

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WizardsChessApp.CommandConversion
 {
-	class Command
+	public class Command
 	{
 		public Command(Command command)
 		{

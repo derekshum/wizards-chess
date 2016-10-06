@@ -28,6 +28,12 @@ namespace WizardsChessApp.Chess
 			Row = Int32.Parse(posNumber) - 1;
 		}
 
+		public Position(Point2D pos)
+		{
+			Row = pos.Y;
+			ColumnLetter = (ColumnLetter)pos.X;
+		}
+
 		public Position(Position pos)
 		{
 			Row = pos.Row;
@@ -42,7 +48,7 @@ namespace WizardsChessApp.Chess
 			//set { ColumnLetter = (ColumnLetter)value; }
 		}
 
-		public override string ToString() => $"{ColumnLetter}{Row}";
+		public override string ToString() => $"{ColumnLetter}{Row + 1}";
 
 		public static implicit operator Point2D(Position p) => new Point2D(p.Column, p.Row);
 	}

@@ -11,7 +11,7 @@ namespace WizardsChessApp.Chess.Pieces
 	{
 		public Rook(ChessTeam team) : base(team)
 		{
-			type = PieceType.Rook;
+			Type = PieceType.Rook;
 
 			if (allowedMotionVectors.Count == 0)
 			{

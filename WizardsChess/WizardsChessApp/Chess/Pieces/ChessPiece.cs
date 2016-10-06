@@ -6,13 +6,14 @@ using WizardsChessApp.Movement;
 // Board arranged in A-H, 1-8. where A-H is replaced by 9-16
 namespace WizardsChessApp.Chess.Pieces {
 	public abstract class ChessPiece{
-		protected PieceType type;
 
 		public ChessPiece(ChessTeam team){
 			Team = team;
 			HasMoved = false;
 			CanJump = false;
 		}
+
+		public PieceType Type { get; protected set; }
 
 		public ChessTeam Team { get; }
 
@@ -22,12 +23,12 @@ namespace WizardsChessApp.Chess.Pieces {
 
 		public virtual string ToShortString()
 		{
-			return /*Team.ToString().Substring(0, 1) + "-" + */type.ToString().Substring(0, 1);
+			return /*Team.ToString().Substring(0, 1) + "-" + */Type.ToString().Substring(0, 1);
 		}
 
 		public override string ToString()
 		{
-			return Team.ToString() + "-" + type.ToString();
+			return Team.ToString() + "-" + Type.ToString();
 		}
 
 		public abstract IReadOnlyList<Vector2D> GetAllowedMotionVectors();

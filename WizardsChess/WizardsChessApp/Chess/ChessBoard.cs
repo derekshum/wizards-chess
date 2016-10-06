@@ -14,7 +14,25 @@ namespace WizardsChessApp.Chess
 		public ChessBoard()
 		{
 			boardMatrix = new ChessPiece[Size, Size];
+			WhoseTurn = ChessTeam.White;
 			setBoard();
+		}
+
+		public ISet<Position> FindPotentialPiecesForMove(PieceType piece, Position destination)
+		{
+			var pieceLocationList = pieceLocationsByType[piece];
+
+			var potentialPiecePositions = new HashSet<Position>();
+
+			foreach (var location in pieceLocationList)
+			{
+				if (isMoveValid(new Position(location), destination))
+				{
+					potentialPiecePositions.Add(new Position(location));
+				}
+			}
+
+			return potentialPiecePositions;
 		}
 
 		/// <summary>
@@ -26,7 +44,7 @@ namespace WizardsChessApp.Chess
 		/// <param name="startPosition">The position of the piece to move.</param>
 		/// <param name="endPosition">The destination of the piece.</param>
 		/// <returns></returns>
-		public bool IsMoveValid(Position startPosition, Position endPosition)
+		private bool isMoveValid(Position startPosition, Position endPosition)
 		{
 			// Get piece at input location
 			ChessPiece startPiece = boardMatrix[startPosition.Row, startPosition.Column];
@@ -34,6 +52,12 @@ namespace WizardsChessApp.Chess
 
 			// If there is no piece at the requested start position, return false
 			if (startPiece == null)
+			{
+				return false;
+			}
+
+			// It's not this pieces turn to move
+			if (startPiece.Team != WhoseTurn)
 			{
 				return false;
 			}
@@ -82,7 +106,7 @@ namespace WizardsChessApp.Chess
 		/// <param name="endPosition"></param>
 		public void MovePiece(Position startPosition, Position endPosition)
 		{
-			if (!IsMoveValid(startPosition, endPosition))
+			if (!isMoveValid(startPosition, endPosition))
 			{
 				throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
 			}
@@ -92,12 +116,29 @@ namespace WizardsChessApp.Chess
 			if (endPiece != null)
 			{
 				deadPiecesByTeam[endPiece.Team].Add(endPiece);
+				// Remove a killed piece from our valid pieceLocationsByType list
+				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
+				listOfEndPieceType.Remove(endPosition);
 			}
 
 			var startPiece = boardMatrix[startPosition.Row, startPosition.Column];
 			startPiece.HasMoved = true;
 			boardMatrix[endPosition.Row, endPosition.Column] = startPiece;
 			boardMatrix[startPosition.Row, startPosition.Column] = null;
+
+			var listOfStartPieceTypes = pieceLocationsByType[startPiece.Type];
+			// Replace the old position for this piece with the new position in the pieceLocationsByType list
+			listOfStartPieceTypes.Remove(startPosition);
+			listOfStartPieceTypes.Add(endPosition);
+
+			if (WhoseTurn == ChessTeam.Black)
+			{
+				WhoseTurn = ChessTeam.White;
+			}
+			else
+			{
+				WhoseTurn = ChessTeam.Black;
+			}
 		}
 
 		public override string ToString()
@@ -185,11 +226,35 @@ namespace WizardsChessApp.Chess
 				boardMatrix[WhiteFrontRow, col] = new Pawn(ChessTeam.White);
 				boardMatrix[BlackFrontRow, col] = new Pawn(ChessTeam.Black);
 			}
+
+			setupPieceLocationsDictionary();
+		}
+
+		private void setupPieceLocationsDictionary()
+		{
+			for (int row = 0; row < Size; row ++)
+			{
+				for (int col = 0; col < Size; col++)
+				{
+					var piece = boardMatrix[row, col];
+					if (piece != null)
+					{
+						if (!pieceLocationsByType.ContainsKey(piece.Type))
+						{
+							pieceLocationsByType[piece.Type] = new List<Point2D>();
+						}
+						pieceLocationsByType[piece.Type].Add(new Movement.Point2D(col, row));
+					}
+				}
+			}
 		}
 
 		public const int Size = 8;
 
-		internal ChessPiece[,] boardMatrix;
+		public ChessTeam WhoseTurn;
+
+		internal ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1.
+		internal Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();
 		private IDictionary<ChessTeam, ISet<ChessPiece>> deadPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
 		{
 			{ChessTeam.White, new HashSet<ChessPiece>()},
