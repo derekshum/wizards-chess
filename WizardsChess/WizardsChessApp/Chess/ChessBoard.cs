@@ -94,7 +94,9 @@ namespace WizardsChessApp.Chess
 				deadPiecesByTeam[endPiece.Team].Add(endPiece);
 			}
 
-			boardMatrix[endPosition.Row, endPosition.Column] = boardMatrix[startPosition.Row, startPosition.Column];
+			var startPiece = boardMatrix[startPosition.Row, startPosition.Column];
+			startPiece.HasMoved = true;
+			boardMatrix[endPosition.Row, endPosition.Column] = startPiece;
 			boardMatrix[startPosition.Row, startPosition.Column] = null;
 		}
 
@@ -135,7 +137,7 @@ namespace WizardsChessApp.Chess
 			var nextPosition = startPosition + unitVector;
 			while (nextPosition != endPosition)
 			{
-				if (boardMatrix[nextPosition.X, nextPosition.Y] != null)
+				if (boardMatrix[nextPosition.Y, nextPosition.X] != null)
 				{
 					return false;
 				}

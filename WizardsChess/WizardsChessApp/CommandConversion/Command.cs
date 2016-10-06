@@ -22,7 +22,7 @@ namespace WizardsChessApp.CommandConversion
 			}
 			else
 			{
-				throw new ArgumentException("Cannot create a Command without an action parameter");
+				throw new ArgumentException($"Cannot create a Command without an action parameter. Received {commandParams.Count} parameters.");
 			}
 		}
 

@@ -26,7 +26,7 @@
 			<item> A <tag> out = "A"; </tag> </item>
 			<item> alpha <tag> out = "A"; </tag> </item>
 			<item> B <tag> out = "B"; </tag> </item>
-			<item> bravo <tag> out "B"; </tag> </item>
+			<item> bravo <tag> out = "B"; </tag> </item>
 			<item> C <tag> out = "C"; </tag> </item>
 			<item> charlie <tag> out = "C"; </tag> </item>
 			<item> D <tag> out = "D"; </tag> </item>

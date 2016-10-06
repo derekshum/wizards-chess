@@ -14,7 +14,6 @@
 	
 	<rule id="moveCommand">
 		<item repeat="0-1"> move </item>
-		<tag> out.action = "move"; </tag>
 		<one-of>
 			<item>
 				<ruleref uri="PiecesAndPositions.grxml#piece" />
@@ -30,6 +29,7 @@
 		<ruleref uri="PiecesAndPositions.grxml#position"/>
 		<tag> out.destinationLetter = rules.latest().letter; </tag>
 		<tag> out.destinationNumber = rules.latest().number; </tag>
+		<tag> out.action = "move"; </tag>
 	</rule>
 	
 </grammar>

@@ -27,7 +27,8 @@ namespace WizardsChessApp.AppDebugging
 
 		public void UpdatePieceLocations()
 		{
-			ICollection<ObservableChessPiece> copiedCollection = this;
+			ObservableChessPiece[] remainingPieces = new ObservableChessPiece[ChessBoard.Size * 4];
+			int pieceCounter = 0;
 			for (int row = 0; row < ChessBoard.Size; row++)
 			{
 				for (int col = 0; col < ChessBoard.Size; col++)
@@ -35,14 +36,21 @@ namespace WizardsChessApp.AppDebugging
 					if (board.boardMatrix[row, col] != null)
 					{
 						var piece = this.First(p => p.Piece == board.boardMatrix[row, col]);
-						copiedCollection.Remove(piece);
 						piece.UpdatePosition(row, col);
+						remainingPieces[pieceCounter++] = piece;
 					}
 				}
 			}
-			foreach (var piece in copiedCollection)
+
+			if (pieceCounter != this.Count)
 			{
-				this.Remove(piece);
+				for (int i = 0; i < this.Count; i++)
+				{
+					if (!remainingPieces.Contains(this[i]))
+					{
+						this.RemoveItem(i);
+					}
+				}
 			}
 		}
 

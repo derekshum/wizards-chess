@@ -44,6 +44,6 @@ namespace WizardsChessApp.Chess
 
 		public override string ToString() => $"{ColumnLetter}{Row}";
 
-		public static implicit operator Point2D(Position p) => new Point2D(p.Row, p.Column);
+		public static implicit operator Point2D(Position p) => new Point2D(p.Column, p.Row);
 	}
 }

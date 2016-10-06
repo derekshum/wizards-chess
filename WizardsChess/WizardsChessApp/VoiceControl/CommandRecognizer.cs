@@ -11,7 +11,9 @@ namespace WizardsChessApp.VoiceControl
 	{
 		private CommandRecognizer()
 		{
-			SpeechRecognizer_ = new SpeechRecognizer();
+			speechRecognizer = new SpeechRecognizer();
+			speechRecognizer.UIOptions.IsReadBackEnabled = false;
+			speechRecognizer.UIOptions.ShowConfirmation = false;
 		}
 
 		public static async Task<CommandRecognizer> CreateAsync()
@@ -27,7 +29,7 @@ namespace WizardsChessApp.VoiceControl
 
 		public async Task<SpeechRecognitionResult> RecognizeSpeechAsync()
 		{
-			return await SpeechRecognizer_.RecognizeWithUIAsync().AsTask();
+			return await speechRecognizer.RecognizeWithUIAsync().AsTask();
 		}
 
 		protected async Task<SpeechRecognitionCompilationResult> SetupConstraintsAsync()
@@ -35,11 +37,11 @@ namespace WizardsChessApp.VoiceControl
 			var grammarConstraints = await SpeechConstraints.GetConstraintsAsync();
 			foreach (var constraint in grammarConstraints)
 			{
-				SpeechRecognizer_.Constraints.Add(constraint);
+				speechRecognizer.Constraints.Add(constraint);
 			}
-			return await SpeechRecognizer_.CompileConstraintsAsync().AsTask();
+			return await speechRecognizer.CompileConstraintsAsync().AsTask();
 		}
 
-		private SpeechRecognizer SpeechRecognizer_;
+		private SpeechRecognizer speechRecognizer;
 	}
 }

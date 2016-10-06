@@ -22,25 +22,26 @@
 			<Setter Property="HorizontalAlignment" Value="Right" />
 		</Style>
 	</Page.Resources>
-	
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState x:Name="OK" />
+				<VisualState x:Name="Error">
+					<VisualState.StateTriggers>
+						<StateTrigger IsActive="{x:Bind GameManager.IsError, Mode=OneWay}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="StateText.Foreground" Value="Red" />
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
 		<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
 			<Button HorizontalAlignment="Center" Click="Button_Click" Margin="0,0,0,0">Give Command</Button>
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 30, 0, 0">
-				<VisualStateManager.VisualStateGroups>
-					<VisualStateGroup>
-						<VisualState>
-							<VisualState.StateTriggers>
-								<StateTrigger IsActive="{Binding GameManager.IsError}" />
-							</VisualState.StateTriggers>
-							<VisualState.Setters>
-								<Setter Target="StateText.Foreground" Value="Red" />
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
-				</VisualStateManager.VisualStateGroups>
-				<TextBlock FontSize="20">State: </TextBlock>
-				<TextBlock x:Name="StateText" FontSize="20" Foreground="Green" Text="{x:Bind GameManager.State}" />
+				<TextBlock FontSize="20" Text="State: " />
+				<TextBlock x:Name="StateText" FontSize="20" Foreground="Green" Text="{x:Bind Path=GameManager.State, Mode=OneWay}" />
 			</StackPanel>
 			<Grid HorizontalAlignment="Center" Margin="0, 30, 0, 0">
 				<Grid.ColumnDefinitions>
