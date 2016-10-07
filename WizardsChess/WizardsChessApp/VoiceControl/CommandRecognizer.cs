@@ -21,8 +21,6 @@ namespace WizardsChessApp.VoiceControl
 			speechRecognizer = new SpeechRecognizer();
 			speechRecognizer.UIOptions.IsReadBackEnabled = false;
 			speechRecognizer.UIOptions.ShowConfirmation = false;
-			speechRecognizer.Timeouts.InitialSilenceTimeout = TimeSpan.FromSeconds(5);
-			speechRecognizer.Timeouts.BabbleTimeout = TimeSpan.FromSeconds(2);
 
 			audioOut.MediaFailed += ReleaseAudio;
 			audioOut.MediaEnded += ReleaseAudio;
@@ -161,13 +159,13 @@ namespace WizardsChessApp.VoiceControl
 			var voiceStream = await speechSynth.SynthesizeTextToStreamAsync(phrase);
 			audioOut.SetSource(voiceStream, voiceStream.ContentType);
 			audioOut.Play();
-			await Task.Delay(10000);
+			await Task.Delay(3000);
 			audioOut.Stop();
 		}
 
 		private void ReleaseAudio(object sender, RoutedEventArgs args)
 		{
-			//int old = audioLock.Release();
+			System.Diagnostics.Debug.WriteLine($"ReleaseAudio called with args {args}");
 		}
 
 		private async Task<SpeechRecognitionCompilationResult> setupConstraintsAsync()
