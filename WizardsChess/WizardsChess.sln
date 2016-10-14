@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WizardsChessApp", "WizardsChessApp\WizardsChessApp.csproj", "{53885826-D721-4AF3-B9AC-779C2E95625D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WizardsChess", "WizardsChess\WizardsChess.csproj", "{9A475A57-FC3D-4562-A121-F441D86DBD85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,24 @@ Global
 		{53885826-D721-4AF3-B9AC-779C2E95625D}.Release|x86.ActiveCfg = Release|x86
 		{53885826-D721-4AF3-B9AC-779C2E95625D}.Release|x86.Build.0 = Release|x86
 		{53885826-D721-4AF3-B9AC-779C2E95625D}.Release|x86.Deploy.0 = Release|x86
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Debug|ARM.ActiveCfg = Debug|ARM
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Debug|ARM.Build.0 = Debug|ARM
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Debug|ARM.Deploy.0 = Debug|ARM
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Debug|x64.ActiveCfg = Debug|x64
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Debug|x64.Build.0 = Debug|x64
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Debug|x64.Deploy.0 = Debug|x64
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Debug|x86.ActiveCfg = Debug|x86
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Debug|x86.Build.0 = Debug|x86
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Debug|x86.Deploy.0 = Debug|x86
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Release|ARM.ActiveCfg = Release|ARM
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Release|ARM.Build.0 = Release|ARM
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Release|ARM.Deploy.0 = Release|ARM
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Release|x64.ActiveCfg = Release|x64
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Release|x64.Build.0 = Release|x64
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Release|x64.Deploy.0 = Release|x64
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Release|x86.ActiveCfg = Release|x86
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Release|x86.Build.0 = Release|x86
+		{9A475A57-FC3D-4562-A121-F441D86DBD85}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
