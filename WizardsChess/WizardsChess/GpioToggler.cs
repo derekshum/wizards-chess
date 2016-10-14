@@ -33,6 +33,7 @@ namespace WizardsChess
 		
 		private void toggle()
 		{
+			System.Diagnostics.Debug.WriteLine("Toggling");
 			switch (currentPinVal)
 			{
 				case GpioPinValue.High:
