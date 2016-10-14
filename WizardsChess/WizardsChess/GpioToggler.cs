@@ -12,7 +12,7 @@ namespace WizardsChess
 		public GpioToggler(TimeSpan period, int pinNum)
 		{
 			this.period = period;
-			gpio = GpioController.GetDefault();
+			var gpio = GpioController.GetDefault();
 			pin = gpio.OpenPin(pinNum);
 		}
 
@@ -51,7 +51,6 @@ namespace WizardsChess
 		private TimeSpan period;
 		private GpioPinValue currentPinVal;
 		private GpioPin pin;
-		private GpioController gpio;
 		private Task toggleTask;
 	}
 }
