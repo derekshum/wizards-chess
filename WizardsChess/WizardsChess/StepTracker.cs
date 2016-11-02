@@ -7,13 +7,13 @@ using Windows.Devices.Gpio;
 
 namespace WizardsChess
 {
-	public class MotorStepTracker : IDisposable
+	public class StepTracker : IDisposable
 	{
 		/// <summary>
 		/// Track the steps read at the specified input pin. Position is updated on the falling edge.
 		/// </summary>
 		/// <param name="pinNum">The GPIO pin to read steps from.</param>
-		public MotorStepTracker(int pinNum)
+		public StepTracker(int pinNum)
 		{
 			var gpio = GpioController.GetDefault();
 			pin = gpio.OpenPin(pinNum);
