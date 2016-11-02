@@ -106,21 +106,21 @@ namespace WizardsChessApp.Chess
 		/// <param name="endPosition"></param>
 		public void MovePiece(Position startPosition, Position endPosition)
 		{
-			if (!isMoveValid(startPosition, endPosition))
+            
+            if (!isMoveValid(startPosition, endPosition))
 			{
 				throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
 			}
 
-			// Kill the piece at the destination, if there is one
-			var endPiece = boardMatrix[endPosition.Row, endPosition.Column];
+            // Kill the piece at the destination, if there is one
+            var endPiece = boardMatrix[endPosition.Row, endPosition.Column];
 			if (endPiece != null)
 			{
 				deadPiecesByTeam[endPiece.Team].Add(endPiece);
 				// Remove a killed piece from our valid pieceLocationsByType list
 				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
 				listOfEndPieceType.Remove(endPosition);
-			}
-
+			} 
 			var startPiece = boardMatrix[startPosition.Row, startPosition.Column];
 			startPiece.HasMoved = true;
 			boardMatrix[endPosition.Row, endPosition.Column] = startPiece;
@@ -249,9 +249,25 @@ namespace WizardsChessApp.Chess
 			}
 		}
 
-		public const int Size = 8;
+        //added by Derek because movement manager needed to access it
+        public ChessPiece getPieceAt(int x, int y)
+        {
+            return boardMatrix[x, y];
+        }
 
-		public ChessTeam WhoseTurn;
+        public ChessPiece getPieceAt(Point2D location)
+        {
+            return boardMatrix[location.X, location.Y];
+        }
+
+        //access the number of taken pieces on a team
+        public int getNumDeadPieces(ChessTeam team)
+        {
+            return deadPiecesByTeam[team].Count;
+        }
+
+        public const int Size = 8;
+        public ChessTeam WhoseTurn;
 
 		internal ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1.
 		internal Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();
