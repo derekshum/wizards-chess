@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using WizardsChessApp.AppDebugging;
+using WizardsChessApp.Movement.Drv;
 using WizardsChessApp.VoiceControl;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -27,6 +28,7 @@ namespace WizardsChessApp
         public MainPage()
         {
 			GameManager = new VisualGameManager();
+			MotorDriver = new MotorDrv(16, 18);
             this.InitializeComponent();
 		}
 
@@ -36,5 +38,22 @@ namespace WizardsChessApp
 		}
 
 		public VisualGameManager GameManager { get; set; }
+
+		private void MotorForward_Click(object sender, RoutedEventArgs e)
+		{
+			MotorDriver.ChangeState(MotorState.Forward);
+		}
+
+		private void MotorBackward_Click(object sender, RoutedEventArgs e)
+		{
+			MotorDriver.ChangeState(MotorState.Backward);
+		}
+
+		private void MotorStop_Click(object sender, RoutedEventArgs e)
+		{
+			MotorDriver.ChangeState(MotorState.Stopped);
+		}
+
+		private MotorDrv MotorDriver;
 	}
 }

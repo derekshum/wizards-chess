@@ -117,6 +117,7 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Movement\Drv\MotorDrv.cs" />
     <Compile Include="Movement\MovementPlanner.cs" />
     <Compile Include="Movement\Point2D.cs" />
     <Compile Include="Movement\Vector2D.cs" />
