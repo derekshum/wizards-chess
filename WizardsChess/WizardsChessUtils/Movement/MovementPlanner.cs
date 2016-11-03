@@ -14,7 +14,8 @@ namespace WizardsChess.Movement
             board = b;
         }
 
-        public void Move(Point2D start, Point2D end)
+		//Provides movement paths for standard move (with and without capturing)
+        public List<List<Point2D>> Move(Point2D start, Point2D end)
         {
             List<List<Point2D>> paths = new List<List<Point2D>>();
             
@@ -23,19 +24,19 @@ namespace WizardsChess.Movement
                 paths.Add(getTakenPath(end));
             }
             paths.Add(getMovePath(start, end));
-			
-			//TODO: call motor control
+
+			return paths;
         }
 
-        //Only used fo en passant
-        public void Move(Point2D start, Point2D end, Point2D taken)
+        //Provides movement paths for preforming en passant
+        public List<List<Point2D>> Move(Point2D start, Point2D end, Point2D taken)
         {
             List<List<Point2D>> paths = new List<List<Point2D>>();
 
             paths.Add(getTakenPath(taken));
             paths.Add(getMovePath(start, end));
 
-            //TODO: call motor control
+			return paths;
         }
 
         private List<Point2D> getMovePath(Point2D start, Point2D end)
@@ -168,19 +169,5 @@ namespace WizardsChess.Movement
 			});
 			return toPrint;
         }
-
-		public List<List<Point2D>> MoveDebug(Point2D start, Point2D end)
-		{
-			List<List<Point2D>> paths = new List<List<Point2D>>();
-
-			if (board.PieceAt(end) != null)
-			{
-				paths.Add(getTakenPath(end));
-			}
-			paths.Add(getMovePath(start, end));
-
-			return paths;
-		}
-
 	}
 }
