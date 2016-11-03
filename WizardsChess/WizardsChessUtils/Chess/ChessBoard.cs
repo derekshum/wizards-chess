@@ -252,12 +252,12 @@ namespace WizardsChess.Chess
         //added by Derek because movement manager needed to access it
         public ChessPiece PieceAt(int x, int y)
         {
-            return boardMatrix[x, y];
+            return boardMatrix[y, x];
         }
 
         public ChessPiece PieceAt(Point2D location)
         {
-            return boardMatrix[location.X, location.Y];
+            return boardMatrix[location.Y, location.X];
         }
 
         //access the number of taken pieces on a team
