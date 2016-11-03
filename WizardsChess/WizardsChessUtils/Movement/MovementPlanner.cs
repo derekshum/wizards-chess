@@ -7,7 +7,7 @@ using WizardsChess.Chess;
 
 namespace WizardsChess.Movement
 {
-    class MovementPlanner
+    public class MovementPlanner
     {
         public MovementPlanner (ChessBoard b)
         {
@@ -23,9 +23,8 @@ namespace WizardsChess.Movement
                 paths.Add(getTakenPath(end));
             }
             paths.Add(getMovePath(start, end));
-
-            //TODO: call motor control (print for debug for now)
-            Print(paths);
+			
+			//TODO: call motor control
         }
 
         //Only used fo en passant
@@ -36,8 +35,7 @@ namespace WizardsChess.Movement
             paths.Add(getTakenPath(taken));
             paths.Add(getMovePath(start, end));
 
-            //TODO: call motor control (print for debug for now)
-            Print(paths);
+            //TODO: call motor control
         }
 
         private List<Point2D> getMovePath(Point2D start, Point2D end)
@@ -137,12 +135,12 @@ namespace WizardsChess.Movement
             return new Point2D(xOffset + spacing * point.X, yOffset + spacing + point.Y);
         }
 
-        private ChessBoard board;
+        public ChessBoard board; //TODO: make private when debugging done
 
-        //constants pointConversion needs
-        const int spacing = 2;    //the number of points per square in one dimension
-        const int xOffset = 5;    //the x index of the centre of the left most playing board column
-        const int yOffset = 1;    //the y index of the centre of the bottom row
+		//constants pointConversion needs
+		const int spacing = 2;    //number of points per square in one dimension
+        const int xOffset = 4;    //x-index of the centre of the left most playing board column
+        const int yOffset = 1;    //y-index of the centre of the bottom row
         //constants getTakenPath needs
         const int whiteEmptyCol = 20;     //index of the centre of the empty column in between the board and white taken pieces
         const int blackEmptyCol = 2;      //index of the centre of the empty column in between the board and black taken pieces
@@ -155,15 +153,34 @@ namespace WizardsChess.Movement
         const int whiteTakenAddDir = 1;   //y-direction white pieces are added to the white taken trough
         const int blackTakenAddDir = -1;  //y-direction black pieces are added to the black taken trough
 
-        //TODO: axe this debugging printer when it's no longer needed?
-        public void Print(List<List<Point2D>> paths)
+		//TODO: remove debugging methods below when they're no longer needed
+        public String PrintDebug(List<List<Point2D>> paths)
         {
-            paths.ForEach(delegate (List<Point2D> path) {
-                path.ForEach(delegate (Point2D point) {
-                    System.Diagnostics.Debug.WriteLine(point.ToString());
+			String toPrint = "";
+            paths.ForEach((path) => 
+			{
+				toPrint += "start move\n";
+                path.ForEach((point) => 
+				{
+					toPrint += point.ToString() + "\n";
                 });
-            });
+				toPrint += "endMove\n";
+			});
+			return toPrint;
         }
 
-    }
+		public List<List<Point2D>> MoveDebug(Point2D start, Point2D end)
+		{
+			List<List<Point2D>> paths = new List<List<Point2D>>();
+
+			if (board.PieceAt(end) != null)
+			{
+				paths.Add(getTakenPath(end));
+			}
+			paths.Add(getMovePath(start, end));
+
+			return paths;
+		}
+
+	}
 }
