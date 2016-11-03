@@ -30,7 +30,7 @@ namespace WizardsChessTest
 			String printString = "";
 			ChessBoard board = new ChessBoard();
 			MovementPlanner planner = new MovementPlanner(board);
-			paths = planner.MoveDebug(moveW1Start, moveW1End);
+			paths = planner.Move(moveW1Start, moveW1End);
 			
 			printString = planner.PrintDebug(paths);
 			
@@ -55,9 +55,9 @@ namespace WizardsChessTest
 			String printString = "";
 			ChessBoard board = new ChessBoard();
 			MovementPlanner planner = new MovementPlanner(board);
-			listOfPaths.Add(planner.MoveDebug(moveW1Start, moveW1End));
-			listOfPaths.Add(planner.MoveDebug(moveB1Start, moveB1End));
-			listOfPaths.Add(planner.MoveDebug(moveW2Start, moveW2End));
+			listOfPaths.Add(planner.Move(moveW1Start, moveW1End));
+			listOfPaths.Add(planner.Move(moveB1Start, moveB1End));
+			listOfPaths.Add(planner.Move(moveW2Start, moveW2End));
 
 			listOfPaths.ForEach((p) => 
 			{
