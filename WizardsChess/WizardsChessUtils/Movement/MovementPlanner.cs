@@ -18,7 +18,7 @@ namespace WizardsChess.Movement
         {
             List<List<Point2D>> paths = new List<List<Point2D>>();
             
-            if (board.getPieceAt(end) != null)
+            if (board.PieceAt(end) != null)
             {
                 paths.Add(getTakenPath(end));
             }
@@ -46,7 +46,7 @@ namespace WizardsChess.Movement
             Point2D endPoint = pointConversion(end);
 
             //could check for null here, if unsure if that check isn't done elsewhere
-            if (board.getPieceAt(start).CanJump)
+            if (board.PieceAt(start).CanJump)
             {
                 return getKnightMovePath(startPoint, endPoint);
             }
@@ -98,8 +98,8 @@ namespace WizardsChess.Movement
         private List<Point2D> getTakenPath(Point2D start) //change takenTeam type
         {
             Point2D startPoint = pointConversion(start);
-            ChessTeam team = board.getPieceAt(start).Team; 
-            int numTaken = board.getNumDeadPieces(team); 
+            ChessTeam team = board.PieceAt(start).Team; 
+            int numTaken = board.NumDeadPieces(team); 
 
             List<Point2D> path = new List<Point2D>();
 

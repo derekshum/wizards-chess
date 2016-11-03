@@ -250,18 +250,18 @@ namespace WizardsChess.Chess
 		}
 
         //added by Derek because movement manager needed to access it
-        public ChessPiece getPieceAt(int x, int y)
+        public ChessPiece PieceAt(int x, int y)
         {
             return boardMatrix[x, y];
         }
 
-        public ChessPiece getPieceAt(Point2D location)
+        public ChessPiece PieceAt(Point2D location)
         {
             return boardMatrix[location.X, location.Y];
         }
 
         //access the number of taken pieces on a team
-        public int getNumDeadPieces(ChessTeam team)
+        public int NumDeadPieces(ChessTeam team)
         {
             return deadPiecesByTeam[team].Count;
         }
