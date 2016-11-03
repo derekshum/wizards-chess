@@ -134,7 +134,9 @@
 				<Button Margin="10,0" Width="100" Click="MotorForward_Click">Forwards</Button>
 				<Button Margin="10,0" Width="100" Click="MotorBackward_Click">Backwards</Button>
 				<Button Margin="10,0" Width="100" Click="MotorStop_Click">Stop</Button>
+				<Button Margin="10,0" Width="100" Click="ElectroMagToggle_Click">Magnet</Button>
 			</StackPanel>
+			<TextBlock Text="{x:Bind Path=MotorTracker.Position, Mode=OneWay}" />
 		</StackPanel>
 	</Grid>
 </Page>

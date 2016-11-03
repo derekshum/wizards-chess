@@ -118,8 +118,10 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Movement\Drv\MotorDrv.cs" />
+    <Compile Include="Movement\MotorTracker.cs" />
     <Compile Include="Movement\MovementPlanner.cs" />
     <Compile Include="Movement\Point2D.cs" />
+    <Compile Include="Movement\StepTracker.cs" />
     <Compile Include="Movement\Vector2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppDebugging\VisualGameManager.cs" />

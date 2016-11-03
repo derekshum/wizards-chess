@@ -19,11 +19,14 @@ namespace WizardsChessApp.Movement.Drv
 		public MotorDrv(int forwardGpio, int backwardGpio)
 		{
 			var gpio = GpioController.GetDefault();
+			System.Diagnostics.Debug.WriteLine("Number of pins: " + gpio.PinCount);
 			forwardPin = gpio.OpenPin(forwardGpio);
 			backwardPin = gpio.OpenPin(backwardGpio);
-			ChangeState(MotorState.Stopped);
+			forwardPin.Write(GpioPinValue.Low);
+			backwardPin.Write(GpioPinValue.Low);
 			forwardPin.SetDriveMode(GpioPinDriveMode.Output);
 			backwardPin.SetDriveMode(GpioPinDriveMode.Output);
+			
 		}
 
 		public void ChangeState(MotorState state)
@@ -34,17 +37,20 @@ namespace WizardsChessApp.Movement.Drv
 			switch(state)
 			{
 				case MotorState.Forward:
+					System.Diagnostics.Debug.WriteLine("Moving the motor forwards");
 					backwardPin.Write(GpioPinValue.Low);
 					forwardPin.Write(GpioPinValue.High);
 					State = MotorState.Forward;
 					break;
 				case MotorState.Backward:
+					System.Diagnostics.Debug.WriteLine("Moving the motor backwards");
 					forwardPin.Write(GpioPinValue.Low);
 					backwardPin.Write(GpioPinValue.High);
 					State = MotorState.Backward;
 					break;
 				case MotorState.Stopped:
 				default:
+					System.Diagnostics.Debug.WriteLine("Stopping the motor");
 					forwardPin.Write(GpioPinValue.Low);
 					backwardPin.Write(GpioPinValue.Low);
 					State = MotorState.Stopped;

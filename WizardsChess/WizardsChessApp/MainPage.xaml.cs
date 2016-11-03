@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Navigation;
 using WizardsChessApp.AppDebugging;
 using WizardsChessApp.Movement.Drv;
 using WizardsChessApp.VoiceControl;
+using Windows.Devices.Gpio;
+using WizardsChessApp.Movement;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -28,8 +30,13 @@ namespace WizardsChessApp
         public MainPage()
         {
 			GameManager = new VisualGameManager();
-			MotorDriver = new MotorDrv(16, 18);
-            this.InitializeComponent();
+			motorDriver = new MotorDrv(20, 21);
+			MotorTracker = new MotorTracker(23, motorDriver);
+			var gpios = GpioController.GetDefault();
+			electroMagPin = gpios.OpenPin(26);
+			electroMagPin.Write(GpioPinValue.Low);
+			electroMagPin.SetDriveMode(GpioPinDriveMode.Output);
+			this.InitializeComponent();
 		}
 
 		private async void Button_Click(object sender, RoutedEventArgs e)
@@ -41,19 +48,35 @@ namespace WizardsChessApp
 
 		private void MotorForward_Click(object sender, RoutedEventArgs e)
 		{
-			MotorDriver.ChangeState(MotorState.Forward);
+			motorDriver.ChangeState(MotorState.Forward);
 		}
 
 		private void MotorBackward_Click(object sender, RoutedEventArgs e)
 		{
-			MotorDriver.ChangeState(MotorState.Backward);
+			motorDriver.ChangeState(MotorState.Backward);
 		}
 
 		private void MotorStop_Click(object sender, RoutedEventArgs e)
 		{
-			MotorDriver.ChangeState(MotorState.Stopped);
+			motorDriver.ChangeState(MotorState.Stopped);
 		}
 
-		private MotorDrv MotorDriver;
+		private void ElectroMagToggle_Click(object sender, RoutedEventArgs e)
+		{
+			if (electroMagPin.Read() == GpioPinValue.Low)
+			{
+				System.Diagnostics.Debug.WriteLine("Turning ON the electromagnet");
+				electroMagPin.Write(GpioPinValue.High);
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("Turning OFF the electromagnet");
+				electroMagPin.Write(GpioPinValue.Low);
+			}
+		}
+
+		private MotorDrv motorDriver;
+		private GpioPin electroMagPin;
+		public MotorTracker MotorTracker;
 	}
 }
