@@ -1,16 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>618fb584-eaeb-4d9d-b3ae-def464d7b291</ProjectGuid>
+    <ProjectGuid>{11B373B6-B927-44EE-9F33-73D208FAC615}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WizardsChessUtils</RootNamespace>
+    <RootNamespace>WizardsChess</RootNamespace>
     <AssemblyName>WizardsChessUtils</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,26 +35,32 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System"/>
-    
-    <Reference Include="System.Core"/>
-    <Reference Include="System.Xml.Linq"/>
-    <Reference Include="System.Data.DataSetExtensions"/>
-    
-    
-    <Reference Include="Microsoft.CSharp"/>
-    
-    <Reference Include="System.Data"/>
-    
-    <Reference Include="System.Net.Http"/>
-    
-    <Reference Include="System.Xml"/>
+    <None Include="project.json" />
+    <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Chess\ChessBoard.cs" />
+    <Compile Include="Chess\ChessTeam.cs" />
+    <Compile Include="Chess\Pieces\Bishop.cs" />
+    <Compile Include="Chess\Pieces\ChessPiece.cs" />
+    <Compile Include="Chess\Pieces\DirectionalChessPiece.cs" />
+    <Compile Include="Chess\Pieces\King.cs" />
+    <Compile Include="Chess\Pieces\Knight.cs" />
+    <Compile Include="Chess\Pieces\Pawn.cs" />
+    <Compile Include="Chess\Pieces\Queen.cs" />
+    <Compile Include="Chess\Pieces\Rook.cs" />
+    <Compile Include="Chess\PieceType.cs" />
+    <Compile Include="Chess\Position.cs" />
+    <Compile Include="CommandConversion\Action.cs" />
+    <Compile Include="CommandConversion\Command.cs" />
+    <Compile Include="CommandConversion\ConfirmPieceCommand.cs" />
+    <Compile Include="CommandConversion\MoveCommand.cs" />
+    <Compile Include="Movement\MovementPlanner.cs" />
+    <Compile Include="Movement\Point2D.cs" />
+    <Compile Include="Movement\Vector2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -57,5 +68,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-
- </Project>
+</Project>

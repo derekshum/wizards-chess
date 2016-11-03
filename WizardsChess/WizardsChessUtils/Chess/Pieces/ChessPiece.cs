@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using WizardsChessApp.Movement;
+using WizardsChess.Movement;
 
 // Board arranged in A-H, 1-8. where A-H is replaced by 9-16
-namespace WizardsChessApp.Chess.Pieces {
+namespace WizardsChess.Chess.Pieces {
 	public abstract class ChessPiece{
 
 		public ChessPiece(ChessTeam team){

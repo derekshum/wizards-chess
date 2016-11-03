@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChessApp.CommandConversion;
-using WizardsChessApp.Chess.Pieces;
-using WizardsChessApp.Movement;
+using WizardsChess.CommandConversion;
+using WizardsChess.Chess.Pieces;
+using WizardsChess.Movement;
 
-namespace WizardsChessApp.Chess
+namespace WizardsChess.Chess
 {
 	public class ChessBoard
 	{
@@ -269,8 +269,8 @@ namespace WizardsChessApp.Chess
         public const int Size = 8;
         public ChessTeam WhoseTurn;
 
-		internal ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1.
-		internal Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();
+		public ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1.
+		public Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();
 		private IDictionary<ChessTeam, ISet<ChessPiece>> deadPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
 		{
 			{ChessTeam.White, new HashSet<ChessPiece>()},

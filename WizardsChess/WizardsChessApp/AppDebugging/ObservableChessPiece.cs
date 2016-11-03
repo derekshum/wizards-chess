@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
-using WizardsChessApp.Chess.Pieces;
+using WizardsChess.Chess.Pieces;
 
-namespace WizardsChessApp.AppDebugging
+namespace WizardsChess.AppDebugging
 {
 	public class ObservableChessPiece : INotifyPropertyChanged
 	{
@@ -18,10 +18,10 @@ namespace WizardsChessApp.AppDebugging
 			Symbol = Piece.ToShortString();
 			switch (piece.Team)
 			{
-				case Chess.ChessTeam.Black:
+				case WizardsChess.Chess.ChessTeam.Black:
 					Color = new SolidColorBrush(Windows.UI.Colors.Black);
 					break;
-				case Chess.ChessTeam.White:
+				case WizardsChess.Chess.ChessTeam.White:
 					Color = new SolidColorBrush(Windows.UI.Colors.White);
 					break;
 				default:

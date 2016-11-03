@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChessApp.Chess;
+using WizardsChess.Chess;
 
-namespace WizardsChessApp.Movement
+namespace WizardsChess.Movement
 {
     class MovementPlanner
     {

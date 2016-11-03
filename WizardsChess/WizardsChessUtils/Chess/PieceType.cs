@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChessApp.Chess
+namespace WizardsChess.Chess
 {
 	public enum PieceType
 	{
@@ -20,6 +20,10 @@ namespace WizardsChessApp.Chess
 	{
 		public static PieceType Parse(string pieceName)
 		{
+			if (pieceName.Equals("castle", StringComparison.OrdinalIgnoreCase))
+			{
+				return PieceType.Rook;
+			}
 			var piece = Enum.Parse(typeof(PieceType), pieceName, true) as PieceType?;
 			if (piece == null)
 			{

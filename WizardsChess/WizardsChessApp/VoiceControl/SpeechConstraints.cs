@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Media.SpeechRecognition;
 using Windows.Storage;
 
-namespace WizardsChessApp.VoiceControl
+namespace WizardsChess.VoiceControl
 {
 	enum GrammarMode
 	{

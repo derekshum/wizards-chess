@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChessApp.Chess;
+using WizardsChess.Chess;
 
-namespace WizardsChessApp.AppDebugging
+namespace WizardsChess.AppDebugging
 {
 	public class ObservableChessBoard : ObservableCollection<ObservableChessPiece>
 	{

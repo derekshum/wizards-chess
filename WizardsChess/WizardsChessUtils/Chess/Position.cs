@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChessApp.Movement;
+using WizardsChess.Movement;
 
-namespace WizardsChessApp.Chess
+namespace WizardsChess.Chess
 {
 	public enum ColumnLetter
 	{

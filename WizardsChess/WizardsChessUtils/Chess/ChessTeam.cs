@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChessUtils
+namespace WizardsChess.Chess
 {
-    public class Class1
-    {
-    }
+	public enum ChessTeam
+	{
+		White,
+		Black
+	}
 }

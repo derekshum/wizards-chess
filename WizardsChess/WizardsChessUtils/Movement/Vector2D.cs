@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChessApp.Movement
+namespace WizardsChess.Movement
 {
 	// This is a value type, meaning it is passed by value, not by reference.
 	// Because it is a small value, this is generally a good thing.

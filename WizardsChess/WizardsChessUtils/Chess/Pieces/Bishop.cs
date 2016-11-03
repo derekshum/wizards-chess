@@ -3,29 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChessApp.Movement;
+using WizardsChess.Movement;
 
-namespace WizardsChessApp.Chess.Pieces
+namespace WizardsChess.Chess.Pieces
 {
-	class Queen : ChessPiece
+	class Bishop : ChessPiece
 	{
-		public Queen(ChessTeam team) : base(team)
+		public Bishop(ChessTeam team) : base(team)
 		{
-			Type = PieceType.Queen;
+			Type = PieceType.Bishop;
 			if (allowedMotionVectors.Count == 0)
 			{
 				for (int move = 1; move <= ChessBoard.Size; move++)
 				{
-					// Bishop moves
 					allowedMotionVectors.Add(new Vector2D(move, move));
 					allowedMotionVectors.Add(new Vector2D(move, -move));
 					allowedMotionVectors.Add(new Vector2D(-move, move));
 					allowedMotionVectors.Add(new Vector2D(-move, -move));
-					// Rook moves
-					allowedMotionVectors.Add(new Vector2D(move, 0));
-					allowedMotionVectors.Add(new Vector2D(-move, 0));
-					allowedMotionVectors.Add(new Vector2D(0, move));
-					allowedMotionVectors.Add(new Vector2D(0, -move));
 				}
 			}
 		}

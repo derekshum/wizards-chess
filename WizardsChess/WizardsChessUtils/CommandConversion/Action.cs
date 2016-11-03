@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChessApp.CommandConversion
+namespace WizardsChess.CommandConversion
 {
 	public enum Action
 	{

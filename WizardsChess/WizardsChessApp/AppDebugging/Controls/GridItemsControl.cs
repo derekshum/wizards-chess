@@ -7,7 +7,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
-namespace WizardsChessApp.AppDebugging.Controls
+namespace WizardsChess.AppDebugging.Controls
 {
 	public class GridItemsControl : ItemsControl
 	{

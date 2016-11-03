@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChessApp.Chess;
+using WizardsChess.Chess;
 
-namespace WizardsChessApp.CommandConversion
+namespace WizardsChess.CommandConversion
 {
 	public class MoveCommand : Command
 	{

@@ -5,11 +5,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChessApp.Chess;
-using WizardsChessApp.CommandConversion;
-using WizardsChessApp.VoiceControl;
+using WizardsChess.Chess;
+using WizardsChess.CommandConversion;
+using WizardsChess.VoiceControl;
 
-namespace WizardsChessApp.AppDebugging
+namespace WizardsChess.AppDebugging
 {
 	public class VisualGameManager : INotifyPropertyChanged
 	{
@@ -29,7 +29,7 @@ namespace WizardsChessApp.AppDebugging
 				var cmd = await listenForCommandAsync();
 				State = "Processing";
 
-				if (cmd.Action == CommandConversion.Action.Move)
+				if (cmd.Action == WizardsChess.CommandConversion.Action.Move)
 				{
 					await performMoveIfValidAsync(cmd as MoveCommand);
 				}

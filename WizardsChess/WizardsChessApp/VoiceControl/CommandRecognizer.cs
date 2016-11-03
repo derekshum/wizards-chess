@@ -9,10 +9,10 @@ using Windows.Media.SpeechRecognition;
 using Windows.Media.SpeechSynthesis;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using WizardsChessApp.Chess;
-using WizardsChessApp.CommandConversion;
+using WizardsChess.Chess;
+using WizardsChess.CommandConversion;
 
-namespace WizardsChessApp.VoiceControl
+namespace WizardsChess.VoiceControl
 {
 	class CommandRecognizer
 	{
@@ -86,7 +86,7 @@ namespace WizardsChessApp.VoiceControl
 
 			var cmd = new Command(recognizedSpeech.SemanticInterpretation.Properties);
 
-			if (cmd.Action != CommandConversion.Action.ConfirmPiece)
+			if (cmd.Action != WizardsChess.CommandConversion.Action.ConfirmPiece)
 			{
 				return cmd;
 			}
@@ -125,7 +125,7 @@ namespace WizardsChessApp.VoiceControl
 
 			var cmd = new Command(result.SemanticInterpretation.Properties);
 
-			if (cmd.Action != CommandConversion.Action.Move)
+			if (cmd.Action != WizardsChess.CommandConversion.Action.Move)
 			{
 				return cmd;
 			}
@@ -151,7 +151,7 @@ namespace WizardsChessApp.VoiceControl
 
 			var cmd = new Command(result.SemanticInterpretation.Properties);
 
-			return cmd.Action == CommandConversion.Action.Yes;
+			return cmd.Action == WizardsChess.CommandConversion.Action.Yes;
 		}
 
 		private async Task outputVoice(string phrase)
