@@ -24,19 +24,19 @@ namespace WizardsChess.Movement
             }
             paths.Add(getMovePath(start, end));
 
-            //! call motor control (print for debug)
+            //TODO: call motor control (print for debug for now)
             Print(paths);
         }
 
         //Only used fo en passant
-        public void Move(Point2D start, Point2D end, Point2D taken) //change takenTeam type
+        public void Move(Point2D start, Point2D end, Point2D taken)
         {
             List<List<Point2D>> paths = new List<List<Point2D>>();
 
             paths.Add(getTakenPath(taken));
             paths.Add(getMovePath(start, end));
 
-            //! call motor control (print for debug)
+            //TODO: call motor control (print for debug for now)
             Print(paths);
         }
 
@@ -61,8 +61,8 @@ namespace WizardsChess.Movement
         {
             List<Point2D> path = new List<Point2D>();
 
-            path.Add(new Point2D(startPoint.X, startPoint.Y));
-            path.Add(new Point2D(endPoint.X, endPoint.Y));
+            path.Add(startPoint);
+            path.Add(endPoint);
 
             return path;
         }
@@ -78,19 +78,15 @@ namespace WizardsChess.Movement
             int xVsY = Math.Abs(xMove) - Math.Abs(yMove);   //should be -2 or 2
 
             path.Add(startPoint);
-            if (xVsY == 2)  //moving further in the x direction
+            if (xVsY > 0)  //moving further in the x direction, xVsY should equal 2
             {
-                path.Add(new Point2D(path[path.Count - 1].X, path[path.Count - 1].Y + yMove/2));
+                path.Add(new Point2D(startPoint.X, startPoint.Y + yMove/2));
                 path.Add(new Point2D(endPoint.X, path[path.Count - 1].Y));
             }
-            else if(xVsY == -2 )    //moving further in the y direction
+            else   //moving further in the y direction, xVsY should equal -2
             {
-                path.Add(new Point2D(path[path.Count - 1].X + xMove/2, path[path.Count - 1].Y));
+                path.Add(new Point2D(startPoint.X + xMove/2, startPoint.Y));
                 path.Add(new Point2D(path[path.Count - 1].X, endPoint.Y));
-            }
-            else
-            {
-                //! error
             }
             path.Add(endPoint);
 
