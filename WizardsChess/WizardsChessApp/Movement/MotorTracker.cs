@@ -33,6 +33,10 @@ namespace WizardsChessApp.Movement
 					Position--;
 				}
 			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("Read step when motor stopped.");
+			}
 		}
 
 		private MotorDrv motorDrv;

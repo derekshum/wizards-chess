@@ -19,7 +19,7 @@ namespace WizardsChess
 		{
 			var gpio = GpioController.GetDefault();
 			pin = gpio.OpenPin(pinNum);
-			pin.SetDriveMode(GpioPinDriveMode.InputPullDown);
+			pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
 			Position = 0;
 			pin.ValueChanged += countStep;
 			dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
@@ -31,7 +31,7 @@ namespace WizardsChess
 				if (position != value)
 				{
 					position = value;
-					if (position % 100 == 0)
+					if (position % 200 == 0)
 					{
 						dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => {
 							NotifyPropertyChanged();
