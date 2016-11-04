@@ -15,12 +15,14 @@ namespace WizardsChessTest
 		{
 			ChessBoard board = new ChessBoard();
 			MovementPlanner planner = new MovementPlanner(board);
-			ChessPiece TestPiece = planner.board.PieceAt(1, 4);
+			ChessPiece TestPiece = planner.board.PieceAt(4, 1);
 			Assert.AreEqual(TestPiece.Type, PieceType.Pawn);
 		}
-		/*public void SampleMoveChecking1()
+
+		[TestMethod]
+		public void SampleMoveChecking1()
 		{
-			String correctPoints = "start move\n[12, 3]\n[12,7\nend move \n";
+			//String correctPoints = "start move\n[12, 3]\n[12, 7]\nend move \n";
 			//Set moves
 			//White King Pawn to E5
 			Point2D moveW1Start = new Point2D(4, 1);    //start location of the first white move (0-7, 0-7)
@@ -31,11 +33,14 @@ namespace WizardsChessTest
 			ChessBoard board = new ChessBoard();
 			MovementPlanner planner = new MovementPlanner(board);
 			paths = planner.Move(moveW1Start, moveW1End);
-			
+
 			printString = planner.PrintDebug(paths);
-			
-			Assert.AreEqual(correctPoints, printString);
-		}*/
+			//System.Diagnostics.Debug.Write(printString);
+			Assert.AreEqual("[12, 3]", paths[0][0].ToString());
+			Assert.AreEqual("[12, 7]", paths[0][1].ToString());
+			//Assert.AreEqual(correctPoints, printString);
+
+		}
 		/*
 		public void SampleMoveChecking2()
 		{
