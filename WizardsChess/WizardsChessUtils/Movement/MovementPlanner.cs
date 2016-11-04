@@ -108,7 +108,7 @@ namespace WizardsChess.Movement
             }
             else    //team == ChessTeam.Black
             {
-                path = getTakenPathWithTeam(startPoint, blackRemovalDir, blackEmptyCol, blackTakenCol, whiteTakenStart - whiteTakenAddDir * numTaken);
+                path = getTakenPathWithTeam(startPoint, blackRemovalDir, blackEmptyCol, blackTakenCol, blackTakenStart - blackTakenAddDir * numTaken);
             }
             return path;
         }
