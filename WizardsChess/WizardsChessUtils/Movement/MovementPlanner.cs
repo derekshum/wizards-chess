@@ -133,7 +133,7 @@ namespace WizardsChess.Movement
         //converts from an (0-7,0-7) point to a (0-22, 0-16) point
         private Point2D pointConversion(Point2D point)
         {
-            return new Point2D(xOffset + spacing * point.X, yOffset + spacing + point.Y);
+            return new Point2D(xOffset + spacing * point.X, yOffset + spacing * point.Y);
         }
 
         public ChessBoard board; //TODO: make private when debugging done
@@ -165,7 +165,7 @@ namespace WizardsChess.Movement
 				{
 					toPrint += point.ToString() + "\n";
                 });
-				toPrint += "endMove\n";
+				toPrint += "end move\n";
 			});
 			return toPrint;
         }
