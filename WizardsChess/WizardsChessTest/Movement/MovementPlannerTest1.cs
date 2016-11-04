@@ -20,7 +20,7 @@ namespace WizardsChessTest
 		}
 
 		[TestMethod]
-		public void SampleMoveChecking1()
+		public void SampleMoveCheckingPawnMoving()
 		{
 			//String correctPoints = "start move\n[12, 3]\n[12, 7]\nend move \n";
 			//Set moves
@@ -41,10 +41,32 @@ namespace WizardsChessTest
 			//Assert.AreEqual(correctPoints, printString);
 
 		}
-		/*
-		public void SampleMoveChecking2()
+
+		[TestMethod]
+		public void CapturingMovementTest()	//tests move taking by enacting an impossible pawn zoom
 		{
-			String correctPoints = "start move\n[16, 1]\n"; ///TODO: finish this long ass list
+			//White King Pawn to E2 (magic!)
+			Point2D moveW1Start = new Point2D(4, 1);    //start location of the first white move (0-7, 0-7)
+			Point2D moveW1End = new Point2D(4, 6);
+
+			List<List<Point2D>> paths = new List<List<Point2D>>();
+			ChessBoard board = new ChessBoard();
+			MovementPlanner planner = new MovementPlanner(board);
+			paths = planner.Move(moveW1Start, moveW1End);
+
+			Assert.AreEqual("[12, 13]", paths[0][0].ToString());
+			Assert.AreEqual("[12, 14]", paths[0][1].ToString());
+			Assert.AreEqual("[2, 14]", paths[0][2].ToString());
+			Assert.AreEqual("[2, 15]", paths[0][3].ToString());
+			Assert.AreEqual("[0, 15]", paths[0][4].ToString());
+			Assert.AreEqual("[12, 3]", paths[1][0].ToString());
+			Assert.AreEqual("[12, 13]", paths[1][1].ToString());
+		}
+
+		/*
+		[TestMethod]
+		public void SampleMoveCheckingKnightTaking()	//won't work without board updating
+		{
 			//Set moves
 			//White King Side Knight to F6
 			Point2D moveW1Start = new Point2D(6, 0);	//start location of the first white move (0-7, 0-7)
@@ -57,19 +79,29 @@ namespace WizardsChessTest
 			Point2D moveW2End = moveB1End;
 
 			List<List<List<Point2D>>> listOfPaths = new List<List<List<Point2D>>>();
-			String printString = "";
+			//String printString = "";
 			ChessBoard board = new ChessBoard();
 			MovementPlanner planner = new MovementPlanner(board);
 			listOfPaths.Add(planner.Move(moveW1Start, moveW1End));
 			listOfPaths.Add(planner.Move(moveB1Start, moveB1End));
 			listOfPaths.Add(planner.Move(moveW2Start, moveW2End));
 
-			listOfPaths.ForEach((p) => 
-			{
-				printString += planner.PrintDebug(p);
-			});
-			Assert.AreEqual(correctPoints, printString);
-		}
-		*/
+			Assert.AreEqual("[16, 1]", listOfPaths[0][0][0].ToString());
+			Assert.AreEqual("[15, 1]", listOfPaths[0][0][1].ToString());
+			Assert.AreEqual("[15, 5]", listOfPaths[0][0][2].ToString());
+			Assert.AreEqual("[14, 5]", listOfPaths[0][0][3].ToString());
+			Assert.AreEqual("[12, 13]", listOfPaths[1][0][0].ToString());
+			Assert.AreEqual("[12, 9]", listOfPaths[1][0][1].ToString());
+			Assert.AreEqual("[12, 9]", listOfPaths[2][0][0].ToString());
+			Assert.AreEqual("[12, 10]", listOfPaths[2][0][1].ToString());
+			Assert.AreEqual("[2, 10]", listOfPaths[2][0][2].ToString());
+			Assert.AreEqual("[2, 15]", listOfPaths[2][0][3].ToString());
+			Assert.AreEqual("[0, 15]", listOfPaths[2][0][4].ToString());
+			Assert.AreEqual("[14, 5]", listOfPaths[2][1][0].ToString());
+			Assert.AreEqual("[13, 5]", listOfPaths[2][1][1].ToString());
+			Assert.AreEqual("[13, 9]", listOfPaths[2][1][2].ToString());
+			Assert.AreEqual("[12, 9]", listOfPaths[2][1][3].ToString());
+			
+		}*/
 	}
 }
