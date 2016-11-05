@@ -44,26 +44,19 @@ namespace WizardsChess.Movement
             Point2D startPoint = pointConversion(start);
             Point2D endPoint = pointConversion(end);
 
-            //could check for null here, if unsure if that check isn't done elsewhere
-            if (board.PieceAt(start).CanJump)
-            {
-                return getKnightMovePath(startPoint, endPoint);
-            }
-            else // piece moving is a non knight piece
-            {
-                return getDirectMovePath(startPoint, endPoint);
-            }
-        }
-
-        //gets the direct path of movement for non-knight piece moves (but not that of taken pieces)
-        private List<Point2D> getDirectMovePath(Point2D startPoint, Point2D endPoint)
-        {
-            List<Point2D> path = new List<Point2D>();
-
-            path.Add(startPoint);
-            path.Add(endPoint);
-
-            return path;
+			//could check for null here, if unsure if that check isn't done elsewhere
+			if (board.PieceAt(start).CanJump)
+			{
+				return getKnightMovePath(startPoint, endPoint);
+			}
+			else if (start.X != end.X && start.Y != end.Y)	//diagonal movement, could be removed if diagonal movement of the motors is achived
+			{
+				return getDiagonalMove(startPoint, endPoint);
+			}
+			else // piece moving is a non knight piece
+			{
+				return getStraightMovePath(startPoint, endPoint);
+			}
         }
 
         //gets the path of movement for knight piece moves
@@ -92,9 +85,45 @@ namespace WizardsChess.Movement
             return path;
         }
 
-        //gets the path of movement for a taken piece from the board to the trough
-        //expects points to be in 23x17 form
-        private List<Point2D> getTakenPath(Point2D start) //change takenTeam type
+		private List<Point2D> getDiagonalMove(Point2D startPoint, Point2D endPoint)
+		{
+			List<Point2D> path = new List<Point2D>();
+			int Dist = Math.Abs(endPoint.X - startPoint.X);	//number of points moving in each direction
+			int xDir = (endPoint.X - startPoint.X) / Dist;	//x-direction moving in the x direction
+			int yDir = (endPoint.Y - startPoint.Y) / Dist;	//y-direction of movement
+
+			path.Add(startPoint);
+			path.Add(new Point2D(startPoint.X + xDir, startPoint.Y));
+			if (Dist > spacing)
+			{
+				path.Add(new Point2D(path[path.Count - 1].X, endPoint.Y - yDir));
+				path.Add(new Point2D(endPoint.X, path[path.Count - 1].Y));
+			}
+			else // Dist == spacing
+			{
+				path.Add(new Point2D(path[path.Count - 1].X, endPoint.Y));
+			}
+
+			path.Add(endPoint);
+
+			return path;
+		}
+
+
+		//gets the direct path of movement for non-knight piece moves (but not that of taken pieces)
+		private List<Point2D> getStraightMovePath(Point2D startPoint, Point2D endPoint)
+		{
+			List<Point2D> path = new List<Point2D>();
+
+			path.Add(startPoint);
+			path.Add(endPoint);
+
+			return path;
+		}
+
+		//gets the path of movement for a taken piece from the board to the trough
+		//expects points to be in 23x17 form
+		private List<Point2D> getTakenPath(Point2D start) //change takenTeam type
         {
             Point2D startPoint = pointConversion(start);
             ChessTeam team = board.PieceAt(start).Team; 
