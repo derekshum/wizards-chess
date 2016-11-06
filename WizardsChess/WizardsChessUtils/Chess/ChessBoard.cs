@@ -260,7 +260,7 @@ namespace WizardsChess.Chess
             return boardMatrix[location.Y, location.X];
         }
 
-        //access the number of taken pieces on a team
+        //access the number of captured pieces on a team
         public int NumCapturedPieces(ChessTeam team)
         {
             return capturedPiecesByTeam[team].Count;
