@@ -116,7 +116,7 @@ namespace WizardsChess.Chess
             var endPiece = boardMatrix[endPosition.Row, endPosition.Column];
 			if (endPiece != null)
 			{
-				deadPiecesByTeam[endPiece.Team].Add(endPiece);
+				capturedPiecesByTeam[endPiece.Team].Add(endPiece);
 				// Remove a killed piece from our valid pieceLocationsByType list
 				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
 				listOfEndPieceType.Remove(endPosition);
@@ -261,9 +261,9 @@ namespace WizardsChess.Chess
         }
 
         //access the number of taken pieces on a team
-        public int NumDeadPieces(ChessTeam team)
+        public int NumCapturedPieces(ChessTeam team)
         {
-            return deadPiecesByTeam[team].Count;
+            return capturedPiecesByTeam[team].Count;
         }
 
         public const int Size = 8;
@@ -271,7 +271,7 @@ namespace WizardsChess.Chess
 
 		public ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1.
 		public Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();
-		private IDictionary<ChessTeam, ISet<ChessPiece>> deadPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
+		private IDictionary<ChessTeam, ISet<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
 		{
 			{ChessTeam.White, new HashSet<ChessPiece>()},
 			{ChessTeam.Black, new HashSet<ChessPiece>()}

@@ -21,7 +21,7 @@ namespace WizardsChess.Movement
             
             if (board.PieceAt(end) != null)
             {
-                paths.Add(getTakenPath(end));
+                paths.Add(getCapturedPath(end));
             }
             paths.Add(getMovePath(start, end));
 
@@ -29,11 +29,11 @@ namespace WizardsChess.Movement
         }
 
         //Provides movement paths for preforming en passant
-        public List<List<Point2D>> Move(Point2D start, Point2D end, Point2D taken)
+        public List<List<Point2D>> Move(Point2D start, Point2D end, Point2D captured)
         {
             List<List<Point2D>> paths = new List<List<Point2D>>();
 
-            paths.Add(getTakenPath(taken));
+            paths.Add(getCapturedPath(captured));
             paths.Add(getMovePath(start, end));
 
 			return paths;
@@ -110,7 +110,7 @@ namespace WizardsChess.Movement
 		}
 
 
-		//gets the direct path of movement for non-knight piece moves (but not that of taken pieces)
+		//gets the direct path of movement for non-knight piece moves (but not that of captured pieces)
 		private List<Point2D> getStraightMovePath(Point2D startPoint, Point2D endPoint)
 		{
 			List<Point2D> path = new List<Point2D>();
@@ -121,31 +121,31 @@ namespace WizardsChess.Movement
 			return path;
 		}
 
-		//gets the path of movement for a taken piece from the board to the trough
+		//gets the path of movement for a captured piece from the board to the trough
 		//expects points to be in 23x17 form
-		private List<Point2D> getTakenPath(Point2D start) //change takenTeam type
+		private List<Point2D> getCapturedPath(Point2D start) //change capturedTeam type
         {
             Point2D startPoint = pointConversion(start);
             ChessTeam team = board.PieceAt(start).Team; 
-            int numTaken = board.NumDeadPieces(team); 
+            int numCaptured = board.NumCapturedPieces(team); 
 
             List<Point2D> path = new List<Point2D>();
 
             if (team == ChessTeam.White)
             {
-                path = getTakenPathWithTeam(startPoint, whiteRemovalDir, whiteEmptyCol, whiteTakenCol, whiteTakenStart - whiteTakenAddDir * numTaken);
+                path = getCapturedPathWithTeam(startPoint, whiteRemovalDir, whiteEmptyCol, whiteCapturedCol, whiteCapturedStart - whiteCapturedAddDir * numCaptured);
             }
             else    //team == ChessTeam.Black
             {
-                path = getTakenPathWithTeam(startPoint, blackRemovalDir, blackEmptyCol, blackTakenCol, blackTakenStart - blackTakenAddDir * numTaken);
+                path = getCapturedPathWithTeam(startPoint, blackRemovalDir, blackEmptyCol, blackCapturedCol, blackCapturedStart - blackCapturedAddDir * numCaptured);
             }
             return path;
         }
 
         //path[path.Count - 1].X or Y is just a way of saying the previous value for X or Y in the path
-        private List<Point2D> getTakenPathWithTeam(Point2D startPoint, int dir, int emptyCol, int takenCol, int troughIndex)
+        private List<Point2D> getCapturedPathWithTeam(Point2D startPoint, int dir, int emptyCol, int capturedCol, int troughIndex)
         {
-            //the number of half squares from the edge of the board to put the first taken piece at
+            //the number of half squares from the edge of the board to put the first captured piece at
             List<Point2D> path = new List<Point2D>();
 
             path.Add(startPoint);
@@ -155,7 +155,7 @@ namespace WizardsChess.Movement
                 path.Add(new Point2D(emptyCol, path[path.Count - 1].Y));
                 path.Add(new Point2D(path[path.Count - 1].X, troughIndex));
             }
-            path.Add(new Point2D(takenCol, troughIndex));
+            path.Add(new Point2D(capturedCol, troughIndex));
             return path;
         }
 
@@ -171,17 +171,17 @@ namespace WizardsChess.Movement
 		const int spacing = 2;    //number of points per square in one dimension
         const int xOffset = 4;    //x-index of the centre of the left most playing board column
         const int yOffset = 1;    //y-index of the centre of the bottom row
-        //constants getTakenPath needs
-        const int whiteEmptyCol = 20;     //index of the centre of the empty column in between the board and white taken pieces
-        const int blackEmptyCol = 2;      //index of the centre of the empty column in between the board and black taken pieces
-        const int whiteTakenCol = 22;     //x-index of the centre of the column where white taken pieces are stored
-        const int blackTakenCol = 0;      //x-index of the centre of the column where black taken pieces are stored
-        const int whiteTakenStart = 1;    //y-index where the first white piece taken is placed
-        const int blackTakenStart = 15;   //y-index where the first black piece taken is placed
-        const int whiteRemovalDir = -1;   //y-direction the white pieces are pulled a half square in before being taken off the board
-        const int blackRemovalDir = 1;    //y-direction the black pieces are pulled a half square in before being taken off the board
-        const int whiteTakenAddDir = 1;   //y-direction white pieces are added to the white taken trough
-        const int blackTakenAddDir = -1;  //y-direction black pieces are added to the black taken trough
+        //constants getCapturedPath needs
+        const int whiteEmptyCol = 20;     //index of the centre of the empty column in between the board and white captured pieces
+        const int blackEmptyCol = 2;      //index of the centre of the empty column in between the board and black captured pieces
+        const int whiteCapturedCol = 22;     //x-index of the centre of the column where white captured pieces are stored
+        const int blackCapturedCol = 0;      //x-index of the centre of the column where black captured pieces are stored
+        const int whiteCapturedStart = 1;    //y-index where the first white piece captured is placed
+        const int blackCapturedStart = 15;   //y-index where the first black piece captured is placed
+        const int whiteRemovalDir = -1;   //y-direction the white pieces are pulled a half square in before being captured off the board
+        const int blackRemovalDir = 1;    //y-direction the black pieces are pulled a half square in before being captured off the board
+        const int whiteCapturedAddDir = 1;   //y-direction white pieces are added to the white captured trough
+        const int blackCapturedAddDir = -1;  //y-direction black pieces are added to the black captured trough
 
 		//TODO: remove debugging methods below when they're no longer needed
         public String PrintDebug(List<List<Point2D>> paths)
