@@ -15,7 +15,7 @@ namespace WizardsChessTest
 		{
 			ChessBoard board = new ChessBoard();
 			MovementPlanner planner = new MovementPlanner(board);
-			ChessPiece TestPiece = planner.board.PieceAt(4, 1);
+			ChessPiece TestPiece = board.PieceAt(4, 1);
 			Assert.AreEqual(TestPiece.Type, PieceType.Pawn);
 		}
 
@@ -33,6 +33,7 @@ namespace WizardsChessTest
 			ChessBoard board = new ChessBoard();
 			MovementPlanner planner = new MovementPlanner(board);
 			paths = planner.Move(moveW1Start, moveW1End);
+			board.MovePiece(new Position(moveW1Start), new Position(moveW1End));
 
 			printString = planner.PrintDebug(paths);
 			//System.Diagnostics.Debug.Write(printString);
@@ -53,6 +54,7 @@ namespace WizardsChessTest
 			ChessBoard board = new ChessBoard();
 			MovementPlanner planner = new MovementPlanner(board);
 			paths = planner.Move(moveW1Start, moveW1End);
+			//board.MovePiece(new Position(moveW1Start), new Position(moveW1End));
 
 			Assert.AreEqual("[12, 13]", paths[0][0].ToString());
 			Assert.AreEqual("[12, 14]", paths[0][1].ToString());

@@ -165,7 +165,7 @@ namespace WizardsChess.Movement
             return new Point2D(xOffset + spacing * point.X, yOffset + spacing * point.Y);
         }
 
-        public ChessBoard board; //TODO: make private when debugging done
+        private ChessBoard board; 
 
 		//constants pointConversion needs
 		const int spacing = 2;    //number of points per square in one dimension
