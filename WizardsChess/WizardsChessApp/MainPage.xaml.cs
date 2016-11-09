@@ -14,6 +14,9 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using WizardsChess.AppDebugging;
 using WizardsChess.VoiceControl;
+using WizardsChess.Movement;
+using WizardsChess.Movement.Drv;
+using Windows.Devices.Gpio;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -27,7 +30,13 @@ namespace WizardsChess
         public MainPage()
         {
 			GameManager = new VisualGameManager();
-            this.InitializeComponent();
+			motorDriver = new MotorDrv(20, 21);
+			MotorTracker = new MotorTracker(23, motorDriver);
+			var gpios = GpioController.GetDefault();
+			electroMagPin = gpios.OpenPin(26);
+			electroMagPin.Write(GpioPinValue.Low);
+			electroMagPin.SetDriveMode(GpioPinDriveMode.Output);
+			this.InitializeComponent();
 		}
 
 		private async void Button_Click(object sender, RoutedEventArgs e)
@@ -36,5 +45,38 @@ namespace WizardsChess
 		}
 
 		public VisualGameManager GameManager { get; set; }
+
+		private void MotorForward_Click(object sender, RoutedEventArgs e)
+		{
+			motorDriver.ChangeState(MotorState.Forward);
+		}
+
+		private void MotorBackward_Click(object sender, RoutedEventArgs e)
+		{
+			motorDriver.ChangeState(MotorState.Backward);
+		}
+
+		private void MotorStop_Click(object sender, RoutedEventArgs e)
+		{
+			motorDriver.ChangeState(MotorState.Stopped);
+		}
+
+		private void ElectroMagToggle_Click(object sender, RoutedEventArgs e)
+		{
+			if (electroMagPin.Read() == GpioPinValue.Low)
+			{
+				System.Diagnostics.Debug.WriteLine("Turning ON the electromagnet");
+				electroMagPin.Write(GpioPinValue.High);
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("Turning OFF the electromagnet");
+				electroMagPin.Write(GpioPinValue.Low);
+			}
+		}
+
+		private MotorDrv motorDriver;
+		private GpioPin electroMagPin;
+		public MotorTracker MotorTracker;
 	}
 }
