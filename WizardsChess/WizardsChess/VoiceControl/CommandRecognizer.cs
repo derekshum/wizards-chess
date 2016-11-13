@@ -21,6 +21,9 @@ namespace WizardsChess.VoiceControl
 			speechRecognizer = new SpeechRecognizer();
 			speechRecognizer.UIOptions.IsReadBackEnabled = false;
 			speechRecognizer.UIOptions.ShowConfirmation = false;
+			continousSpeechSession = speechRecognizer.ContinuousRecognitionSession;
+			continousSpeechSession.ResultGenerated += respondToContinuousSpeechRecognition;
+			continousSpeechSession.Completed += respondToContinuousSpeechCompleted;
 
 			audioOut.MediaFailed += ReleaseAudio;
 			audioOut.MediaEnded += ReleaseAudio;
@@ -35,7 +38,51 @@ namespace WizardsChess.VoiceControl
 			{
 				throw new FormatException($"Could not compile grammar constraints. Received error {compilationResult.Status}");
 			}
+			await recognizer.StartContinuousSessionAsync();
 			return recognizer;
+		}
+
+		public async Task StartContinuousSessionAsync()
+		{
+			await continousSpeechSession.StartAsync(SpeechContinuousRecognitionMode.PauseOnRecognition);
+		}
+
+		public async Task StopContinuousSessionAsync()
+		{
+			await continousSpeechSession.StopAsync();
+		}
+
+		public async Task PauseContinuousSessionAsync()
+		{
+			await continousSpeechSession.PauseAsync();
+		}
+
+		public void ResumeContinousSessionAsync()
+		{
+			continousSpeechSession.Resume();
+		}
+
+		private void respondToContinuousSpeechRecognition(
+			SpeechContinuousRecognitionSession sender,
+			SpeechContinuousRecognitionResultGeneratedEventArgs args)
+		{
+
+			if (args.Result.Status == SpeechRecognitionResultStatus.Success)
+			{
+				System.Diagnostics.Debug.WriteLine($"Recognized speech: {args.Result.Text}");
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine($"Received continuous speech result of {args.Result.Status}");
+			}
+			continousSpeechSession.Resume();
+		}
+
+		private void respondToContinuousSpeechCompleted(
+			SpeechContinuousRecognitionSession sender,
+			SpeechContinuousRecognitionCompletedEventArgs args)
+		{
+			System.Diagnostics.Debug.WriteLine($"Received continuous speech completion result of {args.Status}");
 		}
 
 		public async Task<Command> ConfirmPieceSelectionAsync(PieceType pieceType, IReadOnlyList<Position> possiblePositions)
@@ -180,6 +227,7 @@ namespace WizardsChess.VoiceControl
 
 		private Semaphore audioLock = new Semaphore(1, 1);
 		private SpeechRecognizer speechRecognizer;
+		private SpeechContinuousRecognitionSession continousSpeechSession;
 		private SpeechSynthesizer speechSynth = new SpeechSynthesizer();
 		private MediaElement audioOut = new MediaElement();
 	}

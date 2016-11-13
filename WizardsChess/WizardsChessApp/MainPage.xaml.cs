@@ -30,12 +30,12 @@ namespace WizardsChess
         public MainPage()
         {
 			GameManager = new VisualGameManager();
-			motorDriver = new MotorDrv(20, 21);
-			MotorTracker = new MotorTracker(23, motorDriver);
-			var gpios = GpioController.GetDefault();
-			electroMagPin = gpios.OpenPin(26);
-			electroMagPin.Write(GpioPinValue.Low);
-			electroMagPin.SetDriveMode(GpioPinDriveMode.Output);
+			//motorDriver = new MotorDrv(20, 21);
+			//MotorTracker = new MotorTracker(23, motorDriver);
+			//var gpios = GpioController.GetDefault();
+			//electroMagPin = gpios.OpenPin(26);
+			//electroMagPin.Write(GpioPinValue.Low);
+			//electroMagPin.SetDriveMode(GpioPinDriveMode.Output);
 			this.InitializeComponent();
 		}
 

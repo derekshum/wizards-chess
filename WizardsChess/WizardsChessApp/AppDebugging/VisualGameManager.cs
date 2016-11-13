@@ -25,17 +25,20 @@ namespace WizardsChess.AppDebugging
 		{
 			try
 			{
-				State = "Listening";
-				var cmd = await listenForCommandAsync();
-				State = "Processing";
+				cmdRecognizer = await CommandRecognizer.CreateAsync();
+				await cmdRecognizer.StartContinuousSessionAsync();
 
-				if (cmd.Action == WizardsChess.CommandConversion.Action.Move)
-				{
-					await performMoveIfValidAsync(cmd as MoveCommand);
-				}
+				//State = "Listening";
+				//var cmd = await listenForCommandAsync();
+				//State = "Processing";
 
-				IsError = false;
-				State = "Ok";
+				//if (cmd.Action == WizardsChess.CommandConversion.Action.Move)
+				//{
+				//	await performMoveIfValidAsync(cmd as MoveCommand);
+				//}
+
+				//IsError = false;
+				//State = "Ok";
 			}
 			catch (Exception e)
 			{
