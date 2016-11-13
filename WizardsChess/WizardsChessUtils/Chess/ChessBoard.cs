@@ -18,6 +18,7 @@ namespace WizardsChess.Chess
 			setBoard();
 		}
 
+		//TODO: understand this (-Derek)
 		public ISet<Position> FindPotentialPiecesForMove(PieceType piece, Position destination)
 		{
 			var pieceLocationList = pieceLocationsByType[piece];
@@ -269,8 +270,8 @@ namespace WizardsChess.Chess
         public const int Size = 8;
         public ChessTeam WhoseTurn;
 
-		public ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1.
-		public Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();
+		public ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1. Change to private?
+		public Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();	//TODO: figure out if this should be private or capitalized
 		private IDictionary<ChessTeam, ISet<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
 		{
 			{ChessTeam.White, new HashSet<ChessPiece>()},
