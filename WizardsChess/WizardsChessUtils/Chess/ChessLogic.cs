@@ -11,9 +11,9 @@ namespace WizardsChess.Chess
 	{
 		public ChessLogic (ChessBoard b)
 		{
-
+			board = b;
 		}
 
-
+		ChessBoard board;
 	}
 }
