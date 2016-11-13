@@ -13,7 +13,13 @@ namespace WizardsChess.Chess
 		{
 			board = b;
 		}
+		public bool isMoveValid(Position startPosition, Position endPosition)
+		{
+
+		}
 
 		ChessBoard board;
+
+
 	}
 }
