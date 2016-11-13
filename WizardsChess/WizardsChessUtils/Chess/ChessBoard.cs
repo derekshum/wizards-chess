@@ -231,6 +231,7 @@ namespace WizardsChess.Chess
 			setupPieceLocationsDictionary();
 		}
 
+		//sets up pieceLocationByType
 		private void setupPieceLocationsDictionary()
 		{
 			for (int row = 0; row < Size; row ++)
@@ -250,16 +251,26 @@ namespace WizardsChess.Chess
 			}
 		}
 
-        //added by Derek because movement manager needed to access it
+        //piece accessor by x and y indexes
         public ChessPiece PieceAt(int x, int y)
         {
             return boardMatrix[y, x];
         }
 
+		//piece accessor by point
         public ChessPiece PieceAt(Point2D location)
         {
             return boardMatrix[location.Y, location.X];
-        }
+		}
+
+		//TODO: piece accessor by Position data type
+		//TODO: piece accessor by alphanumeric string (same as above?)
+
+		/*//TODO: accessor (public dictionary) for positionLocationsByType (the whole thing)
+		public IReadOnlyDictionary<PieceType, IReadOnlyList<Point2D>> PieceLocationByType()
+		{
+		   get { return pieceLocationByType; }
+		}*/
 
         //access the number of captured pieces on a team
         public int NumCapturedPieces(ChessTeam team)
@@ -268,10 +279,10 @@ namespace WizardsChess.Chess
         }
 
         public const int Size = 8;
-        public ChessTeam WhoseTurn;
+        public ChessTeam WhoseTurn;	//TODO: move to ChessLogic
 
 		public ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1. Change to private?
-		public Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();	//TODO: figure out if this should be private or capitalized
+		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();	//TODO: figure out if this should be private or capitalized
 		private IDictionary<ChessTeam, ISet<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
 		{
 			{ChessTeam.White, new HashSet<ChessPiece>()},
