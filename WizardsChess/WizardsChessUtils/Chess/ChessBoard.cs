@@ -36,6 +36,7 @@ namespace WizardsChess.Chess
 			return potentialPiecePositions;
 		}
 
+		//TODO: move this to ChessLogic
 		/// <summary>
 		/// Checks if the move from startPosition to endPosition is valid.
 		/// Assumes that startPosition and endPosition are valid parameters.
@@ -163,6 +164,7 @@ namespace WizardsChess.Chess
 			return strBuild.ToString();
 		}
 
+		//TODO: move to ChessLogic
 		/// <summary>
 		/// Checks if there are any pieces in the way between the start and endPositions.
 		/// This check does not include the start and end positions themselves.
@@ -251,7 +253,7 @@ namespace WizardsChess.Chess
 			}
 		}
 
-		//TODO:? ChessTeam modifiers(increment or set to a certain team's) and an accessor?
+		//TODO:? WhoseTurn modifiers(increment or set to a certain team's) and an accessor?- not if Whoseturn is stored in logic
 
         //piece accessor by x and y indexes
         public ChessPiece PieceAt(int x, int y)
