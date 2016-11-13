@@ -18,7 +18,7 @@ namespace WizardsChess.Chess
 			setBoard();
 		}
 
-		//TODO: understand this (-Derek)
+		//Checks for pieces of a certain type that can move to 
 		public ISet<Position> FindPotentialPiecesForMove(PieceType piece, Position destination)
 		{
 			var pieceLocationList = pieceLocationsByType[piece];
@@ -251,20 +251,26 @@ namespace WizardsChess.Chess
 			}
 		}
 
+		//TODO:? ChessTeam modifiers(increment or set to a certain team's) and an accessor?
+
         //piece accessor by x and y indexes
         public ChessPiece PieceAt(int x, int y)
         {
             return boardMatrix[y, x];
         }
 
-		//piece accessor by point
+		//piece accessor by Point2D
         public ChessPiece PieceAt(Point2D location)
         {
             return boardMatrix[location.Y, location.X];
 		}
 
-		//TODO: piece accessor by Position data type
-		//TODO: piece accessor by alphanumeric string (same as above?)
+		//piece accessor by Position
+		public ChessPiece PieceAt(Position location)
+		{
+			return boardMatrix[location.Row, location.Column];
+		}
+		//TODO:? piece accessor by alphanumeric string
 
 		/*//TODO: accessor (public dictionary) for positionLocationsByType (the whole thing)
 		public IReadOnlyDictionary<PieceType, IReadOnlyList<Point2D>> PieceLocationByType()
@@ -279,10 +285,10 @@ namespace WizardsChess.Chess
         }
 
         public const int Size = 8;
-        public ChessTeam WhoseTurn;	//TODO: move to ChessLogic
+        public ChessTeam WhoseTurn;	//TODO: move to ChessLogic? Change to Private (and add modifiers and an accessor?)
 
-		public ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1. Change to private?
-		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();	//TODO: figure out if this should be private or capitalized
+		private ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1. Change to private?
+		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();   //TODO: figure out if this should be private or capitalized
 		private IDictionary<ChessTeam, ISet<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
 		{
 			{ChessTeam.White, new HashSet<ChessPiece>()},
