@@ -4,8 +4,15 @@
 	
 	<rule id="yesNo">
 		<one-of>
-			<item> <ruleref uri="#yes" /> </item>
-			<item> <ruleref uri="#no"/> </item>
+			<item>
+				<ruleref uri="#yes" />
+				<tag> out = rules.latest(); </tag>
+			</item>
+			<item>
+				<ruleref uri="#no"/>
+				<tag> out = rules.latest(); </tag>
+			</item>
+			<item> cancel <tag> out.action = "cancel"; </tag> </item>
 		</one-of>
 	</rule>
 	

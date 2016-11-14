@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Chess;
 
-namespace WizardsChess.CommandConversion
+namespace WizardsChess.VoiceControl.Commands
 {
 	public class MoveCommand : ICommand
 	{

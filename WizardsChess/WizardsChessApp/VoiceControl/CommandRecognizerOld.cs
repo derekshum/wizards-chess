@@ -10,13 +10,13 @@ using Windows.Media.SpeechSynthesis;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using WizardsChess.Chess;
-using WizardsChess.CommandConversion;
+using WizardsChess.VoiceControl.Commands;
 
 namespace WizardsChess.VoiceControl
 {
-	class CommandRecognizer
+	class CommandRecognizerOld
 	{
-		private CommandRecognizer()
+		private CommandRecognizerOld()
 		{
 			speechRecognizer = new SpeechRecognizer();
 			speechRecognizer.UIOptions.IsReadBackEnabled = false;
@@ -31,9 +31,9 @@ namespace WizardsChess.VoiceControl
 			audioOut.CurrentStateChanged += ReleaseAudio;
 		}
 
-		public static async Task<CommandRecognizer> CreateAsync()
+		public static async Task<CommandRecognizerOld> CreateAsync()
 		{
-			var recognizer = new CommandRecognizer();
+			var recognizer = new CommandRecognizerOld();
 			var compilationResult = await recognizer.setupConstraintsAsync();
 			if (compilationResult.Status != SpeechRecognitionResultStatus.Success)
 			{
@@ -133,7 +133,7 @@ namespace WizardsChess.VoiceControl
 
 			var cmdType = CommandTypeMethods.Parse(recognizedSpeech.SemanticInterpretation.Properties);
 
-			if (cmdType != WizardsChess.CommandConversion.CommandType.ConfirmPiece)
+			if (cmdType != WizardsChess.VoiceControl.Commands.CommandType.ConfirmPiece)
 			{
 				return new Command(cmdType);
 			}
@@ -172,7 +172,7 @@ namespace WizardsChess.VoiceControl
 
 			var cmdType = CommandTypeMethods.Parse(result.SemanticInterpretation.Properties);
 
-			if (cmdType != WizardsChess.CommandConversion.CommandType.Move)
+			if (cmdType != WizardsChess.VoiceControl.Commands.CommandType.Move)
 			{
 				return new Command(cmdType);
 			}
@@ -198,7 +198,7 @@ namespace WizardsChess.VoiceControl
 
 			var cmdType = CommandTypeMethods.Parse(result.SemanticInterpretation.Properties);
 
-			return cmdType == WizardsChess.CommandConversion.CommandType.Yes;
+			return cmdType == WizardsChess.VoiceControl.Commands.CommandType.Yes;
 		}
 
 		private async Task outputVoice(string phrase)

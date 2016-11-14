@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Chess;
-using WizardsChess.CommandConversion;
+using WizardsChess.VoiceControl.Commands;
 using WizardsChess.VoiceControl;
 
 namespace WizardsChess.AppDebugging
@@ -25,14 +25,14 @@ namespace WizardsChess.AppDebugging
 		{
 			try
 			{
-				cmdRecognizer = await CommandRecognizer.CreateAsync();
+				cmdRecognizer = await CommandRecognizerOld.CreateAsync();
 				await cmdRecognizer.StartContinuousSessionAsync();
 
 				//State = "Listening";
 				//var cmd = await listenForCommandAsync();
 				//State = "Processing";
 
-				//if (cmd.Action == WizardsChess.CommandConversion.Action.Move)
+				//if (cmd.Action == WizardsChess.VoiceControl.Commands.Action.Move)
 				//{
 				//	await performMoveIfValidAsync(cmd as MoveCommand);
 				//}
@@ -51,7 +51,7 @@ namespace WizardsChess.AppDebugging
 		{
 			if (cmdRecognizer == null)
 			{
-				cmdRecognizer = await CommandRecognizer.CreateAsync();
+				cmdRecognizer = await CommandRecognizerOld.CreateAsync();
 			}
 
 			return await cmdRecognizer.RecognizeMoveAsync();
@@ -125,6 +125,6 @@ namespace WizardsChess.AppDebugging
 		private bool isError;
 		private ObservableChessBoard chessBoard;
 		private ChessBoard board = new ChessBoard();
-		private CommandRecognizer cmdRecognizer;
+		private CommandRecognizerOld cmdRecognizer;
 	}
 }

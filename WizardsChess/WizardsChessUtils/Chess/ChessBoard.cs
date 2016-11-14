@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChess.CommandConversion;
+using WizardsChess.VoiceControl.Commands;
 using WizardsChess.Chess.Pieces;
 using WizardsChess.Movement;
 

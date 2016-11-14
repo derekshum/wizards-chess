@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChess.CommandConversion
+namespace WizardsChess.VoiceControl.Commands
 {
 	public enum CommandType
 	{
@@ -18,6 +18,21 @@ namespace WizardsChess.CommandConversion
 
 	public static class CommandTypeMethods
 	{
+		public static CommandFamily GetFamily(this CommandType type)
+		{
+			switch (type)
+			{
+				case CommandType.Move:
+					return CommandFamily.Move;
+				case CommandType.ConfirmPiece:
+					return CommandFamily.PieceConfirmation;
+				case CommandType.Yes:
+				case CommandType.No:
+					return CommandFamily.YesNo;
+				default:
+					return CommandFamily.Other;
+			}
+		}
 		public static CommandType Parse(IReadOnlyDictionary<string, IReadOnlyList<string>> commandParams)
 		{
 			IReadOnlyList<string> paramsList;
@@ -28,7 +43,7 @@ namespace WizardsChess.CommandConversion
 			else
 			{
 				throw new ArgumentException($"Cannot create a Command without an action parameter. Received {commandParams.Count} parameters.");
-}
+			}
 		}
 
 		public static CommandType Parse(string actionStr)
