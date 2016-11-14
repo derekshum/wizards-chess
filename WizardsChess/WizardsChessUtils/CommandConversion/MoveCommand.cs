@@ -11,7 +11,7 @@ namespace WizardsChess.CommandConversion
 	{
 		public CommandType Type { get; }
 		public PieceType? Piece { get; }
-		public Position Position { get; }
+		public Position Position { get; set; }
 		public Position Destination { get; }
 
 		private MoveCommand()

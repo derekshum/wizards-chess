@@ -16,10 +16,8 @@ namespace WizardsChess
 		public static async Task<GameManager> CreateAsync()
 		{
 			GameManager manager = new GameManager();
-			manager.cmdRecognizer = await CommandRecognizer.CreateAsync();
+			await Task.FromResult(0);
 			return manager;
 		}
-
-		private CommandRecognizer cmdRecognizer;
 	}
 }
