@@ -7,9 +7,18 @@ using WizardsChess.Chess;
 
 namespace WizardsChess.CommandConversion
 {
-	public class ConfirmPieceCommand : Command
+	public class ConfirmPieceCommand : ICommand
 	{
-		public ConfirmPieceCommand(IReadOnlyDictionary<string, IReadOnlyList<string>> commandParams) : base(commandParams)
+		public CommandType Type { get; }
+		public PieceType? Piece { get; }
+		public Position Position { get; }
+
+		public ConfirmPieceCommand()
+		{
+			Type = CommandType.ConfirmPiece;
+		}
+
+		public ConfirmPieceCommand(IReadOnlyDictionary<string, IReadOnlyList<string>> commandParams) : this()
 		{
 			IReadOnlyList<string> paramsList;
 			if (commandParams.TryGetValue("piece", out paramsList))
@@ -36,8 +45,5 @@ namespace WizardsChess.CommandConversion
 				throw new ArgumentException($"Cannot create valid {nameof(ConfirmPieceCommand)} without a valid {nameof(Position)}");
 			}
 		}
-
-		public PieceType? Piece { get; set; }
-		public Position Position { get; set; }
 	}
 }

@@ -7,9 +7,19 @@ using WizardsChess.Chess;
 
 namespace WizardsChess.CommandConversion
 {
-	public class MoveCommand : Command
+	public class MoveCommand : ICommand
 	{
-		public MoveCommand(Command command) : base(command)
+		public CommandType Type { get; }
+		public PieceType? Piece { get; }
+		public Position Position { get; }
+		public Position Destination { get; }
+
+		private MoveCommand()
+		{
+			Type = CommandType.Move;
+		}
+
+		public MoveCommand(ICommand command) : this()
 		{
 			var mvCmd = command as MoveCommand;
 			if (mvCmd != null)
@@ -20,11 +30,11 @@ namespace WizardsChess.CommandConversion
 			}
 		}
 
-		public MoveCommand(IReadOnlyDictionary<string, IReadOnlyList<string>> commandParams) : base(commandParams)
+		public MoveCommand(IReadOnlyDictionary<string, IReadOnlyList<string>> commandParams) : this()
 		{
 			IReadOnlyList<string> paramsList;
 
-			if (Action == Action.Move)
+			if (Type == CommandType.Move)
 			{
 				if (commandParams.TryGetValue("piece", out paramsList))
 				{
@@ -35,7 +45,7 @@ namespace WizardsChess.CommandConversion
 				Destination = new Position(destLetter.FirstOrDefault(), destNumber.FirstOrDefault());
 			}
 
-			if (Action == Action.Move || Action == Action.ConfirmPiece)
+			if (Type == CommandType.Move || Type == CommandType.ConfirmPiece)
 			{
 				string posLetter = null;
 				string posNumber = null;
@@ -53,19 +63,5 @@ namespace WizardsChess.CommandConversion
 				}
 			}
 		}
-
-		public bool IsMoveCommand(IReadOnlyDictionary<string, IReadOnlyList<string>> commandParams)
-		{
-			IReadOnlyList<string> paramsList;
-			if (commandParams.TryGetValue("action", out paramsList))
-			{
-				return paramsList.FirstOrDefault() == "action";
-			}
-			return false;
-		}
-
-		public PieceType? Piece { get; set; }
-		public Position Position { get; set; }
-		public Position Destination { get; set; }
 	}
 }

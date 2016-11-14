@@ -51,14 +51,18 @@
     <Compile Include="Chess\Pieces\Rook.cs" />
     <Compile Include="Chess\PieceType.cs" />
     <Compile Include="Chess\Position.cs" />
-    <Compile Include="CommandConversion\Action.cs" />
     <Compile Include="CommandConversion\Command.cs" />
+    <Compile Include="CommandConversion\CommandType.cs" />
+    <Compile Include="CommandConversion\ICommand.cs" />
     <Compile Include="CommandConversion\ConfirmPieceCommand.cs" />
     <Compile Include="CommandConversion\MoveCommand.cs" />
     <Compile Include="Movement\MovementPlanner.cs" />
     <Compile Include="Movement\Point2D.cs" />
     <Compile Include="Movement\Vector2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="VoiceControl\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

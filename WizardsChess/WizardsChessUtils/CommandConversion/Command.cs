@@ -6,26 +6,18 @@ using System.Threading.Tasks;
 
 namespace WizardsChess.CommandConversion
 {
-	public class Command
+	public class Command : ICommand
 	{
-		public Command(Command command)
+		public CommandType Type { get; }
+		
+		public Command(CommandType type)
 		{
-			Action = command.Action;
+			Type = type;
 		}
 
 		public Command(IReadOnlyDictionary<string, IReadOnlyList<string>> commandParams)
 		{
-			IReadOnlyList<string> paramsList;
-			if (commandParams.TryGetValue("action", out paramsList))
-			{
-				Action = ActionMethods.Parse(paramsList.FirstOrDefault());
-			}
-			else
-			{
-				throw new ArgumentException($"Cannot create a Command without an action parameter. Received {commandParams.Count} parameters.");
-			}
+			Type = CommandTypeMethods.Parse(commandParams);
 		}
-
-		public Action Action { get; set; }
 	}
 }
