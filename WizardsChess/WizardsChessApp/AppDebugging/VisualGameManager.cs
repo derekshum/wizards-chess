@@ -47,7 +47,7 @@ namespace WizardsChess.AppDebugging
 			}
 		}
 
-		private async Task<Command> listenForCommandAsync()
+		private async Task<ICommand> listenForCommandAsync()
 		{
 			if (cmdRecognizer == null)
 			{

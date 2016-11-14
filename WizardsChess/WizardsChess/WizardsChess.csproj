@@ -101,7 +101,6 @@
     <Compile Include="StepTracker.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VoiceControl\CommandRecognizer.cs" />
     <Compile Include="VoiceControl\SpeechConstraints.cs" />
   </ItemGroup>
   <ItemGroup>
