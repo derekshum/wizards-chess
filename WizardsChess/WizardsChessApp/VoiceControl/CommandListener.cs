@@ -15,16 +15,20 @@ namespace WizardsChess.VoiceControl
 		public event CommandEventHandler ReceivedCommand;
 		public event CommandHypothesisEventHandler ReceivedCommandHypothesis;
 
-		private void OnCommandRecognized(CommandEventArgs e)
+		private void onCommandRecognized(CommandEventArgs e)
 		{
 			ReceivedCommand?.Invoke(this, e);
 		}
 
-		private void OnCommandHypothesized(CommandHypothesisEventArgs e)
+		private void onCommandHypothesized(CommandHypothesisEventArgs e)
 		{
 			ReceivedCommandHypothesis?.Invoke(this, e);
 		}
 		#endregion
+
+		public CommandFamily CommandFamily { get { return commandFamily; } }
+
+		public bool IsListening { get { return isListening; } }
 
 		#region Construction
 		private CommandListener()
@@ -36,27 +40,34 @@ namespace WizardsChess.VoiceControl
 			continuousSession.ResultGenerated += respondToSpeechRecognition;
 		}
 
-		public async Task<CommandListener> CreateAsync()
+		public static async Task<CommandListener> CreateAsync()
 		{
 			var cmdInterpreter = new CommandListener();
-			var grammarCompilationResult = await setupGrammarConstraintsAsync();
+			var grammarCompilationResult = await cmdInterpreter.setupGrammarConstraintsAsync();
 			if (grammarCompilationResult.Status != SpeechRecognitionResultStatus.Success)
 			{
 				throw new FormatException($"Could not compile grammar constraints. Received error {grammarCompilationResult.Status}");
 			}
-			setupCommandFamilyGrammar(CommandFamily.Move);
+			cmdInterpreter.setupCommandFamilyGrammar(CommandFamily.Move);
 			return cmdInterpreter;
 		}
 		#endregion
 
-		public async Task ListenForAsync(CommandFamily command)
+		public async Task ListenForAsync(CommandFamily family)
 		{
-			if (command == commandFamily)
+			if (family == commandFamily)
 				return;
+			commandFamily = family;
 
-			await StopListeningAsync();
-			setupCommandFamilyGrammar(CommandFamily.Move);
-			await StartListeningAsync();
+			if (isListening)
+			{
+				await StopListeningAsync();
+			}
+			setupCommandFamilyGrammar(family);
+			if (isListening) // we just stopped listening and need to restart it
+			{
+				await StartListeningAsync();
+			}
 		}
 
 		public async Task StartListeningAsync()
@@ -103,16 +114,19 @@ namespace WizardsChess.VoiceControl
 					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, true);
 					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, false);
 					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, false);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, false);
 					break;
 				case CommandFamily.PieceConfirmation:
 					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, true);
 					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, false);
 					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, false);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, true);
 					break;
 				case CommandFamily.YesNo:
 					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, true);
 					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, false);
 					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, false);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, true);
 					break;
 				default:
 					throw new ArgumentException("Received unkown CommandFamily in setupCommandFamilyGrammarAsync");
@@ -134,11 +148,11 @@ namespace WizardsChess.VoiceControl
 				}
 				else if (args.Result.Confidence == SpeechRecognitionConfidence.Low)
 				{
-					OnCommandHypothesized(new CommandHypothesisEventArgs(args.Result.Text));
+					onCommandHypothesized(new CommandHypothesisEventArgs(convertSpeechToCommand(args.Result), args.Result.Text));
 				}
 				else
 				{
-					OnCommandRecognized(new CommandEventArgs(convertSpeechToCommand(args.Result)));
+					onCommandRecognized(new CommandEventArgs(convertSpeechToCommand(args.Result)));
 				}
 			}
 			else

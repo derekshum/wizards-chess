@@ -13,7 +13,8 @@ namespace WizardsChess.VoiceControl.Commands
 		Undo,
 		Yes,
 		No,
-		ConfirmPiece
+		ConfirmPiece,
+		Cancel
 	}
 
 	public static class CommandTypeMethods
@@ -23,6 +24,8 @@ namespace WizardsChess.VoiceControl.Commands
 			switch (type)
 			{
 				case CommandType.Move:
+				case CommandType.Reset:
+				case CommandType.Undo:
 					return CommandFamily.Move;
 				case CommandType.ConfirmPiece:
 					return CommandFamily.PieceConfirmation;
@@ -62,6 +65,8 @@ namespace WizardsChess.VoiceControl.Commands
 					return CommandType.No;
 				case "piececonfirmation":
 					return CommandType.ConfirmPiece;
+				case "cancel":
+					return CommandType.Cancel;
 				default:
 					throw new ArgumentException($"Cannot convert string \"{actionStr}\" to an Action enum.");
 			}

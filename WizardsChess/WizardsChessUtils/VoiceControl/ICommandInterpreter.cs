@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Chess;
+using WizardsChess.VoiceControl.Commands;
 
 namespace WizardsChess.VoiceControl
 {
-	interface ICommandInterpreter
+	public interface ICommandInterpreter
 	{
 		event CommandEventHandler CommandReceived;
 
+		Task SetCommandFamilyAsync(CommandFamily family);
 		Task ConfirmPieceSelectionAsync(PieceType pieceType, IReadOnlyList<Position> possiblePositions);
 	}
 }
