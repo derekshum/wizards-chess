@@ -28,7 +28,7 @@ namespace WizardsChess.VoiceControl
 		#endregion
 
 		#region Construction
-		private CommandInterpreter(CommandListener listener)
+		private CommandInterpreter(ICommandListener listener, ICommunicator communicator)
 		{
 			isStarted = false;
 			commandHypothesis = null;
@@ -38,6 +38,7 @@ namespace WizardsChess.VoiceControl
 			listener.ReceivedCommandHypothesis += receivedCommandHypothesis;
 
 			this.listener = listener;
+			this.communicator = communicator;
 		}
 
 		public static async Task<CommandInterpreter> CreateAsync()
@@ -75,6 +76,7 @@ namespace WizardsChess.VoiceControl
 		private ListeningState listeningState;
 		private ListeningState previousListeningState;
 		private ICommandListener listener;
+		private ICommunicator communicator;
 		private CommandEventArgs commandHypothesis;
 		private PieceType possiblePieceType;
 		private IReadOnlyList<Position> possiblePiecePositions;

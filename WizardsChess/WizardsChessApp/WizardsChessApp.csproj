@@ -111,6 +111,7 @@
     <Compile Include="AppDebugging\VisualGameManager.cs" />
     <Compile Include="VoiceControl\CommandInterpreter.cs" />
     <Compile Include="VoiceControl\CommandListener.cs" />
+    <Compile Include="VoiceControl\Communicator.cs" />
     <Compile Include="VoiceControl\SpeechConstraints.cs" />
     <Compile Include="VoiceControl\CommandRecognizerOld.cs" />
   </ItemGroup>
