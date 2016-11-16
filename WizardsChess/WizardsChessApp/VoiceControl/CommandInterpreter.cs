@@ -67,6 +67,7 @@ namespace WizardsChess.VoiceControl
 
 			await changeStateAsync(ListeningState.Move);
 			await listener.StartListeningAsync();
+			isStarted = true;
 		}
 
 		#region Private Members
