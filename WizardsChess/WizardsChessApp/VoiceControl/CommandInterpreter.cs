@@ -53,7 +53,18 @@ namespace WizardsChess.VoiceControl
 
 		public async Task ConfirmPieceSelectionAsync(PieceType pieceType, IReadOnlyList<Position> possiblePositions)
 		{
-			// TODO: Announce the piece options using the ICommandSpeaker
+			StringBuilder confirmPieceSpeech = new StringBuilder();
+			confirmPieceSpeech.Append($"Do you mean the {pieceType} at position ");
+
+			int i = 0;
+			for (i = 0; i < (possiblePositions.Count - 1); i++)
+			{
+				confirmPieceSpeech.Append($"{possiblePositions[i]}, ");
+			}
+			confirmPieceSpeech.Append($"or {possiblePositions[i]}?");
+
+			await communicator.Speak(confirmPieceSpeech.ToString());
+
 			possiblePieceType = pieceType;
 			possiblePiecePositions = possiblePositions;
 			await changeStateAsync(ListeningState.PieceConfirmation);
@@ -125,7 +136,7 @@ namespace WizardsChess.VoiceControl
 		private async void receivedCommandHypothesis(Object sender, CommandHypothesisEventArgs e)
 		{
 			await listener.StopListeningAsync();
-			// TODO: Use an ICommandSpeaker to ask if this was the right command
+			await communicator.Speak($"Did you say: {e.CommandText}");
 			commandHypothesis = e;
 			await changeStateAsync(ListeningState.Hypothesis);
 			await listener.StartListeningAsync();
@@ -201,7 +212,7 @@ namespace WizardsChess.VoiceControl
 			}
 			else
 			{
-				// TODO: Speak to user about issue
+				await communicator.Speak("Ok. Please repeat your previous command.");
 			}
 			await changeStateAsync(ListeningState.Move);
 		}

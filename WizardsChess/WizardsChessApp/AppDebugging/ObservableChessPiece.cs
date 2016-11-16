@@ -30,7 +30,7 @@ namespace WizardsChess.AppDebugging
 			UpdatePosition(row, col);
 		}
 
-		private async void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+		private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
 		{
 			//if (uiDispatcher == null)
 			//{

@@ -101,6 +101,7 @@
     <Compile Include="AppDebugging\Controls\GridItemsControl.cs" />
     <Compile Include="AppDebugging\ObservableChessBoard.cs" />
     <Compile Include="AppDebugging\ObservableChessPiece.cs" />
+    <Compile Include="AppDebugging\Threading.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.Media.SpeechSynthesis;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using WizardsChess.AppDebugging;
 
 namespace WizardsChess.VoiceControl
 {
@@ -22,13 +23,16 @@ namespace WizardsChess.VoiceControl
 
 		public async Task Speak(string text)
 		{
-			if (audioOut.CurrentState == Windows.UI.Xaml.Media.MediaElementState.Playing)
+			await Threading.MarshallToUiThread(async () =>
 			{
-				audioOut.Stop();
-			}
-			var voiceStream = await speechSynth.SynthesizeTextToStreamAsync(text);
-			audioOut.SetSource(voiceStream, voiceStream.ContentType);
-			audioOut.Play();
+				if (audioOut.CurrentState == Windows.UI.Xaml.Media.MediaElementState.Playing)
+				{
+					audioOut.Stop();
+				}
+				var voiceStream = await speechSynth.SynthesizeTextToStreamAsync(text);
+				audioOut.SetSource(voiceStream, voiceStream.ContentType);
+				audioOut.Play();
+			});
 		}
 
 		private void audioEventReceived(object sender, RoutedEventArgs e)
