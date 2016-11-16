@@ -45,7 +45,7 @@ namespace WizardsChess.VoiceControl
 		{
 			var listener = await CommandListener.CreateAsync();
 
-			var interpreter = new CommandInterpreter(listener);
+			var interpreter = new CommandInterpreter(listener, new Communicator());
 
 			return interpreter;
 		}

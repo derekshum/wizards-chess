@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Media.SpeechSynthesis;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace WizardsChess.VoiceControl
@@ -14,6 +15,9 @@ namespace WizardsChess.VoiceControl
 		{
 			speechSynth = new SpeechSynthesizer();
 			audioOut = new MediaElement();
+			audioOut.MediaEnded += audioEventReceived;
+			audioOut.MediaFailed += audioEventReceived;
+			audioOut.MediaOpened += audioEventReceived;
 		}
 
 		public async Task Speak(string text)
@@ -25,6 +29,11 @@ namespace WizardsChess.VoiceControl
 			var voiceStream = await speechSynth.SynthesizeTextToStreamAsync(text);
 			audioOut.SetSource(voiceStream, voiceStream.ContentType);
 			audioOut.Play();
+		}
+
+		private void audioEventReceived(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine($"Received audio event: {e.ToString()}");
 		}
 
 		private SpeechSynthesizer speechSynth;
