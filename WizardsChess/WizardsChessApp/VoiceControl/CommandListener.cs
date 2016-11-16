@@ -42,14 +42,14 @@ namespace WizardsChess.VoiceControl
 
 		public static async Task<CommandListener> CreateAsync()
 		{
-			var cmdInterpreter = new CommandListener();
-			var grammarCompilationResult = await cmdInterpreter.setupGrammarConstraintsAsync();
+			var cmdListener = new CommandListener();
+			var grammarCompilationResult = await cmdListener.setupGrammarConstraintsAsync();
 			if (grammarCompilationResult.Status != SpeechRecognitionResultStatus.Success)
 			{
 				throw new FormatException($"Could not compile grammar constraints. Received error {grammarCompilationResult.Status}");
 			}
-			cmdInterpreter.setupCommandFamilyGrammar(CommandFamily.Move);
-			return cmdInterpreter;
+			cmdListener.setupCommandFamilyGrammar(CommandFamily.Move);
+			return cmdListener;
 		}
 		#endregion
 
@@ -61,12 +61,12 @@ namespace WizardsChess.VoiceControl
 
 			if (isListening)
 			{
-				await StopListeningAsync();
+				await continuousSession.StopAsync();
 			}
 			setupCommandFamilyGrammar(family);
 			if (isListening) // we just stopped listening and need to restart it
 			{
-				await StartListeningAsync();
+				await continuousSession.StartAsync();
 			}
 		}
 
@@ -159,8 +159,6 @@ namespace WizardsChess.VoiceControl
 			{
 				System.Diagnostics.Debug.WriteLine($"Received continuous speech result of {args.Result.Status}");
 			}
-
-			continuousSession.Resume();
 		}
 
 		private ICommand convertSpeechToCommand(SpeechRecognitionResult speech)

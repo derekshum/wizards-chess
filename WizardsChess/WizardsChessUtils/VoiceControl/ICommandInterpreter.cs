@@ -12,7 +12,7 @@ namespace WizardsChess.VoiceControl
 	{
 		event CommandEventHandler CommandReceived;
 
-		Task SetCommandFamilyAsync(CommandFamily family);
+		Task StartAsync();
 		Task ConfirmPieceSelectionAsync(PieceType pieceType, IReadOnlyList<Position> possiblePositions);
 	}
 }

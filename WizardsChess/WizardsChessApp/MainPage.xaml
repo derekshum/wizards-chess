@@ -38,7 +38,7 @@
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
 		<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
-			<Button HorizontalAlignment="Center" Click="Button_Click" Margin="0,0,0,0">Give Command</Button>
+			<Button HorizontalAlignment="Center" Click="Button_Click" Margin="0,0,0,0">Start Game</Button>
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 30, 0, 0">
 				<TextBlock FontSize="20" Text="State: " />
 				<TextBlock x:Name="StateText" FontSize="20" Foreground="Green" Text="{x:Bind Path=GameManager.State, Mode=OneWay}" />

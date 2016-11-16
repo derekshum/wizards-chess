@@ -65,6 +65,7 @@
     <Compile Include="VoiceControl\Events\CommandHypothesisEventArgs.cs" />
     <Compile Include="VoiceControl\ICommandInterpreter.cs" />
     <Compile Include="VoiceControl\ICommandListener.cs" />
+    <Compile Include="VoiceControl\ICommunicator.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

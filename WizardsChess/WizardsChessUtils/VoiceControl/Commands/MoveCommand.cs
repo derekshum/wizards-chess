@@ -11,7 +11,7 @@ namespace WizardsChess.VoiceControl.Commands
 	{
 		public CommandType Type { get; }
 		public PieceType? Piece { get; }
-		public Position Position { get; set; }
+		public Position? Position { get; set; }
 		public Position Destination { get; }
 
 		private MoveCommand()
@@ -25,7 +25,8 @@ namespace WizardsChess.VoiceControl.Commands
 			if (mvCmd != null)
 			{
 				Piece = mvCmd.Piece;
-				Position = new Position(mvCmd.Position);
+				if (mvCmd.Position.HasValue)
+					Position = new Position(mvCmd.Position.Value);
 				Destination = new Position(mvCmd.Destination);
 			}
 		}

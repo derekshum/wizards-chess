@@ -12,7 +12,7 @@ namespace WizardsChess.AppDebugging
 {
 	public class ObservableChessPiece : INotifyPropertyChanged
 	{
-		public ObservableChessPiece(ChessPiece piece, int row, int col)
+		public ObservableChessPiece(ChessPiece piece, int row, int col, Windows.UI.Core.CoreDispatcher uiDispatcher)
 		{
 			this.piece = piece;
 			Symbol = Piece.ToShortString();
@@ -30,8 +30,13 @@ namespace WizardsChess.AppDebugging
 			UpdatePosition(row, col);
 		}
 
-		private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+		private async void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
 		{
+			//if (uiDispatcher == null)
+			//{
+			//	uiDispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+			//}
+			//await uiDispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); });
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
@@ -105,5 +110,6 @@ namespace WizardsChess.AppDebugging
 		private SolidColorBrush color;
 		private int gridRow;
 		private int gridColumn;
+		private Windows.UI.Core.CoreDispatcher uiDispatcher;
 	}
 }

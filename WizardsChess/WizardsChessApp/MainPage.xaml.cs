@@ -17,6 +17,7 @@ using WizardsChess.VoiceControl;
 using WizardsChess.Movement;
 using WizardsChess.Movement.Drv;
 using Windows.Devices.Gpio;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -29,7 +30,8 @@ namespace WizardsChess
     {
         public MainPage()
         {
-			GameManager = new VisualGameManager();
+			uiDispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+			GameManager = new VisualGameManager(uiDispatcher);
 			//motorDriver = new MotorDrv(20, 21);
 			//MotorTracker = new MotorTracker(23, motorDriver);
 			//var gpios = GpioController.GetDefault();
@@ -41,7 +43,8 @@ namespace WizardsChess
 
 		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
-			await GameManager.PerformCommandAsync();
+			await GameManager.SetupCommandInterpreter();
+			await GameManager.StartGameAsync();
 		}
 
 		public VisualGameManager GameManager { get; set; }
@@ -78,5 +81,6 @@ namespace WizardsChess
 		private MotorDrv motorDriver;
 		private GpioPin electroMagPin;
 		public MotorTracker MotorTracker;
+		private Windows.UI.Core.CoreDispatcher uiDispatcher;
 	}
 }

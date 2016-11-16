@@ -28,11 +28,11 @@ namespace WizardsChess.VoiceControl.Commands
 
 			string posLetter = null;
 			string posNumber = null;
-			if (commandParams.TryGetValue("positionLetter", out paramsList))
+			if (commandParams.TryGetValue("pieceLetter", out paramsList))
 			{
 				posLetter = paramsList.FirstOrDefault();
 			}
-			if (commandParams.TryGetValue("positionNumber", out paramsList))
+			if (commandParams.TryGetValue("pieceNumber", out paramsList))
 			{
 				posNumber = paramsList.FirstOrDefault();
 			}
