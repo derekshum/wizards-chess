@@ -85,10 +85,10 @@ namespace WizardsChess.VoiceControl
 		#region Private Members
 		private bool isStarted;
 		private ListeningState listeningState;
-		private ListeningState previousListeningState;
+		private ListeningState preHypothesisListeningState;
 		private ICommandListener listener;
 		private ICommunicator communicator;
-		private CommandEventArgs commandHypothesis;
+		private CommandHypothesisEventArgs commandHypothesis;
 		private PieceType possiblePieceType;
 		private IReadOnlyList<Position> possiblePiecePositions;
 		#endregion
@@ -99,7 +99,11 @@ namespace WizardsChess.VoiceControl
 			if (listeningState != state)
 			{
 				System.Diagnostics.Debug.WriteLine($"Changing CommandInterpreter listening state to {state}");
-				previousListeningState = listeningState;
+
+				if (state == ListeningState.Hypothesis)
+				{
+					preHypothesisListeningState = listeningState;
+				}
 
 				listeningState = state;
 
@@ -135,11 +139,18 @@ namespace WizardsChess.VoiceControl
 
 		private async void receivedCommandHypothesis(Object sender, CommandHypothesisEventArgs e)
 		{
-			await listener.StopListeningAsync();
-			await communicator.Speak($"Did you say: {e.CommandText}");
+			if (listeningState == ListeningState.Hypothesis)
+			{
+				await changeStateAsync(preHypothesisListeningState);
+				await handleRejectedHypothesisAsync();
+				return;
+			}
+
+			//await listener.StopListeningAsync();
 			commandHypothesis = e;
 			await changeStateAsync(ListeningState.Hypothesis);
-			await listener.StartListeningAsync();
+			await communicator.Speak($"Did you say: {e.CommandText}");
+			//await listener.StartListeningAsync();
 		}
 
 		private bool isCommandFamilyValid(CommandFamily family)
@@ -161,11 +172,7 @@ namespace WizardsChess.VoiceControl
 			switch (listeningState)
 			{
 				case ListeningState.Hypothesis:
-					await changeStateAsync(previousListeningState);
-					if (isHypothesisValid(command))
-					{
-						onCommandReceived(commandHypothesis);
-					}
+					await handleHypothesisConfirmationResponseAsync(command);
 					break;
 				case ListeningState.PieceConfirmation:
 					await handleConfirmPieceCommandAsync(command);
@@ -179,18 +186,32 @@ namespace WizardsChess.VoiceControl
 
 		private async Task handleHypothesisConfirmationResponseAsync(ICommand command)
 		{
-			await changeStateAsync(previousListeningState);
+			await changeStateAsync(preHypothesisListeningState);
 			if (isHypothesisValid(command))
 			{
+				// The last command was understood correctly, handle it as a regular command
 				receivedCommand(this, commandHypothesis);
-			}
-			else if (listeningState == ListeningState.PieceConfirmation)
-			{
-				await ConfirmPieceSelectionAsync(possiblePieceType, possiblePiecePositions);
 			}
 			else
 			{
-				// TODO: Ask for their move again
+				await handleRejectedHypothesisAsync();
+			}
+		}
+
+		private async Task handleRejectedHypothesisAsync()
+		{
+			switch (listeningState)
+			{
+				case ListeningState.Hypothesis:
+					System.Diagnostics.Debug.WriteLine("CommandInterpreter got stuck in the Hypothesis state afer rejecting a hypothesis");
+					break;
+				case ListeningState.PieceConfirmation:
+					await ConfirmPieceSelectionAsync(possiblePieceType, possiblePiecePositions);
+					break;
+				case ListeningState.Move:
+				default:
+					await communicator.Speak("Ok. Please repeat your previous command.");
+					break;
 			}
 		}
 
@@ -210,9 +231,17 @@ namespace WizardsChess.VoiceControl
 			{
 				onCommandReceived(new CommandEventArgs(command));
 			}
+			else if (command.Type != CommandType.Cancel)
+			{
+				// Try piece confirmation again if their answer just didn't make sense
+				await communicator.Speak("That position was not valid.");
+				await ConfirmPieceSelectionAsync(possiblePieceType, possiblePiecePositions);
+				return;
+			}
 			else
 			{
-				await communicator.Speak("Ok. Please repeat your previous command.");
+				// If they cancel, return to move command state
+				await communicator.Speak("Ok. Please repeat your move command.");
 			}
 			await changeStateAsync(ListeningState.Move);
 		}
