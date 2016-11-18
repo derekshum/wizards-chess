@@ -12,6 +12,7 @@ namespace WizardsChess.VoiceControl.Commands
 		public CommandType Type { get; }
 		public PieceType? Piece { get; }
 		public Position Position { get; }
+		public bool PositionUsedNatoAlphabet { get; }
 
 		public ConfirmPieceCommand()
 		{
@@ -28,6 +29,7 @@ namespace WizardsChess.VoiceControl.Commands
 
 			string posLetter = null;
 			string posNumber = null;
+			string posUsedNato = null;
 			if (commandParams.TryGetValue("pieceLetter", out paramsList))
 			{
 				posLetter = paramsList.FirstOrDefault();
@@ -36,9 +38,16 @@ namespace WizardsChess.VoiceControl.Commands
 			{
 				posNumber = paramsList.FirstOrDefault();
 			}
-			if (!String.IsNullOrWhiteSpace(posLetter) && !String.IsNullOrWhiteSpace(posNumber))
+			if (commandParams.TryGetValue("usedNato", out paramsList))
+			{
+				posUsedNato = paramsList.FirstOrDefault();
+			}
+			if (!String.IsNullOrWhiteSpace(posLetter) &&
+				!String.IsNullOrWhiteSpace(posNumber) &&
+				!String.IsNullOrWhiteSpace(posUsedNato))
 			{
 				Position = new Position(posLetter, posNumber);
+				PositionUsedNatoAlphabet = posUsedNato.Equals("true", StringComparison.OrdinalIgnoreCase);
 			}
 			else
 			{

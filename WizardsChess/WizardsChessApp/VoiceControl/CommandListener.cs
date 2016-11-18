@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Media.SpeechRecognition;
+using WizardsChess.Chess;
 using WizardsChess.VoiceControl.Commands;
 using WizardsChess.VoiceControl.Events;
 
@@ -152,6 +153,39 @@ namespace WizardsChess.VoiceControl
 				}
 				else
 				{
+					var command = convertSpeechToCommand(args.Result);
+					if (command.Type == CommandType.Move)
+					{
+						var moveCommand = command as MoveCommand;
+						if (moveCommand.Position.HasValue && !moveCommand.PositionUsedNatoAlphabet)
+						{
+							if (isPositionAmbiguous(moveCommand.Position.Value))
+							{
+								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
+								return;
+							}
+						}
+						if (!moveCommand.DestinationUsedNatoAlphabet)
+						{
+							if (isPositionAmbiguous(moveCommand.Destination))
+							{
+								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
+								return;
+							}
+						}
+					}
+					else if (command.Type == CommandType.ConfirmPiece)
+					{
+						var confirmPieceCommand = command as ConfirmPieceCommand;
+						if (!confirmPieceCommand.PositionUsedNatoAlphabet)
+						{
+							if (isPositionAmbiguous(confirmPieceCommand.Position))
+							{
+								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
+								return;
+							}
+						}
+					}
 					onCommandRecognized(new CommandEventArgs(convertSpeechToCommand(args.Result)));
 				}
 			}
@@ -173,6 +207,15 @@ namespace WizardsChess.VoiceControl
 				default:
 					return new Command(speech.SemanticInterpretation.Properties);
 			}
+		}
+
+		private bool isPositionAmbiguous(Position p)
+		{
+			return p.ColumnLetter == ColumnLetter.B
+				|| p.ColumnLetter == ColumnLetter.C
+				|| p.ColumnLetter == ColumnLetter.D
+				|| p.ColumnLetter == ColumnLetter.E
+				|| p.ColumnLetter == ColumnLetter.G;
 		}
 		#endregion
 	}

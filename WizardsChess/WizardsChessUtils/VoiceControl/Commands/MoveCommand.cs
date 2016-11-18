@@ -13,6 +13,8 @@ namespace WizardsChess.VoiceControl.Commands
 		public PieceType? Piece { get; }
 		public Position? Position { get; set; }
 		public Position Destination { get; }
+		public bool PositionUsedNatoAlphabet { get; }
+		public bool DestinationUsedNatoAlphabet { get; }
 
 		private MoveCommand()
 		{
@@ -26,8 +28,12 @@ namespace WizardsChess.VoiceControl.Commands
 			{
 				Piece = mvCmd.Piece;
 				if (mvCmd.Position.HasValue)
+				{
 					Position = new Position(mvCmd.Position.Value);
+					PositionUsedNatoAlphabet = mvCmd.PositionUsedNatoAlphabet;
+				}
 				Destination = new Position(mvCmd.Destination);
+				DestinationUsedNatoAlphabet = mvCmd.DestinationUsedNatoAlphabet;
 			}
 		}
 
@@ -41,15 +47,18 @@ namespace WizardsChess.VoiceControl.Commands
 				{
 					Piece = PieceTypeMethods.Parse(paramsList.FirstOrDefault());
 				}
-				var destLetter = commandParams["destinationLetter"];
-				var destNumber = commandParams["destinationNumber"];
-				Destination = new Position(destLetter.FirstOrDefault(), destNumber.FirstOrDefault());
+				var destLetter = commandParams["destinationLetter"].FirstOrDefault();
+				var destNumber = commandParams["destinationNumber"].FirstOrDefault();
+				Destination = new Position(destLetter, destNumber);
+				var destUsedNato = commandParams["destinationUsedNato"].FirstOrDefault();
+				DestinationUsedNatoAlphabet = destUsedNato.Equals("true", StringComparison.OrdinalIgnoreCase);
 			}
 
 			if (Type == CommandType.Move || Type == CommandType.ConfirmPiece)
 			{
 				string posLetter = null;
 				string posNumber = null;
+				string posUsedNato = null;
 				if (commandParams.TryGetValue("positionLetter", out paramsList))
 				{
 					posLetter = paramsList.FirstOrDefault();
@@ -58,9 +67,16 @@ namespace WizardsChess.VoiceControl.Commands
 				{
 					posNumber = paramsList.FirstOrDefault();
 				}
-				if (!String.IsNullOrWhiteSpace(posLetter) && !String.IsNullOrWhiteSpace(posNumber))
+				if (commandParams.TryGetValue("positionUsedNato", out paramsList))
+				{
+					posUsedNato = paramsList.FirstOrDefault();
+				}
+				if (!String.IsNullOrWhiteSpace(posLetter) &&
+					!String.IsNullOrWhiteSpace(posNumber) &&
+					!String.IsNullOrWhiteSpace(posUsedNato))
 				{
 					Position = new Position(posLetter, posNumber);
+					PositionUsedNatoAlphabet = posUsedNato.Equals("true", StringComparison.OrdinalIgnoreCase);
 				}
 			}
 		}

@@ -30,6 +30,10 @@ namespace WizardsChess.VoiceControl
 					audioOut.Stop();
 				}
 				var voiceStream = await speechSynth.SynthesizeTextToStreamAsync(text);
+				if (voiceStream == null)
+				{
+					System.Diagnostics.Debug.WriteLine($"Could not synthesize voice stream from text: {text}.");
+				}
 				audioOut.SetSource(voiceStream, voiceStream.ContentType);
 				audioOut.Play();
 			});

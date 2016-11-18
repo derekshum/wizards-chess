@@ -17,28 +17,29 @@
 	<rule id="position" scope="public">
 		<ruleref uri="#letter"/>
 		<ruleref uri="#number"/>
-		<tag> out.letter = rules.letter; </tag>
+		<tag> out.letter = rules.letter.letter; </tag>
+		<tag> out.usedNato = rules.letter.usedNato; </tag>
 		<tag> out.number = rules.number; </tag>
 	</rule>
 	
 	<rule id="letter" scope="public">
 		<one-of>
-			<item> A <tag> out = "A"; </tag> </item>
-			<item> alpha <tag> out = "A"; </tag> </item>
-			<item> B <tag> out = "B"; </tag> </item>
-			<item> bravo <tag> out = "B"; </tag> </item>
-			<item> C <tag> out = "C"; </tag> </item>
-			<item> charlie <tag> out = "C"; </tag> </item>
-			<item> D <tag> out = "D"; </tag> </item>
-			<item> delta <tag> out = "D"; </tag> </item>
-			<item> E <tag> out = "E"; </tag> </item>
-			<item> echo <tag> out = "E"; </tag> </item>
-			<item> F <tag> out = "F"; </tag> </item>
-			<item> foxtrot <tag> out = "F"; </tag> </item>
-			<item> G <tag> out = "G"; </tag> </item>
-			<item> golf <tag> out = "G"; </tag> </item>
-			<item> H <tag> out = "H"; </tag> </item>
-			<item> hotel <tag> out = "H"; </tag> </item>
+			<item> A <tag> out.letter = "A"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> alpha <tag> out.letter = "A"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> B <tag> out.letter = "B"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> bravo <tag> out.letter = "B"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> C <tag> out.letter = "C"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> charlie <tag> out.letter = "C"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> D <tag> out.letter = "D"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> delta <tag> out.letter = "D"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> E <tag> out.letter = "E"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> echo <tag> out.letter = "E"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> F <tag> out.letter = "F"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> foxtrot <tag> out.letter = "F"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> G <tag> out.letter = "G"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> golf <tag> out.letter = "G"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> H <tag> out.letter = "H"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> hotel <tag> out.letter = "H"; </tag> <tag> out.usedNato = "true"; </tag> </item>
 		</one-of>
 	</rule>
 	

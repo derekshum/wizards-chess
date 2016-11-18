@@ -23,6 +23,7 @@
 		<ruleref uri="PiecesAndPositions.grxml#position"/>
 		<tag> out.action = "pieceConfirmation"; </tag>
 		<tag> out.pieceLetter = rules.latest().letter; </tag>
+		<tag> out.usedNato = rules.latest().usedNato; </tag>
 		<tag> out.pieceNumber = rules.latest().number; </tag>
 	</rule>
 
