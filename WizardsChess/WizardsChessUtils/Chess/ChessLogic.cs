@@ -7,7 +7,7 @@ using WizardsChess.Movement;
 
 namespace WizardsChess.Chess
 {
-	class ChessLogic
+	public class ChessLogic
 	{
 		public ChessLogic (ChessBoard b)
 		{

@@ -289,7 +289,7 @@ namespace WizardsChess.Chess
         public const int Size = 8;
         public ChessTeam WhoseTurn;	//TODO: move to ChessLogic? Change to Private (and add modifiers and an accessor?)
 
-		private ChessPiece[,] boardMatrix; // TODO: This probably shouldn't be internal. Just for debugging for P1. Change to private?
+		private ChessPiece[,] boardMatrix;
 		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();   //TODO: figure out if this should be private or capitalized
 		private IDictionary<ChessTeam, ISet<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
 		{
