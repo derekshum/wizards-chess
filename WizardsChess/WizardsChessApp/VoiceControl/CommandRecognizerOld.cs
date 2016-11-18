@@ -10,26 +10,30 @@ using Windows.Media.SpeechSynthesis;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using WizardsChess.Chess;
-using WizardsChess.CommandConversion;
+using WizardsChess.VoiceControl.Commands;
 
 namespace WizardsChess.VoiceControl
 {
-	class CommandRecognizer
+	class CommandRecognizerOld
 	{
-		private CommandRecognizer()
+		private CommandRecognizerOld()
 		{
 			speechRecognizer = new SpeechRecognizer();
 			speechRecognizer.UIOptions.IsReadBackEnabled = false;
 			speechRecognizer.UIOptions.ShowConfirmation = false;
+			continousSpeechSession = speechRecognizer.ContinuousRecognitionSession;
+			continousSpeechSession.ResultGenerated += respondToContinuousSpeechRecognition;
+			continousSpeechSession.Completed += respondToContinuousSpeechCompleted;
+			continousSpeechSession.AutoStopSilenceTimeout = TimeSpan.FromMinutes(5);
 
 			audioOut.MediaFailed += ReleaseAudio;
 			audioOut.MediaEnded += ReleaseAudio;
 			audioOut.CurrentStateChanged += ReleaseAudio;
 		}
 
-		public static async Task<CommandRecognizer> CreateAsync()
+		public static async Task<CommandRecognizerOld> CreateAsync()
 		{
-			var recognizer = new CommandRecognizer();
+			var recognizer = new CommandRecognizerOld();
 			var compilationResult = await recognizer.setupConstraintsAsync();
 			if (compilationResult.Status != SpeechRecognitionResultStatus.Success)
 			{
@@ -38,7 +42,50 @@ namespace WizardsChess.VoiceControl
 			return recognizer;
 		}
 
-		public async Task<Command> ConfirmPieceSelectionAsync(PieceType pieceType, IReadOnlyList<Position> possiblePositions)
+		public async Task StartContinuousSessionAsync()
+		{
+			await continousSpeechSession.StartAsync(SpeechContinuousRecognitionMode.PauseOnRecognition);
+		}
+
+		public async Task StopContinuousSessionAsync()
+		{
+			await continousSpeechSession.StopAsync();
+		}
+
+		public async Task PauseContinuousSessionAsync()
+		{
+			await continousSpeechSession.PauseAsync();
+		}
+
+		public void ResumeContinousSessionAsync()
+		{
+			continousSpeechSession.Resume();
+		}
+
+		private void respondToContinuousSpeechRecognition(
+			SpeechContinuousRecognitionSession sender,
+			SpeechContinuousRecognitionResultGeneratedEventArgs args)
+		{
+
+			if (args.Result.Status == SpeechRecognitionResultStatus.Success)
+			{
+				System.Diagnostics.Debug.WriteLine($"Recognized speech: {args.Result.Text}");
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine($"Received continuous speech result of {args.Result.Status}");
+			}
+			continousSpeechSession.Resume();
+		}
+
+		private void respondToContinuousSpeechCompleted(
+			SpeechContinuousRecognitionSession sender,
+			SpeechContinuousRecognitionCompletedEventArgs args)
+		{
+			System.Diagnostics.Debug.WriteLine($"Received continuous speech completion result of {args.Status}");
+		}
+
+		public async Task<ICommand> ConfirmPieceSelectionAsync(PieceType pieceType, IReadOnlyList<Position> possiblePositions)
 		{
 			StringBuilder strBuilder = new StringBuilder();
 			strBuilder.Append("Did you mean the ").Append(pieceType.ToString()).Append(" at position ");
@@ -84,18 +131,18 @@ namespace WizardsChess.VoiceControl
 				throw new Exception($"Voice recognition failed with status {recognizedSpeech.Status.ToString()}");
 			}
 
-			var cmd = new Command(recognizedSpeech.SemanticInterpretation.Properties);
+			var cmdType = CommandTypeMethods.Parse(recognizedSpeech.SemanticInterpretation.Properties);
 
-			if (cmd.Action != WizardsChess.CommandConversion.Action.ConfirmPiece)
+			if (cmdType != WizardsChess.VoiceControl.Commands.CommandType.ConfirmPiece)
 			{
-				return cmd;
+				return new Command(cmdType);
 			}
 
 			var confirmPieceCmd = new ConfirmPieceCommand(recognizedSpeech.SemanticInterpretation.Properties);
 			return confirmPieceCmd;
 		}
 
-		public async Task<Command> RecognizeMoveAsync()
+		public async Task<ICommand> RecognizeMoveAsync()
 		{
 			SpeechConstraints.EnableGrammar(speechRecognizer.Constraints, GrammarMode.YesNoCommands, false);
 			SpeechConstraints.EnableGrammar(speechRecognizer.Constraints, GrammarMode.MoveCommands, true);
@@ -123,11 +170,11 @@ namespace WizardsChess.VoiceControl
 				throw new Exception($"Voice recognition failed with status {result.Status.ToString()}");
 			}
 
-			var cmd = new Command(result.SemanticInterpretation.Properties);
+			var cmdType = CommandTypeMethods.Parse(result.SemanticInterpretation.Properties);
 
-			if (cmd.Action != WizardsChess.CommandConversion.Action.Move)
+			if (cmdType != WizardsChess.VoiceControl.Commands.CommandType.Move)
 			{
-				return cmd;
+				return new Command(cmdType);
 			}
 
 			var moveCmd = new MoveCommand(result.SemanticInterpretation.Properties);
@@ -149,9 +196,9 @@ namespace WizardsChess.VoiceControl
 				throw new Exception($"Could not recognize speech input");
 			}
 
-			var cmd = new Command(result.SemanticInterpretation.Properties);
+			var cmdType = CommandTypeMethods.Parse(result.SemanticInterpretation.Properties);
 
-			return cmd.Action == WizardsChess.CommandConversion.Action.Yes;
+			return cmdType == WizardsChess.VoiceControl.Commands.CommandType.Yes;
 		}
 
 		private async Task outputVoice(string phrase)
@@ -180,6 +227,7 @@ namespace WizardsChess.VoiceControl
 
 		private Semaphore audioLock = new Semaphore(1, 1);
 		private SpeechRecognizer speechRecognizer;
+		private SpeechContinuousRecognitionSession continousSpeechSession;
 		private SpeechSynthesizer speechSynth = new SpeechSynthesizer();
 		private MediaElement audioOut = new MediaElement();
 	}

@@ -90,6 +90,9 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
+    <Content Include="VoiceControl\CancelCommand.grxml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -98,6 +101,7 @@
     <Compile Include="AppDebugging\Controls\GridItemsControl.cs" />
     <Compile Include="AppDebugging\ObservableChessBoard.cs" />
     <Compile Include="AppDebugging\ObservableChessPiece.cs" />
+    <Compile Include="AppDebugging\Threading.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -106,13 +110,23 @@
     <Compile Include="Movement\StepTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppDebugging\VisualGameManager.cs" />
+    <Compile Include="VoiceControl\CommandInterpreter.cs" />
+    <Compile Include="VoiceControl\CommandListener.cs" />
+    <Compile Include="VoiceControl\Communicator.cs" />
     <Compile Include="VoiceControl\SpeechConstraints.cs" />
-    <Compile Include="VoiceControl\CommandRecognizer.cs" />
+    <Compile Include="VoiceControl\CommandRecognizerOld.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="VoiceControl\MoveCommands.grxml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -128,13 +142,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -151,6 +158,9 @@
       <Project>{11b373b6-b927-44ee-9f33-73d208fac615}</Project>
       <Name>WizardsChessUtils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AppDebugging\Assets\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

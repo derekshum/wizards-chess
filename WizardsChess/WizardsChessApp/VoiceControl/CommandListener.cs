@@ -1,0 +1,222 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Media.SpeechRecognition;
+using WizardsChess.Chess;
+using WizardsChess.VoiceControl.Commands;
+using WizardsChess.VoiceControl.Events;
+
+namespace WizardsChess.VoiceControl
+{
+	public class CommandListener : ICommandListener
+	{
+		#region Public Events
+		public event CommandEventHandler ReceivedCommand;
+		public event CommandHypothesisEventHandler ReceivedCommandHypothesis;
+
+		private void onCommandRecognized(CommandEventArgs e)
+		{
+			ReceivedCommand?.Invoke(this, e);
+		}
+
+		private void onCommandHypothesized(CommandHypothesisEventArgs e)
+		{
+			ReceivedCommandHypothesis?.Invoke(this, e);
+		}
+		#endregion
+
+		public CommandFamily CommandFamily { get { return commandFamily; } }
+
+		public bool IsListening { get { return isListening; } }
+
+		#region Construction
+		private CommandListener()
+		{
+			isListening = false;
+			recognizer = new SpeechRecognizer();
+			continuousSession = recognizer.ContinuousRecognitionSession;
+			continuousSession.AutoStopSilenceTimeout = TimeSpan.FromMinutes(5);
+			continuousSession.ResultGenerated += respondToSpeechRecognition;
+		}
+
+		public static async Task<CommandListener> CreateAsync()
+		{
+			var cmdListener = new CommandListener();
+			var grammarCompilationResult = await cmdListener.setupGrammarConstraintsAsync();
+			if (grammarCompilationResult.Status != SpeechRecognitionResultStatus.Success)
+			{
+				throw new FormatException($"Could not compile grammar constraints. Received error {grammarCompilationResult.Status}");
+			}
+			cmdListener.setupCommandFamilyGrammar(CommandFamily.Move);
+			return cmdListener;
+		}
+		#endregion
+
+		public async Task ListenForAsync(CommandFamily family)
+		{
+			if (family == commandFamily)
+				return;
+			commandFamily = family;
+
+			if (isListening)
+			{
+				await continuousSession.StopAsync();
+			}
+			setupCommandFamilyGrammar(family);
+			if (isListening) // we just stopped listening and need to restart it
+			{
+				await continuousSession.StartAsync();
+			}
+		}
+
+		public async Task StartListeningAsync()
+		{
+			if (!isListening)
+			{
+				await continuousSession.StartAsync().AsTask();
+				isListening = true;
+			}
+		}
+
+		public async Task StopListeningAsync()
+		{
+			if (isListening)
+			{
+				await continuousSession.StopAsync();
+				isListening = false;
+			}
+		}
+
+		#region Private Members
+		private bool isListening;
+		private CommandFamily commandFamily;
+		private SpeechRecognizer recognizer;
+		private SpeechContinuousRecognitionSession continuousSession;
+		#endregion
+
+		#region Private Methods
+		private async Task<SpeechRecognitionCompilationResult> setupGrammarConstraintsAsync()
+		{
+			var grammarConstraints = await SpeechConstraints.GetConstraintsAsync();
+			foreach (var constraint in grammarConstraints)
+			{
+				recognizer.Constraints.Add(constraint);
+			}
+			return await recognizer.CompileConstraintsAsync().AsTask();
+		}
+
+		private void setupCommandFamilyGrammar(CommandFamily family)
+		{
+			switch (family)
+			{
+				case CommandFamily.Move:
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, true);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, false);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, false);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, false);
+					break;
+				case CommandFamily.PieceConfirmation:
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, true);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, false);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, false);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, true);
+					break;
+				case CommandFamily.YesNo:
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, true);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, false);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, false);
+					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, true);
+					break;
+				default:
+					throw new ArgumentException("Received unkown CommandFamily in setupCommandFamilyGrammarAsync");
+			}
+			commandFamily = family;
+		}
+
+		private void respondToSpeechRecognition(
+			SpeechContinuousRecognitionSession sender,
+			SpeechContinuousRecognitionResultGeneratedEventArgs args)
+		{
+			if (args.Result.Status == SpeechRecognitionResultStatus.Success)
+			{
+				System.Diagnostics.Debug.WriteLine($"Recognized speech: {args.Result.Text}");
+				System.Diagnostics.Debug.WriteLine($"Recognition confidence: {args.Result.Confidence}");
+				if (args.Result.Confidence == SpeechRecognitionConfidence.Rejected)
+				{
+					return;
+				}
+				else if (args.Result.Confidence == SpeechRecognitionConfidence.Low)
+				{
+					onCommandHypothesized(new CommandHypothesisEventArgs(convertSpeechToCommand(args.Result), args.Result.Text));
+				}
+				else
+				{
+					var command = convertSpeechToCommand(args.Result);
+					if (command.Type == CommandType.Move)
+					{
+						var moveCommand = command as MoveCommand;
+						if (moveCommand.Position.HasValue && !moveCommand.PositionUsedNatoAlphabet)
+						{
+							if (isPositionAmbiguous(moveCommand.Position.Value))
+							{
+								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
+								return;
+							}
+						}
+						if (!moveCommand.DestinationUsedNatoAlphabet)
+						{
+							if (isPositionAmbiguous(moveCommand.Destination))
+							{
+								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
+								return;
+							}
+						}
+					}
+					else if (command.Type == CommandType.ConfirmPiece)
+					{
+						var confirmPieceCommand = command as ConfirmPieceCommand;
+						if (!confirmPieceCommand.PositionUsedNatoAlphabet)
+						{
+							if (isPositionAmbiguous(confirmPieceCommand.Position))
+							{
+								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
+								return;
+							}
+						}
+					}
+					onCommandRecognized(new CommandEventArgs(convertSpeechToCommand(args.Result)));
+				}
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine($"Received continuous speech result of {args.Result.Status}");
+			}
+		}
+
+		private ICommand convertSpeechToCommand(SpeechRecognitionResult speech)
+		{
+			var cmdType = CommandTypeMethods.Parse(speech.SemanticInterpretation.Properties);
+			switch (cmdType)
+			{
+				case CommandType.Move:
+					return new MoveCommand(speech.SemanticInterpretation.Properties);
+				case CommandType.ConfirmPiece:
+					return new ConfirmPieceCommand(speech.SemanticInterpretation.Properties);
+				default:
+					return new Command(speech.SemanticInterpretation.Properties);
+			}
+		}
+
+		private bool isPositionAmbiguous(Position p)
+		{
+			return p.ColumnLetter == ColumnLetter.B
+				|| p.ColumnLetter == ColumnLetter.C
+				|| p.ColumnLetter == ColumnLetter.D
+				|| p.ColumnLetter == ColumnLetter.E
+				|| p.ColumnLetter == ColumnLetter.G;
+		}
+		#endregion
+	}
+}

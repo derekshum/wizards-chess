@@ -50,6 +50,24 @@ namespace WizardsChess.Chess
 
 		public override string ToString() => $"{ColumnLetter}{Row + 1}";
 
+		public override bool Equals(object obj)
+		{
+			if (obj is Position)
+			{
+				var p = (Position)obj;
+				return p == this;
+			}
+			return base.Equals(obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return Column * 8 + Row;
+		}
+
+		public static bool operator ==(Position pLhs, Position pRhs) => pLhs.Column == pRhs.Column && pLhs.Row == pRhs.Row;
+		public static bool operator !=(Position pLhs, Position pRhs) => !(pLhs == pRhs);
+
 		public static implicit operator Point2D(Position p) => new Point2D(p.Column, p.Row);
 	}
 }

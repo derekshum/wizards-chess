@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using WizardsChess.AppDebugging;
 
 namespace WizardsChess
 {
@@ -46,6 +47,9 @@ namespace WizardsChess
             }
 #endif
             Frame rootFrame = Window.Current.Content as Frame;
+
+			Threading.SetUiDispatcher(
+				Windows.UI.Core.CoreWindow.GetForCurrentThread()?.Dispatcher);
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active

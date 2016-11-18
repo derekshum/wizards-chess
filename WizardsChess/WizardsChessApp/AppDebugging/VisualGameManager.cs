@@ -6,62 +6,78 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Chess;
-using WizardsChess.CommandConversion;
+using WizardsChess.VoiceControl.Commands;
 using WizardsChess.VoiceControl;
+using WizardsChess.VoiceControl.Events;
 
 namespace WizardsChess.AppDebugging
 {
 	public class VisualGameManager : INotifyPropertyChanged
 	{
-		public VisualGameManager()
+		public VisualGameManager(Windows.UI.Core.CoreDispatcher uiDispatcher)
 		{
+			this.uiDispatcher = uiDispatcher;
 			State = "Ok";
 			IsError = false;
 
-			chessBoard = new ObservableChessBoard(board);
+			chessBoard = new ObservableChessBoard(board, uiDispatcher);
 		}
 
-		public async Task PerformCommandAsync()
+		public async Task SetupCommandInterpreter()
 		{
-			try
-			{
-				State = "Listening";
-				var cmd = await listenForCommandAsync();
-				State = "Processing";
+			if (commandInterpreter != null)
+				return;
+			commandInterpreter = await CommandInterpreter.CreateAsync();
+			commandInterpreter.CommandReceived += commandReceived;
+		}
 
-				if (cmd.Action == WizardsChess.CommandConversion.Action.Move)
-				{
-					await performMoveIfValidAsync(cmd as MoveCommand);
-				}
+		public async Task StartGameAsync()
+		{
+			await commandInterpreter.StartAsync();
+		}
 
-				IsError = false;
-				State = "Ok";
-			}
-			catch (Exception e)
+		private async void commandReceived(Object sender, CommandEventArgs e)
+		{
+			switch (e.Command.Type)
 			{
-				IsError = true;
-				State = e.Message;
+				case CommandType.Move:
+					var moveCmd = e.Command as MoveCommand;
+					currentMoveCommand = moveCmd;
+					await performMoveOnUiIfValidAsync(moveCmd);
+					break;
+				case CommandType.ConfirmPiece:
+					var pieceConfirmation = e.Command as ConfirmPieceCommand;
+					if (currentMoveCommand == null)
+					{
+						throw new Exception("Received piece confirmation command when currentMoveCommand was null");
+					}
+					currentMoveCommand.Position = pieceConfirmation.Position;
+					await performMoveOnUiIfValidAsync(currentMoveCommand);
+					break;
+				default:
+					System.Diagnostics.Debug.WriteLine($"VisualGameManager received command type: {e.Command.Type}");
+					break;
 			}
 		}
 
-		private async Task<Command> listenForCommandAsync()
+		private async Task performMoveOnUiIfValidAsync(MoveCommand moveCmd)
 		{
-			if (cmdRecognizer == null)
+			if (uiDispatcher == null)
 			{
-				cmdRecognizer = await CommandRecognizer.CreateAsync();
+				uiDispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
 			}
-
-			return await cmdRecognizer.RecognizeMoveAsync();
+			await uiDispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () => { await performMoveIfValidAsync(moveCmd); });
 		}
 
 		private async Task performMoveIfValidAsync(MoveCommand moveCmd)
 		{
-			if (moveCmd.Piece.HasValue)
+			if (!moveCmd.Position.HasValue)
 			{
 				var possibleStartPositions = board.FindPotentialPiecesForMove(moveCmd.Piece.Value, moveCmd.Destination);
 				if (possibleStartPositions.Count == 0)
 				{
-					throw new InvalidOperationException($"Could not find a possible starting piece of type {moveCmd.Piece.Value} going to {moveCmd.Destination}");
+					System.Diagnostics.Debug.WriteLine($"Could not find a possible starting piece of type {moveCmd.Piece.Value} going to {moveCmd.Destination}");
+					return;
 				}
 				else if (possibleStartPositions.Count == 1)
 				{
@@ -69,18 +85,19 @@ namespace WizardsChess.AppDebugging
 				}
 				else
 				{
-					var cmd = await cmdRecognizer.ConfirmPieceSelectionAsync(moveCmd.Piece.Value, possibleStartPositions.ToList());
-					var confirmationCmd = cmd as ConfirmPieceCommand;
-					if (confirmationCmd == null)
-					{
-						throw new Exception("Could not confirm which piece was meant to move.");
-					}
-
-					moveCmd.Position = confirmationCmd.Position;
+					await commandInterpreter.ConfirmPieceSelectionAsync(moveCmd.Piece.Value, possibleStartPositions.ToList());
+					return;
 				}
 			}
 
-			board.MovePiece(moveCmd.Position, moveCmd.Destination);
+			try
+			{
+				board.MovePiece(moveCmd.Position.Value, moveCmd.Destination);
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine(e.Message);
+			}
 			chessBoard.UpdatePieceLocations();
 		}
 
@@ -122,6 +139,8 @@ namespace WizardsChess.AppDebugging
 		private bool isError;
 		private ObservableChessBoard chessBoard;
 		private ChessBoard board = new ChessBoard();
-		private CommandRecognizer cmdRecognizer;
+		private ICommandInterpreter commandInterpreter;
+		private MoveCommand currentMoveCommand;
+		private Windows.UI.Core.CoreDispatcher uiDispatcher;
 	}
 }

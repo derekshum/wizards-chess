@@ -19,6 +19,8 @@ namespace WizardsChess
 			//
 			BackgroundTaskDeferral deferral = taskInstance.GetDeferral();
 
+			GameManager gameManager = await GameManager.CreateAsync();
+
 			GpioToggler pin21Toggler = new GpioToggler(TimeSpan.FromMilliseconds(1000), 21);
 			pin21Toggler.Start();
 
