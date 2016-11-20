@@ -9,7 +9,7 @@ using WizardsChess.Movement;
 
 namespace WizardsChess.Chess
 {
-	public class ChessBoard
+	public class ChessBoard: IChessBoard
 	{
 		public ChessBoard()
 		{
@@ -18,6 +18,7 @@ namespace WizardsChess.Chess
 			setBoard();
 		}
 
+		//TODO: figure out what to do with this
 		//Checks for pieces of a certain type that can move to 
 		public ISet<Position> FindPotentialPiecesForMove(PieceType piece, Position destination)
 		{
@@ -27,7 +28,7 @@ namespace WizardsChess.Chess
 
 			foreach (var location in pieceLocationList)
 			{
-				if (isMoveValid(new Position(location), destination))
+				if (isMoveValid(new Position(location), destination))	//TODO: it requires "isMoveValid"
 				{
 					potentialPiecePositions.Add(new Position(location));
 				}
@@ -36,84 +37,14 @@ namespace WizardsChess.Chess
 			return potentialPiecePositions;
 		}
 
-		//TODO: move this to ChessLogic
-		/// <summary>
-		/// Checks if the move from startPosition to endPosition is valid.
-		/// Assumes that startPosition and endPosition are valid parameters.
-		/// Returns false if there is no piece at startPosition, or the piece otherwise
-		/// cannot complete the requested move.
-		/// </summary>
-		/// <param name="startPosition">The position of the piece to move.</param>
-		/// <param name="endPosition">The destination of the piece.</param>
-		/// <returns></returns>
-		private bool isMoveValid(Position startPosition, Position endPosition)
-		{
-			// Get piece at input location
-			ChessPiece startPiece = boardMatrix[startPosition.Row, startPosition.Column];
-			ChessPiece endPiece = boardMatrix[endPosition.Row, endPosition.Column];
-
-			// If there is no piece at the requested start position, return false
-			if (startPiece == null)
-			{
-				return false;
-			}
-
-			// It's not this pieces turn to move
-			if (startPiece.Team != WhoseTurn)
-			{
-				return false;
-			}
-
-			IReadOnlyList<Vector2D> pieceMovementVectors;
-			if (endPiece == null)
-			{
-				pieceMovementVectors = startPiece.GetAllowedMotionVectors();
-			}
-			else
-			{
-				// If there is a piece in the way and it is a friendly piece, then we can't move there
-				if (endPiece.Team == startPiece.Team)
-				{
-					return false;
-				}
-				pieceMovementVectors = startPiece.GetAttackMotionVectors();
-			}
-
-			var requestedMoveVector = (Point2D)endPosition - startPosition;
-
-			try
-			{
-				var matchingMove = pieceMovementVectors.Single(v => v == requestedMoveVector);
-			}
-			catch (InvalidOperationException)
-			{
-				// Could not retrieve a matching vector from the allowed moves
-				return false;
-			}
-			
-			// If the piece can jump, it doesn't matter if something is in the way
-			if (startPiece.CanJump)
-			{
-				return true;
-			}
-
-			return isPathClear(startPosition, endPosition);
-		}
-
 		/// <summary>
 		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
-		/// Throws an InvalidOperationException if this is an invalid move.
+		/// Throws an InvalidOperationException if this is an invalid move.	//TODO: take this out once it's no longer done here
 		/// </summary>
 		/// <param name="startPosition"></param>
 		/// <param name="endPosition"></param>
 		public void MovePiece(Position startPosition, Position endPosition)
 		{
-            
-            if (!isMoveValid(startPosition, endPosition))
-			{
-				throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
-			}
-
             // Kill the piece at the destination, if there is one
             var endPiece = boardMatrix[endPosition.Row, endPosition.Column];
 			if (endPiece != null)
@@ -132,15 +63,6 @@ namespace WizardsChess.Chess
 			// Replace the old position for this piece with the new position in the pieceLocationsByType list
 			listOfStartPieceTypes.Remove(startPosition);
 			listOfStartPieceTypes.Add(endPosition);
-
-			if (WhoseTurn == ChessTeam.Black)
-			{
-				WhoseTurn = ChessTeam.White;
-			}
-			else
-			{
-				WhoseTurn = ChessTeam.Black;
-			}
 		}
 
 		public override string ToString()
@@ -252,6 +174,8 @@ namespace WizardsChess.Chess
 				}
 			}
 		}
+
+		//TODO: board reset
 
 		//TODO:? WhoseTurn modifiers(increment or set to a certain team's) and an accessor?- not if Whoseturn is stored in logic
 

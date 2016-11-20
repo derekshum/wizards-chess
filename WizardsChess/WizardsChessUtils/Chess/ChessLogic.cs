@@ -14,6 +14,28 @@ namespace WizardsChess.Chess
 			board = b;
 		}
 
+		
+
+		/// <summary>
+		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
+		/// Throws an InvalidOperationException if this is an invalid move.
+		/// </summary>
+		public void MovePiece (Position startPosition, Position endPosition)
+		{
+			if (!IsMoveValid(startPosition, endPosition))
+			{
+				throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
+			}
+			board.MovePiece(startPosition, endPosition);
+			if (WhoseTurn == ChessTeam.Black)
+			{
+				WhoseTurn = ChessTeam.White;
+			}
+			else
+			{
+				WhoseTurn = ChessTeam.Black;
+			}
+		}
 		/// <summary>
 		/// Checks if the move from startPosition to endPosition is valid.
 		/// Assumes that startPosition and endPosition are valid parameters.
@@ -23,7 +45,7 @@ namespace WizardsChess.Chess
 		/// <param name="startPosition">The position of the piece to move.</param>
 		/// <param name="endPosition">The destination of the piece.</param>
 		/// <returns></returns>
-		private bool isMoveValid(Position startPosition, Position endPosition)
+		public bool IsMoveValid(Position startPosition, Position endPosition)
 		{
 			// Get piece at input location
 			ChessPiece startPiece = board.PieceAt(startPosition);

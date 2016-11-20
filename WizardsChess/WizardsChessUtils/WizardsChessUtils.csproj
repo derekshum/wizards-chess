@@ -42,6 +42,7 @@
     <Compile Include="Chess\ChessBoard.cs" />
     <Compile Include="Chess\ChessTeam.cs" />
     <Compile Include="Chess\ChessLogic.cs" />
+    <Compile Include="Chess\IChessBoard.cs" />
     <Compile Include="Chess\Pieces\Bishop.cs" />
     <Compile Include="Chess\Pieces\ChessPiece.cs" />
     <Compile Include="Chess\Pieces\DirectionalChessPiece.cs" />
