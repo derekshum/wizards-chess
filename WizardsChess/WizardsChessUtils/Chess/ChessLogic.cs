@@ -14,7 +14,25 @@ namespace WizardsChess.Chess
 			board = b;
 		}
 
-		
+
+		//TODO: figure out what to do with this
+		//Checks for pieces of a certain type that can move to 
+		public ISet<Position> FindPotentialPiecesForMove(PieceType piece, Position destination)
+		{
+			var pieceLocationList = board.PieceLocationsByType[piece];
+
+			var potentialPiecePositions = new HashSet<Position>();
+
+			foreach (var location in pieceLocationList)
+			{
+				if (IsMoveValid(new Position(location), destination))   //TODO: it requires "isMoveValid"
+				{
+					potentialPiecePositions.Add(new Position(location));
+				}
+			}
+
+			return potentialPiecePositions;
+		}
 
 		/// <summary>
 		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
@@ -26,7 +44,9 @@ namespace WizardsChess.Chess
 			{
 				throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
 			}
+
 			board.MovePiece(startPosition, endPosition);
+
 			if (WhoseTurn == ChessTeam.Black)
 			{
 				WhoseTurn = ChessTeam.White;
@@ -99,7 +119,7 @@ namespace WizardsChess.Chess
 			return isPathClear(startPosition, endPosition);
 		}
 
-		private bool isPathClear(Point2D startPosition, Point2D endPosition)
+		public bool isPathClear(Point2D startPosition, Point2D endPosition)
 		{
 			var requestedMoveVector = endPosition - startPosition;
 

@@ -18,25 +18,6 @@ namespace WizardsChess.Chess
 			setBoard();
 		}
 
-		//TODO: figure out what to do with this
-		//Checks for pieces of a certain type that can move to 
-		public ISet<Position> FindPotentialPiecesForMove(PieceType piece, Position destination)
-		{
-			var pieceLocationList = pieceLocationsByType[piece];
-
-			var potentialPiecePositions = new HashSet<Position>();
-
-			foreach (var location in pieceLocationList)
-			{
-				if (isMoveValid(new Position(location), destination))	//TODO: it requires "isMoveValid"
-				{
-					potentialPiecePositions.Add(new Position(location));
-				}
-			}
-
-			return potentialPiecePositions;
-		}
-
 		/// <summary>
 		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
 		/// Throws an InvalidOperationException if this is an invalid move.	//TODO: take this out once it's no longer done here
@@ -63,55 +44,6 @@ namespace WizardsChess.Chess
 			// Replace the old position for this piece with the new position in the pieceLocationsByType list
 			listOfStartPieceTypes.Remove(startPosition);
 			listOfStartPieceTypes.Add(endPosition);
-		}
-
-		public override string ToString()
-		{
-			StringBuilder strBuild = new StringBuilder();
-			strBuild.Append("\tA\tB\tC\tD\tE\tF\tG\tH\n");
-			for (int row = Size - 1; row >= 0; row--)
-			{
-				strBuild.Append(row).Append("\t");
-				for (int col = 0; col < Size; col++)
-				{
-					var piece = boardMatrix[row, col];
-					if (piece != null)
-					{
-						strBuild.Append(piece.ToShortString());
-					}
-					strBuild.Append("\t");
-				}
-				strBuild.Append("\n");
-			}
-			return strBuild.ToString();
-		}
-
-		//TODO: move to ChessLogic
-		/// <summary>
-		/// Checks if there are any pieces in the way between the start and endPositions.
-		/// This check does not include the start and end positions themselves.
-		/// </summary>
-		/// <param name="startPosition"></param>
-		/// <param name="endPosition"></param>
-		/// <returns></returns>
-		private bool isPathClear(Point2D startPosition, Point2D endPosition)
-		{
-			var requestedMoveVector = endPosition - startPosition;
-
-			// Increment from the startPosition to the endPosition, checking nothing is in the way
-			var unitVector = requestedMoveVector.GetUnitVector();
-			var nextPosition = startPosition + unitVector;
-			while (nextPosition != endPosition)
-			{
-				if (boardMatrix[nextPosition.Y, nextPosition.X] != null)
-				{
-					return false;
-				}
-				unitVector = (endPosition - nextPosition).GetUnitVector();
-				nextPosition = nextPosition + unitVector;
-			}
-
-			return true;
 		}
 
 		/// <summary>
@@ -179,8 +111,31 @@ namespace WizardsChess.Chess
 
 		//TODO:? WhoseTurn modifiers(increment or set to a certain team's) and an accessor?- not if Whoseturn is stored in logic
 
-        //piece accessor by x and y indexes
-        public ChessPiece PieceAt(int x, int y)
+		//TODO: Prints a representation of the board.
+		public override string ToString()
+		{
+			StringBuilder strBuild = new StringBuilder();
+			strBuild.Append("\tA\tB\tC\tD\tE\tF\tG\tH\n");
+			for (int row = Size - 1; row >= 0; row--)
+			{
+				strBuild.Append(row).Append("\t");
+				for (int col = 0; col < Size; col++)
+				{
+					var piece = boardMatrix[row, col];
+					if (piece != null)
+					{
+						strBuild.Append(piece.ToShortString());
+					}
+					strBuild.Append("\t");
+				}
+				strBuild.Append("\n");
+			}
+			return strBuild.ToString();
+		}
+
+
+		//piece accessor by x and y indexes
+		public ChessPiece PieceAt(int x, int y)
         {
             return boardMatrix[y, x];
         }
@@ -214,12 +169,28 @@ namespace WizardsChess.Chess
         public ChessTeam WhoseTurn;	//TODO: move to ChessLogic? Change to Private (and add modifiers and an accessor?)
 
 		private ChessPiece[,] boardMatrix;
-		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();   //TODO: figure out if this should be private or capitalized
+		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();    //TODO: figure out how to expose pieceLocationsByType properly
+		public Dictionary<PieceType, IList<Point2D>> PieceLocationsByType
+		{
+			get
+			{
+				var temp = pieceLocationsByType;
+				return temp;
+			}
+		}
 		private IDictionary<ChessTeam, ISet<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
 		{
 			{ChessTeam.White, new HashSet<ChessPiece>()},
 			{ChessTeam.Black, new HashSet<ChessPiece>()}
 		};
+		public IDictionary<ChessTeam, ISet<ChessPiece>> CapturedPiecesByTeam
+		{
+			get
+			{
+				var temp = capturedPiecesByTeam;
+				return temp;
+			}
+		}
 
 		private const int WhiteBackRow = 0;
 		private const int WhiteFrontRow = 1;
