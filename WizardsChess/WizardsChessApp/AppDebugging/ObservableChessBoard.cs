@@ -10,7 +10,7 @@ namespace WizardsChess.AppDebugging
 {
 	public class ObservableChessBoard : ObservableCollection<ObservableChessPiece>
 	{
-		public ObservableChessBoard(ChessBoard board, Windows.UI.Core.CoreDispatcher uiDispatcher)
+		public ObservableChessBoard(IChessBoard board, Windows.UI.Core.CoreDispatcher uiDispatcher)
 		{
 			this.uiDispatcher = uiDispatcher;
 			this.board = board;
@@ -18,9 +18,9 @@ namespace WizardsChess.AppDebugging
 			{
 				for (int col = 0; col < ChessBoard.Size; col++)
 				{
-					if (board.boardMatrix[row,col] != null)
+					if (board.PieceAt(col,row) != null)
 					{
-						Add(new ObservableChessPiece(board.boardMatrix[row, col], row, col, uiDispatcher));
+						Add(new ObservableChessPiece(board.PieceAt(col, row), row, col, uiDispatcher));
 					}
 				}
 			}
@@ -34,9 +34,9 @@ namespace WizardsChess.AppDebugging
 			{
 				for (int col = 0; col < ChessBoard.Size; col++)
 				{
-					if (board.boardMatrix[row, col] != null)
+					if (board.PieceAt(col,row) != null)
 					{
-						var piece = this.First(p => p.Piece == board.boardMatrix[row, col]);
+						var piece = this.First(p => p.Piece == board.PieceAt(col,row));
 						piece.UpdatePosition(row, col);
 						remainingPieces[pieceCounter++] = piece;
 					}
@@ -55,7 +55,7 @@ namespace WizardsChess.AppDebugging
 			}
 		}
 
-		private ChessBoard board;
+		private IChessBoard board;
 		private Windows.UI.Core.CoreDispatcher uiDispatcher;
 	}
 }

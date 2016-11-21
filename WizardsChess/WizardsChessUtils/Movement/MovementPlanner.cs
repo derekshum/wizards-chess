@@ -9,7 +9,7 @@ namespace WizardsChess.Movement
 {
     public class MovementPlanner
     {
-        public MovementPlanner (ChessBoard b)
+        public MovementPlanner (IChessBoard b)
         {
             board = b;
         }
@@ -165,7 +165,7 @@ namespace WizardsChess.Movement
             return new Point2D(xOffset + spacing * point.X, yOffset + spacing * point.Y);
         }
 
-        private ChessBoard board; 
+        private IChessBoard board; 
 
 		//constants pointConversion needs
 		const int spacing = 2;    //number of points per square in one dimension

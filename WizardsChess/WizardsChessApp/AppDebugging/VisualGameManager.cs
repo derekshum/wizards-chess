@@ -139,6 +139,7 @@ namespace WizardsChess.AppDebugging
 		private bool isError;
 		private ObservableChessBoard chessBoard;
 		private ChessBoard board = new ChessBoard();
+		private ChessLogic logic = new ChessLogic(board); //TODO: figure this error out
 		private ICommandInterpreter commandInterpreter;
 		private MoveCommand currentMoveCommand;
 		private Windows.UI.Core.CoreDispatcher uiDispatcher;
