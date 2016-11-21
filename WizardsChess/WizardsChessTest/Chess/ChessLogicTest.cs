@@ -19,8 +19,7 @@ namespace WizardsChessTest.Chess
 		}*/
 		public void TestMethod2()
 		{
-			ChessBoard Board = new ChessBoard();
-			ChessLogic Logic = new ChessLogic(Board);
+			ChessLogic Logic = new ChessLogic();
 			var pawnPlaces = Logic.FindPotentialPiecesForMove(PieceType.Rook, new Position("C","3"));
 			Assert.AreEqual(pawnPlaces.Count, 1);
 		}

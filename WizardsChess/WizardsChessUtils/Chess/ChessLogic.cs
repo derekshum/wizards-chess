@@ -9,9 +9,9 @@ namespace WizardsChess.Chess
 {
 	public class ChessLogic
 	{
-		public ChessLogic (ChessBoard b)
+		public ChessLogic ()
 		{
-			board = b;
+			board = new ChessBoard();
 		}
 
 
@@ -139,8 +139,14 @@ namespace WizardsChess.Chess
 			return true;
 		}
 
-		ChessBoard board;
+		private ChessBoard board;
+		public IChessBoard Board
+		{
+			get
+			{
+				return board;
+			}
+		}
 		private ChessTeam WhoseTurn;	//TODO: verify the encapsulation of this
-
 	}
 }

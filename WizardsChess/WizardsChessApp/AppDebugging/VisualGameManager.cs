@@ -20,7 +20,7 @@ namespace WizardsChess.AppDebugging
 			State = "Ok";
 			IsError = false;
 
-			chessBoard = new ObservableChessBoard(board, uiDispatcher);
+			chessBoard = new ObservableChessBoard(Logic.Board, uiDispatcher);
 		}
 
 		public async Task SetupCommandInterpreter()
@@ -73,7 +73,7 @@ namespace WizardsChess.AppDebugging
 		{
 			if (!moveCmd.Position.HasValue)
 			{
-				var possibleStartPositions = board.FindPotentialPiecesForMove(moveCmd.Piece.Value, moveCmd.Destination);
+				var possibleStartPositions = Logic.FindPotentialPiecesForMove(moveCmd.Piece.Value, moveCmd.Destination);
 				if (possibleStartPositions.Count == 0)
 				{
 					System.Diagnostics.Debug.WriteLine($"Could not find a possible starting piece of type {moveCmd.Piece.Value} going to {moveCmd.Destination}");
@@ -92,7 +92,7 @@ namespace WizardsChess.AppDebugging
 
 			try
 			{
-				board.MovePiece(moveCmd.Position.Value, moveCmd.Destination);
+				Logic.MovePiece(moveCmd.Position.Value, moveCmd.Destination);
 			}
 			catch (Exception e)
 			{
@@ -138,8 +138,7 @@ namespace WizardsChess.AppDebugging
 		private string state;
 		private bool isError;
 		private ObservableChessBoard chessBoard;
-		private ChessBoard board = new ChessBoard();
-		private ChessLogic logic = new ChessLogic(board); //TODO: figure this error out
+		private ChessLogic Logic = new ChessLogic(); //TODO: figure this error out
 		private ICommandInterpreter commandInterpreter;
 		private MoveCommand currentMoveCommand;
 		private Windows.UI.Core.CoreDispatcher uiDispatcher;
