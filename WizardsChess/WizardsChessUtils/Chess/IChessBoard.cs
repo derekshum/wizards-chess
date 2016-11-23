@@ -10,7 +10,6 @@ namespace WizardsChess.Chess
 {
 	public interface IChessBoard
 	{
-		//string ToString(); TODO: make work?
 		ChessPiece PieceAt(int x, int y);
 		ChessPiece PieceAt(Point2D location);
 		ChessPiece PieceAt(Position location);

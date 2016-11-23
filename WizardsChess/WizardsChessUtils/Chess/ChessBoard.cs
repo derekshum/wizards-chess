@@ -115,7 +115,7 @@ namespace WizardsChess.Chess
 		public override string ToString()
 		{
 			StringBuilder strBuild = new StringBuilder();
-			strBuild.Append("\tA\tB\tC\tD\tE\tF\tG\tH\n");
+			strBuild.Append("\n\tA\tB\tC\tD\tE\tF\tG\tH\n");
 			for (int row = Size - 1; row >= 0; row--)
 			{
 				strBuild.Append(row).Append("\t");
