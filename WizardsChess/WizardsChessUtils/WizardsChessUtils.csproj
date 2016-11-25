@@ -53,6 +53,7 @@
     <Compile Include="Chess\Pieces\Rook.cs" />
     <Compile Include="Chess\PieceType.cs" />
     <Compile Include="Chess\Position.cs" />
+    <Compile Include="Movement\Axis.cs" />
     <Compile Include="Movement\Drv\Events\StepEventArgs.cs" />
     <Compile Include="Movement\Drv\IMagnetDrv.cs" />
     <Compile Include="Movement\Drv\IMotorDrv.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="VoiceControl\Commands\CommandType.cs" />
     <Compile Include="VoiceControl\Commands\ICommand.cs" />
     <Compile Include="VoiceControl\Commands\ConfirmPieceCommand.cs" />
+    <Compile Include="VoiceControl\Commands\MotorMoveCommand.cs" />
     <Compile Include="VoiceControl\Commands\MoveCommand.cs" />
     <Compile Include="Movement\MovementPlanner.cs" />
     <Compile Include="Movement\Point2D.cs" />

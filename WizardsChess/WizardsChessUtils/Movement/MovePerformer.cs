@@ -8,12 +8,6 @@ using WizardsChess.Movement.Drv.Events;
 
 namespace WizardsChess.Movement
 {
-	public enum Axis
-	{
-		X,
-		Y
-	}
-
 	public class MovePerformer : IMovePerformer
 	{
 		public MovePerformer(IMotorDrv motorx, IMotorDrv motory, IMagnetDrv magnetDrv

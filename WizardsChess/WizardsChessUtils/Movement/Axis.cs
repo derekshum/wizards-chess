@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChess.VoiceControl.Commands
+namespace WizardsChess.Movement
 {
-	public enum CommandFamily
+	public enum Axis
 	{
-		Other,
-		YesNo,
-		Move,
-		PieceConfirmation,
-		Debug
+		X,
+		Y
 	}
 }
