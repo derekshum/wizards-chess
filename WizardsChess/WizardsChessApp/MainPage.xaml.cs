@@ -32,11 +32,11 @@ namespace WizardsChess
         {
 			var uiDispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
 			GameManager = new VisualGameManager(uiDispatcher);
-			var motorDriverX = new MotorDrv(20, 21);
-			var motorDriverY = new MotorDrv(22, 23);
+			var motorDriverX = new MotorDrv(23, 24);
+			var motorDriverY = new MotorDrv(20, 21);
 			var magnetDriver = new MagnetDrv(26);
-			var stepCounterX = new StepCounter(18);
-			var stepCounterY = new StepCounter(17);
+			var stepCounterX = new StepCounter(6, 19);
+			var stepCounterY = new StepCounter(5, 13);
 			movePerformer = new MovePerformer(motorDriverX, motorDriverY, magnetDriver, stepCounterX, stepCounterY);
 			this.InitializeComponent();
 		}
@@ -47,17 +47,16 @@ namespace WizardsChess
 			await GameManager.StartGameAsync();
 		}
 
-		public string MotorStepsStr { get; set; }
 		public VisualGameManager GameManager { get; set; }
 
 		private void MotorMoveX_Click(object sender, RoutedEventArgs e)
 		{
-			movePerformer.MoveMotor(Axis.X, Int32.Parse(MotorStepsStr));
+			movePerformer.MoveMotor(Axis.X, 1000);
 		}
 
 		private void MotorMoveY_Click(object sender, RoutedEventArgs e)
 		{
-			movePerformer.MoveMotor(Axis.Y, Int32.Parse(MotorStepsStr));
+			movePerformer.MoveMotor(Axis.Y, 1000);
 		}
 
 		private void MotorStop_Click(object sender, RoutedEventArgs e)

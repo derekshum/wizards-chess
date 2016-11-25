@@ -25,6 +25,9 @@ namespace WizardsChess.Movement
 			stepX = stepx;
 			stepY = stepy;
 
+			stepX.FinishedCounting += finishedCounting;
+			stepY.FinishedCounting += finishedCounting;
+
 			stepX.AdditionalStepsCounted += additionalStepsCounted;
 			stepY.AdditionalStepsCounted += additionalStepsCounted;
 		}

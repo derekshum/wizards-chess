@@ -16,11 +16,14 @@ namespace WizardsChess.Movement.Drv
 		/// Count the steps read at the specified input pin. Position is updated on the falling edge.
 		/// </summary>
 		/// <param name="pinNum">The GPIO pin to read steps from.</param>
-		public StepCounter(int pinNum)
+		public StepCounter(int pinNum, int clearPinNum)
 		{
 			var gpio = GpioController.GetDefault();
 			pin = gpio.OpenPin(pinNum);
 			pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
+			clearPin = gpio.OpenPin(clearPinNum);
+			clearPin.Write(GpioPinValue.Low);
+			clearPin.SetDriveMode(GpioPinDriveMode.Output);
 			Position = 0;
 			targetPosition = 0;
 			targetNumSteps = 0;
@@ -36,7 +39,7 @@ namespace WizardsChess.Movement.Drv
 
 		public void CountSteps(int numSteps)
 		{
-			if (additionalStepsCallback != null || (int)additionalStepsCallback.Status < 5)
+			if (additionalStepsCallback != null && (int)additionalStepsCallback.Status < 5)
 			{
 				additionalStepsCallback.ContinueWith((prev) => { this.CountSteps(numSteps); });
 			}
@@ -81,11 +84,11 @@ namespace WizardsChess.Movement.Drv
 				additionalStepsCallback.ContinueWith((prev) => {
 					onAdditionalStepsCounted();
 				});
-				additionalStepsCallback.Start();
 			}
 		}
 
 		private GpioPin pin;
+		private GpioPin clearPin;
 		private int targetPosition;
 		private int targetNumSteps;
 		private Task additionalStepsCallback;
