@@ -12,6 +12,5 @@ namespace WizardsChess.VoiceControl.Commands
 		YesNo,
 		Move,
 		PieceConfirmation,
-		Debug
 	}
 }

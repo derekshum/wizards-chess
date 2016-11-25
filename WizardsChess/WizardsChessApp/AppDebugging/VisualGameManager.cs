@@ -9,13 +9,12 @@ using WizardsChess.Chess;
 using WizardsChess.VoiceControl.Commands;
 using WizardsChess.VoiceControl;
 using WizardsChess.VoiceControl.Events;
-using WizardsChess.Movement;
 
 namespace WizardsChess.AppDebugging
 {
 	public class VisualGameManager : INotifyPropertyChanged
 	{
-		public VisualGameManager(Windows.UI.Core.CoreDispatcher uiDispatcher, IMovePerformer movePerformer)
+		public VisualGameManager(Windows.UI.Core.CoreDispatcher uiDispatcher)
 		{
 			this.uiDispatcher = uiDispatcher;
 			State = "Ok";
