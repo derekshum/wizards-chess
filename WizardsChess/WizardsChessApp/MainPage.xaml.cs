@@ -30,14 +30,14 @@ namespace WizardsChess
     {
         public MainPage()
         {
-			uiDispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+			var uiDispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
 			GameManager = new VisualGameManager(uiDispatcher);
-			//motorDriver = new MotorDrv(20, 21);
-			//MotorTracker = new MotorTracker(23, motorDriver);
-			//var gpios = GpioController.GetDefault();
-			//electroMagPin = gpios.OpenPin(26);
-			//electroMagPin.Write(GpioPinValue.Low);
-			//electroMagPin.SetDriveMode(GpioPinDriveMode.Output);
+			var motorDriverX = new MotorDrv(20, 21);
+			var motorDriverY = new MotorDrv(22, 23);
+			var magnetDriver = new MagnetDrv(26);
+			var stepCounterX = new StepCounter(18);
+			var stepCounterY = new StepCounter(17);
+			movePerformer = new MovePerformer(motorDriverX, motorDriverY, magnetDriver, stepCounterX, stepCounterY);
 			this.InitializeComponent();
 		}
 
@@ -47,40 +47,42 @@ namespace WizardsChess
 			await GameManager.StartGameAsync();
 		}
 
+		public string MotorStepsStr { get; set; }
 		public VisualGameManager GameManager { get; set; }
 
-		private void MotorForward_Click(object sender, RoutedEventArgs e)
+		private void MotorMoveX_Click(object sender, RoutedEventArgs e)
 		{
-			motorDriver.ChangeState(MotorState.Forward);
+			movePerformer.MoveMotor(Axis.X, Int32.Parse(MotorStepsStr));
 		}
 
-		private void MotorBackward_Click(object sender, RoutedEventArgs e)
+		private void MotorMoveY_Click(object sender, RoutedEventArgs e)
 		{
-			motorDriver.ChangeState(MotorState.Backward);
+			movePerformer.MoveMotor(Axis.Y, Int32.Parse(MotorStepsStr));
 		}
 
 		private void MotorStop_Click(object sender, RoutedEventArgs e)
 		{
-			motorDriver.ChangeState(MotorState.Stopped);
+			movePerformer.MoveMotor(Axis.X, 0);
+			movePerformer.MoveMotor(Axis.Y, 0);
 		}
 
 		private void ElectroMagToggle_Click(object sender, RoutedEventArgs e)
 		{
-			if (electroMagPin.Read() == GpioPinValue.Low)
+			if (isElectroMagOn)
 			{
-				System.Diagnostics.Debug.WriteLine("Turning ON the electromagnet");
-				electroMagPin.Write(GpioPinValue.High);
+				System.Diagnostics.Debug.WriteLine("Turning OFF the electromagnet");
+				isElectroMagOn = false;
+				movePerformer.EnableMagnet(isElectroMagOn);
 			}
 			else
 			{
-				System.Diagnostics.Debug.WriteLine("Turning OFF the electromagnet");
-				electroMagPin.Write(GpioPinValue.Low);
+				System.Diagnostics.Debug.WriteLine("Turning ON the electromagnet");
+				isElectroMagOn = true;
+				movePerformer.EnableMagnet(isElectroMagOn);
 			}
 		}
 
-		private MotorDrv motorDriver;
-		private GpioPin electroMagPin;
-		public MotorTracker MotorTracker;
-		private Windows.UI.Core.CoreDispatcher uiDispatcher;
+		private MovePerformer movePerformer;
+		private bool isElectroMagOn = false;
 	}
 }

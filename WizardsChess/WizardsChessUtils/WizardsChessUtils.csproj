@@ -53,10 +53,13 @@
     <Compile Include="Chess\Pieces\Rook.cs" />
     <Compile Include="Chess\PieceType.cs" />
     <Compile Include="Chess\Position.cs" />
+    <Compile Include="Movement\Drv\Events\StepEventArgs.cs" />
     <Compile Include="Movement\Drv\IMagnetDrv.cs" />
     <Compile Include="Movement\Drv\IMotorDrv.cs" />
+    <Compile Include="Movement\Drv\IStepCounter.cs" />
     <Compile Include="Movement\IMovePerformer.cs" />
     <Compile Include="Movement\MovementManager.cs" />
+    <Compile Include="Movement\MovePerformer.cs" />
     <Compile Include="VoiceControl\Commands\Command.cs" />
     <Compile Include="VoiceControl\Commands\CommandFamily.cs" />
     <Compile Include="VoiceControl\Commands\CommandType.cs" />

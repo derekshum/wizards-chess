@@ -7,7 +7,7 @@ using Windows.Devices.Gpio;
 
 namespace WizardsChess.Movement.Drv
 {
-	public sealed class MotorDrv
+	public sealed class MotorDrv : IMotorDrv
 	{
 		public MotorDrv(int forwardGpio, int backwardGpio)
 		{
@@ -22,7 +22,7 @@ namespace WizardsChess.Movement.Drv
 			
 		}
 
-		public void ChangeState(MotorState state)
+		public void SetState(MotorState state)
 		{
 			if (state == State)
 				return;

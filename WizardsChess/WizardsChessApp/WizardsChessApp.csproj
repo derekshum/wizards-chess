@@ -105,7 +105,9 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Movement\Drv\MagnetDrv.cs" />
     <Compile Include="Movement\Drv\MotorDrv.cs" />
+    <Compile Include="Movement\Drv\StepCounter.cs" />
     <Compile Include="Movement\MotorTracker.cs" />
     <Compile Include="Movement\StepTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
