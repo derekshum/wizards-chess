@@ -119,7 +119,7 @@ namespace WizardsChess.Chess
 			return isPathClear(startPosition, endPosition);
 		}
 
-		public bool IsMoveValid(Point2D startPoint, Point2D endPoint)
+		public bool IsPotentialMoveValid(Point2D startPoint, Point2D endPoint)
 		{
 			// Get piece at input location
 			ChessPiece startPiece = board.PieceAt(startPoint);
@@ -127,12 +127,6 @@ namespace WizardsChess.Chess
 
 			// If there is no piece at the requested start position, return false
 			if (startPiece == null)
-			{
-				return false;
-			}
-
-			// It's not this pieces turn to move
-			if (startPiece.Team != WhoseTurn)
 			{
 				return false;
 			}
@@ -225,7 +219,7 @@ namespace WizardsChess.Chess
 					var piece = board.PieceAt(i, j);
 					if (piece != null && piece.Team != Turn)
 					{
-						if (IsMoveValid(new Point2D(i,j), checkPoint))
+						if (IsPotentialMoveValid(new Point2D(i,j), checkPoint))
 						{
 							return true;
 						}
