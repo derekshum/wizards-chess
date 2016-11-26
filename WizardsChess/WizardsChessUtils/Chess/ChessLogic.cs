@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WizardsChess.Chess;
 using WizardsChess.Chess.Pieces;
 using WizardsChess.Movement;
 
@@ -14,8 +15,6 @@ namespace WizardsChess.Chess
 			board = new ChessBoard();
 		}
 
-
-		//TODO: figure out what to do with this
 		//Checks for pieces of a certain type that can move to 
 		public ISet<Position> FindPotentialPiecesForMove(PieceType piece, Position destination)
 		{
@@ -56,6 +55,7 @@ namespace WizardsChess.Chess
 				WhoseTurn = ChessTeam.Black;
 			}
 		}
+
 		/// <summary>
 		/// Checks if the move from startPosition to endPosition is valid.
 		/// Assumes that startPosition and endPosition are valid parameters.
@@ -119,6 +119,60 @@ namespace WizardsChess.Chess
 			return isPathClear(startPosition, endPosition);
 		}
 
+		public bool IsMoveValid(Point2D startPoint, Point2D endPoint)
+		{
+			// Get piece at input location
+			ChessPiece startPiece = board.PieceAt(startPoint);
+			ChessPiece endPiece = board.PieceAt(endPoint);
+
+			// If there is no piece at the requested start position, return false
+			if (startPiece == null)
+			{
+				return false;
+			}
+
+			// It's not this pieces turn to move
+			if (startPiece.Team != WhoseTurn)
+			{
+				return false;
+			}
+
+			IReadOnlyList<Vector2D> pieceMovementVectors;
+			if (endPiece == null)
+			{
+				pieceMovementVectors = startPiece.GetAllowedMotionVectors();
+			}
+			else
+			{
+				// If there is a piece in the way and it is a friendly piece, then we can't move there
+				if (endPiece.Team == startPiece.Team)
+				{
+					return false;
+				}
+				pieceMovementVectors = startPiece.GetAttackMotionVectors();
+			}
+
+			var requestedMoveVector = endPoint - startPoint;
+
+			try
+			{
+				var matchingMove = pieceMovementVectors.Single(v => v == requestedMoveVector);
+			}
+			catch (InvalidOperationException)
+			{
+				// Could not retrieve a matching vector from the allowed moves
+				return false;
+			}
+
+			// If the piece can jump, it doesn't matter if something is in the way
+			if (startPiece.CanJump)
+			{
+				return true;
+			}
+
+			return isPathClear(startPoint, endPoint);
+		}
+
 		public bool isPathClear(Point2D startPosition, Point2D endPosition)
 		{
 			var requestedMoveVector = endPosition - startPosition;
@@ -139,6 +193,48 @@ namespace WizardsChess.Chess
 			return true;
 		}
 
+		//TODO: detect Checkmate
+
+		//TODO: castle
+
+		//TODO: en passant
+
+		// Checks if the player to move's king is in check, overloaded
+		public bool inCheck()
+		{
+			Point2D kingLocation;
+			var kingLocations = board.PieceLocationsByType[PieceType.King];
+			foreach(var aKingLocation in kingLocations)
+			{
+				if (board.PieceAt(aKingLocation).Team == WhoseTurn)
+				{
+					kingLocation = aKingLocation;
+				}
+			}
+			return inCheck(kingLocation, WhoseTurn);
+		}
+
+		// Checks if the specified location is in check for the specified team 
+		public bool inCheck(Point2D checkPoint, ChessTeam Turn)
+		{
+			int i, j;
+			for (i = 0; i < ChessBoard.Size; i++)
+			{
+				for (j = 0; j < ChessBoard.Size, j++)
+				{
+					var piece = board.PieceAt(i, j);
+					if (piece != null && piece.Team != Turn)
+					{
+						if (IsMoveValid(new Point2D(i,j), checkPoint))
+						{
+							return true;
+						}
+					}
+				}
+			}
+			return false;	//TODO: remove this
+		}
+
 		private ChessBoard board;
 		public IChessBoard Board
 		{
@@ -147,6 +243,6 @@ namespace WizardsChess.Chess
 				return board;
 			}
 		}
-		private ChessTeam WhoseTurn;	//TODO: verify the encapsulation of this
+		private ChessTeam WhoseTurn;
 	}
 }
