@@ -119,7 +119,126 @@ namespace WizardsChess.Chess
 			return isPathClear(startPosition, endPosition);
 		}
 
-		public bool IsPotentialMoveValid(Point2D startPoint, Point2D endPoint)
+		public bool isPathClear(Point2D startPosition, Point2D endPosition)
+		{
+			var requestedMoveVector = endPosition - startPosition;
+
+			// Increment from the startPosition to the endPosition, checking nothing is in the way
+			var unitVector = requestedMoveVector.GetUnitVector();
+			var nextPosition = startPosition + unitVector;
+			while (nextPosition != endPosition)
+			{
+				if (board.PieceAt(nextPosition) != null)
+				{
+					return false;
+				}
+				unitVector = (endPosition - nextPosition).GetUnitVector();
+				nextPosition = nextPosition + unitVector;
+			}
+
+			return true;
+		}
+
+		//TODO: detect Checkmate
+
+		//TODO: castle
+
+		public int numValidCastles()	//TODO: this method could be made into castling or return more helpful things
+		{
+			var kingLocations = board.PieceLocationsByType[PieceType.King];
+			Point2D kingLocation = new Point2D();
+			ChessPiece king;
+
+			var allRookLocations = board.PieceLocationsByType[PieceType.Rook];
+			List<Point2D> validRookLocations = new List<Point2D>();
+			List<ChessPiece> validRooks = new List<ChessPiece>();
+			
+			int x;
+			int y;
+			int kingToRookDir;
+			bool clear;
+
+			foreach (var aKingLocation in kingLocations)
+			{
+				if (board.PieceAt(aKingLocation).Team == WhoseTurn)
+				{
+					kingLocation = aKingLocation;
+				}
+			}
+			if (kingLocation == null)
+			{
+				throw new InvalidOperationException($"missing king");
+			}
+			king = board.PieceAt(kingLocation);
+			if (king.HasMoved == true)
+			{
+				return 0;
+			}
+
+			foreach (var location in allRookLocations)
+			{
+				var rook = board.PieceAt(location);
+				if (rook.Team == WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location))
+				{
+					clear = true;
+					y = kingLocation.Y;
+					kingToRookDir = Math.Sign(location.X - kingLocation.X);
+					for (x = kingLocation.X + kingToRookDir; x != location.X; x += kingToRookDir) {
+						if (board.PieceAt(x,y) != null)
+						{
+							clear = false;
+						}
+					}
+					validRookLocations.Add(location);
+					validRooks.Add(rook);
+				}
+			}
+			return validRooks.Count;
+		}
+
+		//TODO: en passant
+
+		// Checks if the player to move's king is in check
+		public bool inCheck()
+		{
+			var kingLocations = board.PieceLocationsByType[PieceType.King];
+			Point2D kingLocation = new Point2D();
+			foreach (var aKingLocation in kingLocations)
+			{
+				if (board.PieceAt(aKingLocation).Team == WhoseTurn)
+				{
+					kingLocation = aKingLocation;
+				}
+			}
+			if (kingLocation == null)
+			{
+				throw new InvalidOperationException($"missing king");
+			}
+			return inCheck(kingLocation, WhoseTurn);
+		}
+
+		// Checks if the specified location is in check for the specified team 
+		public bool inCheck(Point2D checkPoint, ChessTeam Turn)
+		{
+			int i, j;
+			for (i = 0; i < ChessBoard.Size; i++)
+			{
+				for (j = 0; j < ChessBoard.Size, j++)
+				{
+					var piece = board.PieceAt(i, j);
+					if (piece != null && piece.Team != Turn)
+					{
+						if (IsCheckMoveValid(new Point2D(i,j), checkPoint))
+						{
+							return true;
+						}
+					}
+				}
+			}
+			return false;	//TODO: remove this
+		}
+
+		public bool IsCheckMoveValid(Point2D startPoint, Point2D endPoint)
 		{
 			// Get piece at input location
 			ChessPiece startPiece = board.PieceAt(startPoint);
@@ -165,68 +284,6 @@ namespace WizardsChess.Chess
 			}
 
 			return isPathClear(startPoint, endPoint);
-		}
-
-		public bool isPathClear(Point2D startPosition, Point2D endPosition)
-		{
-			var requestedMoveVector = endPosition - startPosition;
-
-			// Increment from the startPosition to the endPosition, checking nothing is in the way
-			var unitVector = requestedMoveVector.GetUnitVector();
-			var nextPosition = startPosition + unitVector;
-			while (nextPosition != endPosition)
-			{
-				if (board.PieceAt(nextPosition) != null)
-				{
-					return false;
-				}
-				unitVector = (endPosition - nextPosition).GetUnitVector();
-				nextPosition = nextPosition + unitVector;
-			}
-
-			return true;
-		}
-
-		//TODO: detect Checkmate
-
-		//TODO: castle
-
-		//TODO: en passant
-
-		// Checks if the player to move's king is in check, overloaded
-		public bool inCheck()
-		{
-			Point2D kingLocation;
-			var kingLocations = board.PieceLocationsByType[PieceType.King];
-			foreach(var aKingLocation in kingLocations)
-			{
-				if (board.PieceAt(aKingLocation).Team == WhoseTurn)
-				{
-					kingLocation = aKingLocation;
-				}
-			}
-			return inCheck(kingLocation, WhoseTurn);
-		}
-
-		// Checks if the specified location is in check for the specified team 
-		public bool inCheck(Point2D checkPoint, ChessTeam Turn)
-		{
-			int i, j;
-			for (i = 0; i < ChessBoard.Size; i++)
-			{
-				for (j = 0; j < ChessBoard.Size, j++)
-				{
-					var piece = board.PieceAt(i, j);
-					if (piece != null && piece.Team != Turn)
-					{
-						if (IsPotentialMoveValid(new Point2D(i,j), checkPoint))
-						{
-							return true;
-						}
-					}
-				}
-			}
-			return false;	//TODO: remove this
 		}
 
 		private ChessBoard board;
