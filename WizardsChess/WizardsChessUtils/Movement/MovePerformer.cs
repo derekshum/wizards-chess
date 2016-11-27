@@ -46,6 +46,7 @@ namespace WizardsChess.Movement
 			}
 			else
 			{
+				steps = Math.Abs(steps);
 				switch (axis)
 				{
 					case Axis.X:

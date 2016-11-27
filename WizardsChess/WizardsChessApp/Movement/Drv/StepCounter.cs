@@ -78,7 +78,7 @@ namespace WizardsChess.Movement.Drv
 
 		private void sendAdditionalSteps()
 		{
-			if (additionalStepsCallback == null)
+			if (additionalStepsCallback == null || (int)additionalStepsCallback.Status > 4)
 			{
 				additionalStepsCallback = Task.Delay(200);
 				additionalStepsCallback.ContinueWith((prev) => {
