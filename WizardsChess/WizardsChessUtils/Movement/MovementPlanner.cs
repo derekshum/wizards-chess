@@ -7,34 +7,26 @@ using WizardsChess.Chess;
 
 namespace WizardsChess.Movement
 {
-    public class MovementPlanner
+    public class MovementPlanner : IMovementPlanner
     {
         public MovementPlanner (IChessBoard b)
         {
             board = b;
         }
 
-		//Provides movement paths for standard move (with and without capturing)
-        public List<List<Point2D>> Move(Point2D start, Point2D end)
+        public List<List<Point2D>> Move(Point2D start, Point2D end, Point2D? captured=null)
         {
             List<List<Point2D>> paths = new List<List<Point2D>>();
             
-            if (board.PieceAt(end) != null)
-            {
-                paths.Add(getCapturedPath(end));
-            }
-            paths.Add(getMovePath(start, end));
-
-			return paths;
-        }
-
-        //Provides movement paths for preforming en passant
-        public List<List<Point2D>> Move(Point2D start, Point2D end, Point2D captured)
-        {
-            List<List<Point2D>> paths = new List<List<Point2D>>();
-
-            paths.Add(getCapturedPath(captured));
-            paths.Add(getMovePath(start, end));
+			if (captured.HasValue)
+			{
+				paths.Add(getCapturedPath(end));
+			}
+			if (captured != end && board.PieceAt(end) != null)
+			{
+				paths.Add(getCapturedPath(end));
+			}
+			paths.Add(getMovePath(start, end));
 
 			return paths;
         }
