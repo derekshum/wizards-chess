@@ -8,6 +8,7 @@ namespace WizardsChess.Movement
 {
 	public interface IMovePerformer
 	{
-		Task MovePiece(IList<Point2D> steps);
+		Task MovePiece(List<Point2D> steps);
+		void GoHome();
 	}
 }

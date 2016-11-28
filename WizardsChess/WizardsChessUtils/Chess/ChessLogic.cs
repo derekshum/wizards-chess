@@ -119,7 +119,7 @@ namespace WizardsChess.Chess
 			return isPathClear(startPosition, endPosition);
 		}
 
-		public bool isPathClear(Point2D startPosition, Point2D endPosition)
+		private bool isPathClear(Point2D startPosition, Point2D endPosition)
 		{
 			var requestedMoveVector = endPosition - startPosition;
 

@@ -26,7 +26,12 @@ namespace WizardsChess.Movement
 			stepY.AdditionalStepsCounted += additionalStepsCounted;
 		}
 
-		public Task MovePiece(IList<Point2D> steps)
+		public Task MovePiece(List<Point2D> steps)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void GoHome()
 		{
 			throw new NotImplementedException();
 		}

@@ -58,8 +58,10 @@
     <Compile Include="Movement\Drv\IMagnetDrv.cs" />
     <Compile Include="Movement\Drv\IMotorDrv.cs" />
     <Compile Include="Movement\Drv\IStepCounter.cs" />
+    <Compile Include="Movement\IMoveManager.cs" />
+    <Compile Include="Movement\IMovePlanner.cs" />
     <Compile Include="Movement\IMovePerformer.cs" />
-    <Compile Include="Movement\MovementManager.cs" />
+    <Compile Include="Movement\MoveManager.cs" />
     <Compile Include="Movement\MovePerformer.cs" />
     <Compile Include="VoiceControl\Commands\Command.cs" />
     <Compile Include="VoiceControl\Commands\CommandFamily.cs" />
@@ -68,7 +70,7 @@
     <Compile Include="VoiceControl\Commands\ConfirmPieceCommand.cs" />
     <Compile Include="VoiceControl\Commands\MotorMoveCommand.cs" />
     <Compile Include="VoiceControl\Commands\MoveCommand.cs" />
-    <Compile Include="Movement\MovementPlanner.cs" />
+    <Compile Include="Movement\MovePlanner.cs" />
     <Compile Include="Movement\Point2D.cs" />
     <Compile Include="Movement\Vector2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

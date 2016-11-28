@@ -7,14 +7,14 @@ using WizardsChess.Chess;
 
 namespace WizardsChess.Movement
 {
-    public class MovementPlanner : IMovementPlanner
+    public class MovePlanner : IMovePlanner
     {
-        public MovementPlanner (IChessBoard b)
+        public MovePlanner (IChessBoard b)
         {
             board = b;
         }
 
-        public List<List<Point2D>> Move(Point2D start, Point2D end, Point2D? captured=null)
+        public List<List<Point2D>> PlanMove(Point2D start, Point2D end, Point2D? captured=null)
         {
             List<List<Point2D>> paths = new List<List<Point2D>>();
             

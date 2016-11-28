@@ -20,7 +20,7 @@ namespace WizardsChess.VoiceControl
 	/// <summary>
 	/// Receives commands from the CommandListener, validates commands using the Communicator, and then exposes confirmed, valid commands.
 	/// </summary>
-	public class CommandInterpreter : ICommandInterpreter
+	class CommandInterpreter : ICommandInterpreter
 	{
 		#region Events
 		public event CommandEventHandler CommandReceived;
