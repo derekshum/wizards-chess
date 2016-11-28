@@ -10,6 +10,9 @@ using WizardsChess.VoiceControl.Events;
 
 namespace WizardsChess.VoiceControl
 {
+	/// <summary>
+	/// CommandListener converts commands from voice recognition to valid ICommands for an ICommandInterpreter.
+	/// </summary>
 	public class CommandListener : ICommandListener
 	{
 		#region Public Events
@@ -27,48 +30,15 @@ namespace WizardsChess.VoiceControl
 		}
 		#endregion
 
-		public CommandFamily CommandFamily { get { return commandFamily; } }
-
 		public bool IsListening { get { return isListening; } }
 
-		#region Construction
-		private CommandListener()
+		public CommandListener(SpeechRecognizer speechRecognizer)
 		{
 			isListening = false;
-			recognizer = new SpeechRecognizer();
+			recognizer = speechRecognizer;
 			continuousSession = recognizer.ContinuousRecognitionSession;
 			continuousSession.AutoStopSilenceTimeout = TimeSpan.FromMinutes(5);
 			continuousSession.ResultGenerated += respondToSpeechRecognition;
-		}
-
-		public static async Task<CommandListener> CreateAsync()
-		{
-			var cmdListener = new CommandListener();
-			var grammarCompilationResult = await cmdListener.setupGrammarConstraintsAsync();
-			if (grammarCompilationResult.Status != SpeechRecognitionResultStatus.Success)
-			{
-				throw new FormatException($"Could not compile grammar constraints. Received error {grammarCompilationResult.Status}");
-			}
-			cmdListener.setupCommandFamilyGrammar(CommandFamily.Move);
-			return cmdListener;
-		}
-		#endregion
-
-		public async Task ListenForAsync(CommandFamily family)
-		{
-			if (family == commandFamily)
-				return;
-			commandFamily = family;
-
-			if (isListening)
-			{
-				await continuousSession.StopAsync();
-			}
-			setupCommandFamilyGrammar(family);
-			if (isListening) // we just stopped listening and need to restart it
-			{
-				await continuousSession.StartAsync();
-			}
 		}
 
 		public async Task StartListeningAsync()
@@ -91,50 +61,11 @@ namespace WizardsChess.VoiceControl
 
 		#region Private Members
 		private bool isListening;
-		private CommandFamily commandFamily;
 		private SpeechRecognizer recognizer;
 		private SpeechContinuousRecognitionSession continuousSession;
 		#endregion
 
 		#region Private Methods
-		private async Task<SpeechRecognitionCompilationResult> setupGrammarConstraintsAsync()
-		{
-			var grammarConstraints = await SpeechConstraints.GetConstraintsAsync();
-			foreach (var constraint in grammarConstraints)
-			{
-				recognizer.Constraints.Add(constraint);
-			}
-			return await recognizer.CompileConstraintsAsync().AsTask();
-		}
-
-		private void setupCommandFamilyGrammar(CommandFamily family)
-		{
-			switch (family)
-			{
-				case CommandFamily.Move:
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, true);
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, false);
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, false);
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, false);
-					break;
-				case CommandFamily.PieceConfirmation:
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, true);
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, false);
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, false);
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, true);
-					break;
-				case CommandFamily.YesNo:
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, true);
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, false);
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, false);
-					SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, true);
-					break;
-				default:
-					throw new ArgumentException("Received unkown CommandFamily in setupCommandFamilyGrammarAsync");
-			}
-			commandFamily = family;
-		}
-
 		private void respondToSpeechRecognition(
 			SpeechContinuousRecognitionSession sender,
 			SpeechContinuousRecognitionResultGeneratedEventArgs args)
@@ -204,6 +135,8 @@ namespace WizardsChess.VoiceControl
 					return new MoveCommand(speech.SemanticInterpretation.Properties);
 				case CommandType.ConfirmPiece:
 					return new ConfirmPieceCommand(speech.SemanticInterpretation.Properties);
+				case CommandType.MotorMove:
+					return new MotorMoveCommand(speech.SemanticInterpretation.Properties);
 				default:
 					return new Command(speech.SemanticInterpretation.Properties);
 			}

@@ -32,12 +32,12 @@ namespace WizardsChess
         {
 			var uiDispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
 			GameManager = new VisualGameManager(uiDispatcher);
-			var motorDriverX = new MotorDrv(23, 24);
-			var motorDriverY = new MotorDrv(20, 21);
-			var magnetDriver = new MagnetDrv(26);
-			var stepCounterX = new StepCounter(6, 19);
-			var stepCounterY = new StepCounter(5, 13);
-			movePerformer = new MovePerformer(motorDriverX, motorDriverY, magnetDriver, stepCounterX, stepCounterY);
+			//var motorDriverX = new MotorDrv(23, 24);
+			//var motorDriverY = new MotorDrv(20, 21);
+			//var magnetDriver = new MagnetDrv(26);
+			//var stepCounterX = new StepCounter(6, 19);
+			//var stepCounterY = new StepCounter(5, 13);
+			//movePerformer = new MovePerformer(motorDriverX, motorDriverY, magnetDriver, stepCounterX, stepCounterY);
 			this.InitializeComponent();
 		}
 

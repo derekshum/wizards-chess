@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<grammar version="1.0" xml:lang="en-ca" root="motormove" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
+	<rule id="motormove">
+		<item> move the </item>
+		<one-of>
+			<item>
+				X
+				<tag> out.axis = "X"; </tag>
+			</item>
+			<item>
+				Y
+				<tag> out.axis = "Y"; </tag>
+			</item>
+		</one-of>
+		<item> motor </item>
+		<item>
+			<ruleref uri="#numberThousand"/>
+			<tag> out.steps = rules.latest(); </tag>
+		</item>
+		<item> thousand steps </item>
+		<one-of>
+			<item>
+				forward
+				<tag> out.direction = "forward"; </tag>
+			</item>
+			<item>
+				forwards
+				<tag> out.direction = "forward"; </tag>
+			</item>
+			<item>
+				backward
+				<tag> out.direction = "backward"; </tag>
+			</item>
+			<item>
+				backwards
+				<tag> out.direction = "backward"; </tag>
+			</item>
+		</one-of>
+		<tag> out.action = "motormove"; </tag>
+	</rule>
+	
+	<rule id="numberThousand" scope="public">
+		<one-of>
+			<item> one <tag> out = "1000"; </tag> </item>
+			<item> two <tag> out = "2000"; </tag> </item>
+			<item> three <tag> out = "3000"; </tag> </item>
+			<item> four <tag> out = "4000"; </tag> </item>
+			<item> five <tag> out = "5000"; </tag> </item>
+			<item> six <tag> out = "6000"; </tag> </item>
+			<item> seven <tag> out = "7000"; </tag> </item>
+			<item> eight <tag> out = "8000"; </tag> </item>
+			<item> nine <tag> out = "9000"; </tag> </item>
+		</one-of>
+	</rule>
+
+</grammar>
+

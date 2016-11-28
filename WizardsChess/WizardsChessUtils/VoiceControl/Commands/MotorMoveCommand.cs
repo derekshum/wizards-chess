@@ -8,16 +8,12 @@ using WizardsChess.Movement;
 
 namespace WizardsChess.VoiceControl.Commands
 {
-	public class MotorMoveCommand : ICommand
+	public class MotorMoveCommand : Command
 	{
-		public CommandType Type { get; }
 		public Axis Axis { get; }
 		public int Steps { get; }
 
-		private MotorMoveCommand()
-		{
-			Type = CommandType.MotorMove;
-		}
+		private MotorMoveCommand() : base(CommandType.MotorMove) { }
 
 		public MotorMoveCommand(ICommand command) : this()
 		{
@@ -26,49 +22,57 @@ namespace WizardsChess.VoiceControl.Commands
 			{
 				Axis = mvCmd.Axis;
 			}
+			else
+			{
+				throw new InvalidCastException("Attempted to make a new MotorMoveCommand from a different ICommand.");
+			}
 		}
 
 		public MotorMoveCommand(IReadOnlyDictionary<string, IReadOnlyList<string>> commandParams) : this()
 		{
 			IReadOnlyList<string> paramsList;
 
-			if (Type == CommandType.Move)
+			if (Type == CommandType.MotorMove)
 			{
 				if (commandParams.TryGetValue("axis", out paramsList))
 				{
 					Axis = (Axis)Enum.Parse(typeof(Axis), paramsList.FirstOrDefault(), true);
 				}
-				var steps = commandParams["steps"].FirstOrDefault();
-				var destNumber = commandParams["destinationNumber"].FirstOrDefault();
-				Destination = new Position(destLetter, destNumber);
-				var destUsedNato = commandParams["destinationUsedNato"].FirstOrDefault();
-				DestinationUsedNatoAlphabet = destUsedNato.Equals("true", StringComparison.OrdinalIgnoreCase);
+				else
+				{
+					System.Diagnostics.Debug.WriteLine("MotorMoveCommand did not receive an 'axis' value.");
+				}
+				if (commandParams.TryGetValue("steps", out paramsList))
+				{
+					int steps;
+					if (!Int32.TryParse(paramsList.FirstOrDefault(), out steps))
+					{
+						System.Diagnostics.Debug.WriteLine("Could not parse steps for a motor move.");
+					}
+					else
+					{
+						Steps = steps;
+					}
+				}
+				else
+				{
+					System.Diagnostics.Debug.WriteLine("MotorMoveCommand did not receive a 'steps' value.");
+				}
+				if (commandParams.TryGetValue("direction", out paramsList))
+				{
+					if (paramsList.FirstOrDefault().Equals("backward", StringComparison.OrdinalIgnoreCase))
+					{
+						Steps *= -1;
+					}
+				}
+				else
+				{
+					System.Diagnostics.Debug.WriteLine("MotorMoveCommand did not receive a 'direction' value.");
+				}
 			}
-
-			if (Type == CommandType.Move || Type == CommandType.ConfirmPiece)
+			else
 			{
-				string posLetter = null;
-				string posNumber = null;
-				string posUsedNato = null;
-				if (commandParams.TryGetValue("positionLetter", out paramsList))
-				{
-					posLetter = paramsList.FirstOrDefault();
-				}
-				if (commandParams.TryGetValue("positionNumber", out paramsList))
-				{
-					posNumber = paramsList.FirstOrDefault();
-				}
-				if (commandParams.TryGetValue("positionUsedNato", out paramsList))
-				{
-					posUsedNato = paramsList.FirstOrDefault();
-				}
-				if (!String.IsNullOrWhiteSpace(posLetter) &&
-					!String.IsNullOrWhiteSpace(posNumber) &&
-					!String.IsNullOrWhiteSpace(posUsedNato))
-				{
-					Position = new Position(posLetter, posNumber);
-					PositionUsedNatoAlphabet = posUsedNato.Equals("true", StringComparison.OrdinalIgnoreCase);
-				}
+				throw new ArgumentException("Attempted to make a MotorMoveCommand from a different command type.");
 			}
 		}
 	}

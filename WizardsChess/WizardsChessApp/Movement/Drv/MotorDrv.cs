@@ -12,7 +12,6 @@ namespace WizardsChess.Movement.Drv
 		public MotorDrv(int forwardGpio, int backwardGpio)
 		{
 			var gpio = GpioController.GetDefault();
-			System.Diagnostics.Debug.WriteLine("Number of pins: " + gpio.PinCount);
 			forwardPin = gpio.OpenPin(forwardGpio);
 			backwardPin = gpio.OpenPin(backwardGpio);
 			forwardPin.Write(GpioPinValue.Low);

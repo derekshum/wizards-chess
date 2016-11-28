@@ -26,6 +26,7 @@ namespace WizardsChess.VoiceControl
 			var yesNoFileTask = StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///VoiceControl/YesNoCommands.grxml")).AsTask();
 			var pieceConfirmationTask = StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///VoiceControl/PieceConfirmation.grxml")).AsTask();
 			var cancelFileTask = StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///VoiceControl/CancelCommand.grxml")).AsTask();
+
 			await Task.WhenAll(commandsFileTask, yesNoFileTask, pieceConfirmationTask, cancelFileTask);
 
 			var moveGrammar = new SpeechRecognitionGrammarFileConstraint(commandsFileTask.Result, moveCommandsGrammarTag);
@@ -37,6 +38,12 @@ namespace WizardsChess.VoiceControl
 			grammarList.Add(yesNoGrammar);
 			grammarList.Add(pieceConfirmationGrammar);
 			grammarList.Add(cancelGrammar);
+
+#if DEBUG
+			var debugFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///VoiceControl/DebugCommands.grxml")).AsTask();
+			var debugGrammar = new SpeechRecognitionGrammarFileConstraint(debugFile, debugGrammarTag);
+			grammarList.Add(debugGrammar);
+#endif
 
 			return grammarList;
 		}
@@ -76,5 +83,6 @@ namespace WizardsChess.VoiceControl
 		private static readonly string yesNoCommandsGrammarTag = "yesNoCommands";
 		private static readonly string pieceConfirmationGrammarTag = "pieceConfirmation";
 		private static readonly string cancelCommandGrammarTag = "cancelCommand";
+		private static readonly string debugGrammarTag = "debugCommand";
 	}
 }

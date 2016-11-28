@@ -10,14 +10,10 @@ namespace WizardsChess.VoiceControl
 {
 	public interface ICommandListener
 	{
-		CommandFamily CommandFamily { get; }
-
 		bool IsListening { get; }
 
 		Task StartListeningAsync();
 		Task StopListeningAsync();
-
-		Task ListenForAsync(CommandFamily command);
 
 		event CommandEventHandler ReceivedCommand;
 		event CommandHypothesisEventHandler ReceivedCommandHypothesis;

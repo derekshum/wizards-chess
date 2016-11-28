@@ -93,6 +93,9 @@
     <Content Include="VoiceControl\CancelCommand.grxml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="VoiceControl\DebugCommands.grxml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -116,7 +119,6 @@
     <Compile Include="VoiceControl\CommandListener.cs" />
     <Compile Include="VoiceControl\Communicator.cs" />
     <Compile Include="VoiceControl\SpeechConstraints.cs" />
-    <Compile Include="VoiceControl\CommandRecognizerOld.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

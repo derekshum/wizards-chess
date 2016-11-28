@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Media.SpeechRecognition;
 using WizardsChess.Chess;
 using WizardsChess.VoiceControl.Commands;
 using WizardsChess.VoiceControl.Events;
@@ -16,6 +17,9 @@ namespace WizardsChess.VoiceControl
 		PieceConfirmation
 	}
 
+	/// <summary>
+	/// Receives commands from the CommandListener, validates commands using the Communicator, and then exposes confirmed, valid commands.
+	/// </summary>
 	public class CommandInterpreter : ICommandInterpreter
 	{
 		#region Events
@@ -28,24 +32,33 @@ namespace WizardsChess.VoiceControl
 		#endregion
 
 		#region Construction
-		private CommandInterpreter(ICommandListener listener, ICommunicator communicator)
+		private CommandInterpreter(SpeechRecognizer speechRecognizer, ICommunicator communicator)
 		{
 			isStarted = false;
 			commandHypothesis = null;
 			listeningState = ListeningState.Move;
 
+			recognizer = speechRecognizer;
+
+			listener = new CommandListener(speechRecognizer);
+
 			listener.ReceivedCommand += receivedCommand;
 			listener.ReceivedCommandHypothesis += receivedCommandHypothesis;
 
-			this.listener = listener;
 			this.communicator = communicator;
 		}
 
 		public static async Task<CommandInterpreter> CreateAsync()
 		{
-			var listener = await CommandListener.CreateAsync();
+			var speechRecognizer = new SpeechRecognizer();
 
-			var interpreter = new CommandInterpreter(listener, new Communicator());
+			var interpreter = new CommandInterpreter(speechRecognizer, new Communicator());
+
+			var grammarCompilationResult = await interpreter.setupGrammarConstraintsAsync();
+			if (grammarCompilationResult.Status != SpeechRecognitionResultStatus.Success)
+			{
+				throw new FormatException($"Could not compile grammar constraints. Received error {grammarCompilationResult.Status}");
+			}
 
 			return interpreter;
 		}
@@ -86,6 +99,7 @@ namespace WizardsChess.VoiceControl
 		private bool isStarted;
 		private ListeningState listeningState;
 		private ListeningState preHypothesisListeningState;
+		private SpeechRecognizer recognizer;
 		private ICommandListener listener;
 		private ICommunicator communicator;
 		private CommandHypothesisEventArgs commandHypothesis;
@@ -94,6 +108,23 @@ namespace WizardsChess.VoiceControl
 		#endregion
 
 		#region Private Methods
+		private async Task<SpeechRecognitionCompilationResult> setupGrammarConstraintsAsync()
+		{
+			var grammarConstraints = await SpeechConstraints.GetConstraintsAsync();
+			foreach (var constraint in grammarConstraints)
+			{
+				if (constraint != null)
+				{
+					recognizer.Constraints.Add(constraint);
+				}
+				else
+				{
+					System.Diagnostics.Debug.WriteLine("Received a null grammar constraint");
+				}
+			}
+			return await recognizer.CompileConstraintsAsync().AsTask();
+		}
+
 		private async Task changeStateAsync(ListeningState state)
 		{
 			if (listeningState != state)
@@ -107,20 +138,34 @@ namespace WizardsChess.VoiceControl
 
 				listeningState = state;
 
+				await listener.StopListeningAsync();
+				
 				switch (state)
 				{
 					case ListeningState.Move:
-						await listener.ListenForAsync(CommandFamily.Move);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, true);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, false);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, false);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, false);
 						break;
 					case ListeningState.PieceConfirmation:
-						await listener.ListenForAsync(CommandFamily.PieceConfirmation);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, true);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, false);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, false);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, true);
 						break;
 					case ListeningState.Hypothesis:
-						await listener.ListenForAsync(CommandFamily.YesNo);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.YesNoCommands, true);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.MoveCommands, false);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.PieceConfirmation, false);
+						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, true);
 						break;
 					default:
+						await listener.StartListeningAsync();
 						throw new Exception("Tried to change CommandInterpreter state to an unknown listening state");
 				}
+
+				await listener.StartListeningAsync();
 			}
 		}
 
@@ -155,6 +200,12 @@ namespace WizardsChess.VoiceControl
 
 		private bool isCommandFamilyValid(CommandFamily family)
 		{
+#if DEBUG
+			if (family == CommandFamily.Debug)
+			{
+				return true;
+			}
+#endif
 			switch (listeningState)
 			{
 				case ListeningState.Hypothesis:
@@ -169,6 +220,12 @@ namespace WizardsChess.VoiceControl
 
 		private async Task handleCommandAsync(ICommand command)
 		{
+#if DEBUG
+			if (command.Type.GetFamily() == CommandFamily.Debug)
+			{
+				onCommandReceived(new CommandEventArgs(command));
+			}
+#endif
 			switch (listeningState)
 			{
 				case ListeningState.Hypothesis:
