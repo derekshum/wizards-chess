@@ -2,7 +2,7 @@
 
 <grammar version="1.0" xml:lang="en-ca" root="motormove" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
 	<rule id="motormove">
-		<item> move the </item>
+		<item> move motor </item>
 		<one-of>
 			<item>
 				X
@@ -13,7 +13,6 @@
 				<tag> out.axis = "Y"; </tag>
 			</item>
 		</one-of>
-		<item> motor </item>
 		<item>
 			<ruleref uri="#numberThousand"/>
 			<tag> out.steps = rules.latest(); </tag>
