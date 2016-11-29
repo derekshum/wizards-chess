@@ -8,6 +8,7 @@ using WizardsChess.Chess;
 using WizardsChess.Movement;
 using WizardsChess.Movement.Drv;
 using WizardsChess.VoiceControl;
+using WizardsChess.VoiceControl.Commands;
 using WizardsChess.VoiceControl.Events;
 
 namespace WizardsChess
@@ -51,6 +52,10 @@ namespace WizardsChess
 
 			GameManager manager = new GameManager(await commandInterpreterConstructor, logic, moveManager);
 
+#if DEBUG
+			manager.DebugMovePerformer = movePerformer;
+#endif
+
 			return manager;
 		}
 
@@ -85,6 +90,26 @@ namespace WizardsChess
 		private void CommandReceived(Object sender, CommandEventArgs args)
 		{
 			System.Diagnostics.Debug.WriteLine($"Received command of type {args.Command.Type}.");
+#if DEBUG
+			if (args.Command.Type.GetFamily() == CommandFamily.Debug)
+			{
+				HandleDebugCommand(args.Command);
+				return;
+			}
+#endif
 		}
+
+#if DEBUG
+		public IMovePerformer DebugMovePerformer;
+
+		private void HandleDebugCommand(ICommand command)
+		{
+			if (command is MotorMoveCommand)
+			{
+				var mtrMvCmd = command as MotorMoveCommand;
+				DebugMovePerformer.MoveMotor(mtrMvCmd.Axis, mtrMvCmd.Steps);
+			}
+		}
+#endif
 	}
 }
