@@ -23,12 +23,14 @@
 				<ruleref uri="PiecesAndPositions.grxml#position"/>
 				<tag> out.positionLetter = rules.latest().letter; </tag>
 				<tag> out.positionNumber = rules.latest().number; </tag>
+				<tag> out.positionUsedNato = rules.latest().usedNato; </tag>
 			</item>
 		</one-of>
 		<item> to </item>
 		<ruleref uri="PiecesAndPositions.grxml#position"/>
 		<tag> out.destinationLetter = rules.latest().letter; </tag>
 		<tag> out.destinationNumber = rules.latest().number; </tag>
+		<tag> out.destinationUsedNato = rules.latest().usedNato; </tag>
 		<tag> out.action = "move"; </tag>
 	</rule>
 	

@@ -21,14 +21,8 @@ namespace WizardsChess
 
 			GameManager gameManager = await GameManager.CreateAsync();
 
-			GpioToggler pin21Toggler = new GpioToggler(TimeSpan.FromMilliseconds(1000), 21);
-			pin21Toggler.Start();
-
 			// Loop continuously
-			while (true)
-			{
-				await Task.Delay(5000);
-			}
+			await gameManager.PlayGameAsync();
 
 			//
 			// Once the asynchronous method(s) are done, close the deferral.

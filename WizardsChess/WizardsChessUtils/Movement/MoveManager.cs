@@ -14,6 +14,7 @@ namespace WizardsChess.Movement
 		{
 			planner = movePlanner;
 			performer = movePerformer;
+			previousMove = new List<IList<Point2D>>();
 		}
 
 		public void Move(Point2D start, Point2D end, Point2D? captured = null)
