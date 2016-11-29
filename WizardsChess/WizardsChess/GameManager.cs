@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WizardsChess.Chess;
 using WizardsChess.Movement;
@@ -11,6 +12,14 @@ using WizardsChess.VoiceControl.Events;
 
 namespace WizardsChess
 {
+	enum GameState
+	{
+		Ready,
+		Playing,
+		AwaitingReset,
+		Complete
+	}
+
 	class GameManager
 	{
 		private GameManager(ICommandInterpreter commandInterpreter, ChessLogic logic, IMoveManager movementManager)
@@ -20,6 +29,7 @@ namespace WizardsChess
 			cmdInterpreter = commandInterpreter;
 			chessLogic = logic;
 			moveManager = movementManager;
+			gameState = GameState.Ready;
 		}
 
 		public static async Task<GameManager> CreateAsync()
@@ -44,16 +54,33 @@ namespace WizardsChess
 			return manager;
 		}
 
-		public async Task PlayGameAsync()
+		public async Task<GameState> PlayGameAsync()
 		{
+			gameState = GameState.Playing;
 			await cmdInterpreter.StartAsync();
-			
-			// Use a monitor?
+
+			while (gameState == GameState.Playing)
+			{
+				await Task.Delay(500);
+			}
+
+			return gameState;
+		}
+
+		public Task ResetAsync()
+		{
+			throw new NotImplementedException("Not yet implemented");
+		}
+
+		public Task CongratulateWinnerAsync()
+		{
+			throw new NotImplementedException("Congratulate winner not yet implemented");
 		}
 
 		private ICommandInterpreter cmdInterpreter;
 		private ChessLogic chessLogic;
 		private IMoveManager moveManager;
+		private GameState gameState;
 
 		private void CommandReceived(Object sender, CommandEventArgs args)
 		{

@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace WizardsChess
 {
-    public sealed class StartupTask : IBackgroundTask
-    {
-        public async void Run(IBackgroundTaskInstance taskInstance)
-        {
+	public sealed class StartupTask : IBackgroundTask
+	{
+		public async void Run(IBackgroundTaskInstance taskInstance)
+		{
 			//
 			// Create the deferral by requesting it from the task instance.
 			//
@@ -22,12 +22,28 @@ namespace WizardsChess
 			GameManager gameManager = await GameManager.CreateAsync();
 
 			// Loop continuously
-			await gameManager.PlayGameAsync();
+			while (true)
+			{
+				var state = await gameManager.PlayGameAsync();
+				switch (state)
+				{
+					case GameState.Ready:
+						break;
+					case GameState.Complete:
+						await gameManager.CongratulateWinnerAsync();
+						await gameManager.ResetAsync();
+						break;
+					case GameState.AwaitingReset:
+					default:
+						await gameManager.ResetAsync();
+						break;
+				}
+			}
 
 			//
 			// Once the asynchronous method(s) are done, close the deferral.
 			//
-			deferral.Complete();
+			//deferral.Complete();
 		}
-    }
+	}
 }
