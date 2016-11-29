@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChess.VoiceControl.Commands
+namespace WizardsChess.Movement.Drv
 {
-	public enum CommandFamily
+	public interface IMagnetDrv
 	{
-		Other,
-		YesNo,
-		Move,
-		PieceConfirmation,
-		Debug
+		void TurnOn();
+
+		void TurnOff();
+
+		bool IsOn { get; }
 	}
 }

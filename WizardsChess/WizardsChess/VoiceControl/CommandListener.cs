@@ -13,7 +13,7 @@ namespace WizardsChess.VoiceControl
 	/// <summary>
 	/// CommandListener converts commands from voice recognition to valid ICommands for an ICommandInterpreter.
 	/// </summary>
-	public class CommandListener : ICommandListener
+	class CommandListener : ICommandListener
 	{
 		#region Public Events
 		public event CommandEventHandler ReceivedCommand;

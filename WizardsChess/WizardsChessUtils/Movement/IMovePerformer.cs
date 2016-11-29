@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WizardsChess.VoiceControl.Commands
+namespace WizardsChess.Movement
 {
-	public enum CommandFamily
+	public interface IMovePerformer
 	{
-		Other,
-		YesNo,
-		Move,
-		PieceConfirmation,
-		Debug
+		Task MovePiece(List<Point2D> steps);
+		void GoHome();
 	}
 }

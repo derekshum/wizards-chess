@@ -9,6 +9,7 @@ using WizardsChess.Chess;
 using WizardsChess.VoiceControl.Commands;
 using WizardsChess.VoiceControl;
 using WizardsChess.VoiceControl.Events;
+using WizardsChess.Movement;
 
 namespace WizardsChess.AppDebugging
 {

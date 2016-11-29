@@ -93,6 +93,21 @@
     <Content Include="VoiceControl\CancelCommand.grxml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="VoiceControl\DebugCommands.grxml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VoiceControl\MoveCommands.grxml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VoiceControl\PieceConfirmation.grxml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VoiceControl\PiecesAndPositions.grxml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VoiceControl\YesNoCommands.grxml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -105,7 +120,9 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Movement\Drv\MagnetDrv.cs" />
     <Compile Include="Movement\Drv\MotorDrv.cs" />
+    <Compile Include="Movement\Drv\StepCounter.cs" />
     <Compile Include="Movement\MotorTracker.cs" />
     <Compile Include="Movement\StepTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -114,7 +131,6 @@
     <Compile Include="VoiceControl\CommandListener.cs" />
     <Compile Include="VoiceControl\Communicator.cs" />
     <Compile Include="VoiceControl\SpeechConstraints.cs" />
-    <Compile Include="VoiceControl\CommandRecognizerOld.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -127,18 +143,6 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="VoiceControl\MoveCommands.grxml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="VoiceControl\YesNoCommands.grxml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="VoiceControl\PiecesAndPositions.grxml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="VoiceControl\PieceConfirmation.grxml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Default.rd.xml" />

@@ -14,7 +14,7 @@ namespace WizardsChessTest
 		public void MovePlannerInitializationCheck()
 		{
 			ChessBoard board = new ChessBoard();
-			MovementPlanner planner = new MovementPlanner(board);
+			MovePlanner planner = new MovePlanner(board);
 			ChessPiece TestPiece = board.PieceAt(4, 1);
 			Assert.AreEqual(TestPiece.Type, PieceType.Pawn);
 		}
@@ -31,8 +31,8 @@ namespace WizardsChessTest
 			List<List<Point2D>> paths = new List<List<Point2D>>();
 			String printString = "";
 			ChessBoard board = new ChessBoard();
-			MovementPlanner planner = new MovementPlanner(board);
-			paths = planner.Move(moveW1Start, moveW1End);
+			MovePlanner planner = new MovePlanner(board);
+			paths = planner.PlanMove(moveW1Start, moveW1End);
 			board.MovePiece(new Position(moveW1Start), new Position(moveW1End));
 
 			printString = planner.PrintDebug(paths);
@@ -52,8 +52,8 @@ namespace WizardsChessTest
 
 			List<List<Point2D>> paths = new List<List<Point2D>>();
 			ChessBoard board = new ChessBoard();
-			MovementPlanner planner = new MovementPlanner(board);
-			paths = planner.Move(moveW1Start, moveW1End);
+			MovePlanner planner = new MovePlanner(board);
+			paths = planner.PlanMove(moveW1Start, moveW1End);
 			//board.MovePiece(new Position(moveW1Start), new Position(moveW1End));
 
 			Assert.AreEqual("[12, 13]", paths[0][0].ToString());

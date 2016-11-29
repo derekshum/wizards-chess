@@ -53,13 +53,24 @@
     <Compile Include="Chess\Pieces\Rook.cs" />
     <Compile Include="Chess\PieceType.cs" />
     <Compile Include="Chess\Position.cs" />
+    <Compile Include="Movement\Axis.cs" />
+    <Compile Include="Movement\Drv\Events\StepEventArgs.cs" />
+    <Compile Include="Movement\Drv\IMagnetDrv.cs" />
+    <Compile Include="Movement\Drv\IMotorDrv.cs" />
+    <Compile Include="Movement\Drv\IStepCounter.cs" />
+    <Compile Include="Movement\IMoveManager.cs" />
+    <Compile Include="Movement\IMovePlanner.cs" />
+    <Compile Include="Movement\IMovePerformer.cs" />
+    <Compile Include="Movement\MoveManager.cs" />
+    <Compile Include="Movement\MovePerformer.cs" />
     <Compile Include="VoiceControl\Commands\Command.cs" />
     <Compile Include="VoiceControl\Commands\CommandFamily.cs" />
     <Compile Include="VoiceControl\Commands\CommandType.cs" />
     <Compile Include="VoiceControl\Commands\ICommand.cs" />
     <Compile Include="VoiceControl\Commands\ConfirmPieceCommand.cs" />
+    <Compile Include="VoiceControl\Commands\MotorMoveCommand.cs" />
     <Compile Include="VoiceControl\Commands\MoveCommand.cs" />
-    <Compile Include="Movement\MovementPlanner.cs" />
+    <Compile Include="Movement\MovePlanner.cs" />
     <Compile Include="Movement\Point2D.cs" />
     <Compile Include="Movement\Vector2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,11 +79,6 @@
     <Compile Include="VoiceControl\ICommandInterpreter.cs" />
     <Compile Include="VoiceControl\ICommandListener.cs" />
     <Compile Include="VoiceControl\ICommunicator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Windows.Foundation.UniversalApiContract">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\References\Windows.Foundation.UniversalApiContract\3.0.0.0\Windows.Foundation.UniversalApiContract.winmd</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
