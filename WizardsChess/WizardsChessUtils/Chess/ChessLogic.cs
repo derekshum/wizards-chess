@@ -223,7 +223,7 @@ namespace WizardsChess.Chess
 			int i, j;
 			for (i = 0; i < ChessBoard.Size; i++)
 			{
-				for (j = 0; j < ChessBoard.Size, j++)
+				for (j = 0; j < ChessBoard.Size; j++)
 				{
 					var piece = board.PieceAt(i, j);
 					if (piece != null && piece.Team != Turn)
