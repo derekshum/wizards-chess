@@ -161,7 +161,6 @@ namespace WizardsChess.VoiceControl
 						SpeechConstraints.EnableGrammar(recognizer.Constraints, GrammarMode.CancelCommand, true);
 						break;
 					default:
-						await listener.StartListeningAsync();
 						throw new Exception("Tried to change CommandInterpreter state to an unknown listening state");
 				}
 

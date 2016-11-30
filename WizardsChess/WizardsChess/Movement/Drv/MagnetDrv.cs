@@ -15,6 +15,7 @@ namespace WizardsChess.Movement.Drv
 			pin = gpio.OpenPin(pinNum);
 			pin.Write(GpioPinValue.Low);
 			pin.SetDriveMode(GpioPinDriveMode.Output);
+			pin.Write(GpioPinValue.Low);
 		}
 
 		private GpioPin pin;

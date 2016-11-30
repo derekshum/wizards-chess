@@ -68,6 +68,7 @@
     <Compile Include="VoiceControl\Commands\CommandType.cs" />
     <Compile Include="VoiceControl\Commands\ICommand.cs" />
     <Compile Include="VoiceControl\Commands\ConfirmPieceCommand.cs" />
+    <Compile Include="VoiceControl\Commands\MagnetCommand.cs" />
     <Compile Include="VoiceControl\Commands\MotorMoveCommand.cs" />
     <Compile Include="VoiceControl\Commands\MoveCommand.cs" />
     <Compile Include="Movement\MovePlanner.cs" />

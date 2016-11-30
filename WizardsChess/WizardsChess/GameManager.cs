@@ -25,7 +25,7 @@ namespace WizardsChess
 	{
 		private GameManager(ICommandInterpreter commandInterpreter, ChessLogic logic, IMoveManager movementManager)
 		{
-			cmdInterpreter.CommandReceived += CommandReceived;
+			commandInterpreter.CommandReceived += CommandReceived;
 
 			cmdInterpreter = commandInterpreter;
 			chessLogic = logic;
@@ -45,6 +45,7 @@ namespace WizardsChess
 			var stepCounterX = new StepCounter(6, 19);
 			var stepCounterY = new StepCounter(5, 13);
 			var movePerformer = new MovePerformer(motorDriverX, motorDriverY, magnetDriver, stepCounterX, stepCounterY);
+			//var movePerformer = new MovePerformer(null, null, null, null, null);
 
 			var movePlanner = new MovePlanner(logic.Board);
 
@@ -104,10 +105,18 @@ namespace WizardsChess
 
 		private void HandleDebugCommand(ICommand command)
 		{
-			if (command is MotorMoveCommand)
+			switch (command.Type)
 			{
-				var mtrMvCmd = command as MotorMoveCommand;
-				DebugMovePerformer.MoveMotor(mtrMvCmd.Axis, mtrMvCmd.Steps);
+				case CommandType.MotorMove:
+					var mtrMvCmd = command as MotorMoveCommand;
+					DebugMovePerformer.MoveMotor(mtrMvCmd.Axis, mtrMvCmd.Steps);
+					break;
+				case CommandType.Magnet:
+					var magnetCmd = command as MagnetCommand;
+					DebugMovePerformer.EnableMagnet(magnetCmd.EnableMagnet);
+					break;
+				default:
+					break;
 			}
 		}
 #endif

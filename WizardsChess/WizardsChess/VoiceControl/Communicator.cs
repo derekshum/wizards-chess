@@ -14,10 +14,17 @@ namespace WizardsChess.VoiceControl
 		public Communicator()
 		{
 			speechSynth = new SpeechSynthesizer();
-			audioOut = new MediaElement();
-			audioOut.MediaEnded += audioEventReceived;
-			audioOut.MediaFailed += audioEventReceived;
-			audioOut.MediaOpened += audioEventReceived;
+			//try
+			//{
+			//	audioOut = new MediaElement();
+			//}
+			//catch (Exception e)
+			//{
+			//	System.Diagnostics.Debug.WriteLine(e);
+			//}
+			//audioOut.MediaEnded += audioEventReceived;
+			//audioOut.MediaFailed += audioEventReceived;
+			//audioOut.MediaOpened += audioEventReceived;
 		}
 
 		public async Task Speak(string text)

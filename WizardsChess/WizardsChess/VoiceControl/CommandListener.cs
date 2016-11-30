@@ -45,7 +45,14 @@ namespace WizardsChess.VoiceControl
 		{
 			if (!isListening)
 			{
-				await continuousSession.StartAsync().AsTask();
+				try
+				{
+					await continuousSession.StartAsync().AsTask();
+				}
+				catch (Exception e)
+				{
+					System.Diagnostics.Debug.WriteLine($"Could not start listening. Threw exception {e}");
+				}
 				isListening = true;
 			}
 		}
@@ -54,7 +61,14 @@ namespace WizardsChess.VoiceControl
 		{
 			if (isListening)
 			{
-				await continuousSession.StopAsync();
+				try
+				{
+					await continuousSession.StopAsync();
+				}
+				catch (Exception e)
+				{
+					System.Diagnostics.Debug.WriteLine($"Could not stop listening. Threw exception {e}");
+				}
 				isListening = false;
 			}
 		}
@@ -90,7 +104,7 @@ namespace WizardsChess.VoiceControl
 						var moveCommand = command as MoveCommand;
 						if (moveCommand.Position.HasValue && !moveCommand.PositionUsedNatoAlphabet)
 						{
-							if (isPositionAmbiguous(moveCommand.Position.Value))
+							if (isPositionAmbiguous(moveCommand.Position.Value, args.Result.Confidence))
 							{
 								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
 								return;
@@ -98,7 +112,7 @@ namespace WizardsChess.VoiceControl
 						}
 						if (!moveCommand.DestinationUsedNatoAlphabet)
 						{
-							if (isPositionAmbiguous(moveCommand.Destination))
+							if (isPositionAmbiguous(moveCommand.Destination, args.Result.Confidence))
 							{
 								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
 								return;
@@ -110,7 +124,7 @@ namespace WizardsChess.VoiceControl
 						var confirmPieceCommand = command as ConfirmPieceCommand;
 						if (!confirmPieceCommand.PositionUsedNatoAlphabet)
 						{
-							if (isPositionAmbiguous(confirmPieceCommand.Position))
+							if (isPositionAmbiguous(confirmPieceCommand.Position, args.Result.Confidence))
 							{
 								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
 								return;
@@ -137,13 +151,20 @@ namespace WizardsChess.VoiceControl
 					return new ConfirmPieceCommand(speech.SemanticInterpretation.Properties);
 				case CommandType.MotorMove:
 					return new MotorMoveCommand(speech.SemanticInterpretation.Properties);
+				case CommandType.Magnet:
+					return new MagnetCommand(speech.SemanticInterpretation.Properties);
 				default:
 					return new Command(speech.SemanticInterpretation.Properties);
 			}
 		}
 
-		private bool isPositionAmbiguous(Position p)
+		private bool isPositionAmbiguous(Position p, SpeechRecognitionConfidence confidence)
 		{
+			if (confidence == SpeechRecognitionConfidence.High)
+			{
+				return false;
+			}
+
 			return p.ColumnLetter == ColumnLetter.B
 				|| p.ColumnLetter == ColumnLetter.C
 				|| p.ColumnLetter == ColumnLetter.D
