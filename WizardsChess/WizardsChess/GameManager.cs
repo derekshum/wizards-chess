@@ -41,12 +41,15 @@ namespace WizardsChess
 
 			var motorDriverX = new MotorDrv(23, 24);
 			var motorDriverY = new MotorDrv(20, 21);
-			var magnetDriver = new MagnetDrv(26);
 			var stepCounterX = new StepCounter(6, 19);
 			var stepCounterY = new StepCounter(5, 13);
-			var movePerformer = new MovePerformer(motorDriverX, motorDriverY, magnetDriver, stepCounterX, stepCounterY);
-			//var movePerformer = new MovePerformer(null, null, null, null, null);
 
+			var calXMover = new CalibratedMotorMover(Axis.X, motorDriverX, stepCounterX, 14, -14);
+			var calYMover = new CalibratedMotorMover(Axis.Y, motorDriverY, stepCounterY, 14, -14);
+
+			var magnetDriver = new MagnetDrv(26);
+
+			var movePerformer = new MovePerformer(calXMover, calYMover, magnetDriver);
 			var movePlanner = new MovePlanner(logic.Board);
 
 			var moveManager = new MoveManager(movePlanner, movePerformer);

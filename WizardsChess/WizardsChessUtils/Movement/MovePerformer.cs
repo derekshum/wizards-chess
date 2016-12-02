@@ -10,20 +10,12 @@ namespace WizardsChess.Movement
 {
 	public class MovePerformer : IMovePerformer
 	{
-		public MovePerformer(IMotorDrv motorx, IMotorDrv motory, IMagnetDrv magnetDrv
-			, IStepCounter stepx, IStepCounter stepy)
+		public MovePerformer(CalibratedMotorMover calXMover, CalibratedMotorMover calYMover, IMagnetDrv magnetDrv)
 		{
-			motorX = motorx;
-			motorY = motory;
+			xMover = calXMover;
+			yMover = calYMover;
+
 			magnet = magnetDrv;
-			stepX = stepx;
-			stepY = stepy;
-
-			stepX.FinishedCounting += finishedCounting;
-			stepY.FinishedCounting += finishedCounting;
-
-			stepX.AdditionalStepsCounted += additionalStepsCounted;
-			stepY.AdditionalStepsCounted += additionalStepsCounted;
 		}
 
 		public Task MovePiece(List<Point2D> steps)
@@ -36,36 +28,18 @@ namespace WizardsChess.Movement
 			throw new NotImplementedException();
 		}
 
-		public void MoveMotor(Axis axis, int steps)
+		public void MoveMotor(Axis axis, int gridUnits)
 		{
-			var state = steps > 0 ? MotorState.Forward : MotorState.Backward;
-			if (steps == 0)
-			{
-				state = MotorState.Stopped;
-			}
-			else
-			{
-				steps = Math.Abs(steps);
-				switch (axis)
-				{
-					case Axis.X:
-						stepX.CountSteps(steps);
-						break;
-					case Axis.Y:
-					default:
-						stepY.CountSteps(steps);
-						break;
-				}
-			}
-
 			switch (axis)
 			{
 				case Axis.X:
-					motorX.SetState(state);
+					xMover.Move(gridUnits);
 					break;
 				case Axis.Y:
+					yMover.Move(gridUnits);
+					break;
 				default:
-					motorY.SetState(state);
+					System.Diagnostics.Debug.WriteLine("MovePerformer.MoveMotor() received an invalid axis.");
 					break;
 			}
 		}
@@ -82,34 +56,8 @@ namespace WizardsChess.Movement
 			}
 		}
 
-		private void finishedCounting(object sender, StepEventArgs stepEventArgs)
-		{
-			if (sender == stepX)
-			{
-				motorX.SetState(MotorState.Stopped);
-			}
-			else
-			{
-				motorY.SetState(MotorState.Stopped);
-			}
-		}
-
-		private void additionalStepsCounted(object sender, StepEventArgs stepEventArgs)
-		{
-			if (sender == stepX)
-			{
-				System.Diagnostics.Debug.WriteLine($"Counted {stepEventArgs.NumSteps} additional X steps");
-			}
-			else
-			{
-				System.Diagnostics.Debug.WriteLine($"Counted {stepEventArgs.NumSteps} additional Y steps");
-			}
-		}
-		
-		private IMotorDrv motorX;
-		private IMotorDrv motorY;
+		private CalibratedMotorMover xMover;
+		private CalibratedMotorMover yMover;
 		private IMagnetDrv magnet;
-		private IStepCounter stepX;
-		private IStepCounter stepY;
 	}
 }

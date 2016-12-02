@@ -80,7 +80,7 @@ namespace WizardsChess.Movement.Drv
 		{
 			if (additionalStepsCallback == null || (int)additionalStepsCallback.Status > 4)
 			{
-				additionalStepsCallback = Task.Delay(200);
+				additionalStepsCallback = Task.Delay(500);
 				additionalStepsCallback.ContinueWith((prev) => {
 					onAdditionalStepsCounted();
 				});

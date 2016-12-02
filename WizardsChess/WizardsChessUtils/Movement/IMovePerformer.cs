@@ -9,7 +9,7 @@ namespace WizardsChess.Movement
 	public interface IMovePerformer
 	{
 		Task MovePiece(List<Point2D> steps);
-		void MoveMotor(Axis axis, int steps);
+		void MoveMotor(Axis axis, int gridUnits);
 		void GoHome();
 		void EnableMagnet(bool enable);
 	}

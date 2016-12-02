@@ -19,4 +19,5 @@ namespace WizardsChess.Movement.Drv
 
 		MotorState State { get; }
 	}
+
 }
