@@ -55,11 +55,9 @@ namespace WizardsChess
 			var moveManager = new MoveManager(movePlanner, movePerformer);
 
 			GameManager manager = new GameManager(await commandInterpreterConstructor, logic, moveManager);
-
 #if DEBUG
 			manager.DebugMovePerformer = movePerformer;
 #endif
-
 			return manager;
 		}
 

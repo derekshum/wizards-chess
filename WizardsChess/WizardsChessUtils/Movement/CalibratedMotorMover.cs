@@ -12,6 +12,7 @@ namespace WizardsChess.Movement
 	{
 		public CalibratedMotorMover(Axis axis, IMotorDrv mtrDrv, IStepCounter stepCntr, int gridMax, int gridMin)
 		{
+			stepPosition = 0;
 			gridPosition = 0;
 			estimatedExtraSteps = 100;
 			stepsPerGridUnit = 225;
@@ -45,6 +46,7 @@ namespace WizardsChess.Movement
 			}
 
 			var state = gridUnits > 0 ? MotorState.Forward : MotorState.Backward;
+			currentMovePolarity = gridUnits > 0 ? 1 : -1;
 			if (gridUnits == 0)
 			{
 				state = MotorState.Stopped;
@@ -74,12 +76,16 @@ namespace WizardsChess.Movement
 
 		private void finishedCounting(object sender, StepEventArgs stepEventArgs)
 		{
+			stepPosition += stepEventArgs.NumSteps * currentMovePolarity;
+			gridPosition = convertStepsToGridUnits(stepPosition);
 			motorDrv.SetState(MotorState.Stopped);
 		}
 
 		private void additionalStepsCounted(object sender, StepEventArgs stepEventArgs)
 		{
 			System.Diagnostics.Debug.WriteLine($"Counted {stepEventArgs.NumSteps} additional steps in the {axis} axis");
+			stepPosition += stepEventArgs.NumSteps * currentMovePolarity;
+			gridPosition = convertStepsToGridUnits(stepPosition);
 			estimatedExtraSteps = stepEventArgs.NumSteps;
 		}
 		
@@ -89,6 +95,7 @@ namespace WizardsChess.Movement
 		private int gridMin;
 		private int stepsPerGridUnit;
 		private int estimatedExtraSteps;
+		private int currentMovePolarity;
 
 		private Axis axis;
 
