@@ -18,6 +18,7 @@ namespace WizardsChess.Movement.Drv
 	{
 		public event StepEventHandler FinishedCounting;
 		public event StepEventHandler AdditionalStepsCounted;
+		public event StepEventHandler MoveTimedOut;
 
 		/// <summary>
 		/// Count the steps read at the specified input pin. Position is updated on the falling edge.
@@ -25,6 +26,8 @@ namespace WizardsChess.Movement.Drv
 		/// <param name="pinNum">The GPIO pin to read steps from.</param>
 		public StepCounter(int pinNum, int clearPinNum)
 		{
+			lockObject = new object();
+
 			var gpio = GpioController.GetDefault();
 			pin = gpio.OpenPin(pinNum);
 			pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
@@ -43,7 +46,7 @@ namespace WizardsChess.Movement.Drv
 
 		public int Position { get; private set; }
 
-		public void CountSteps(int numSteps)
+		public void CountSteps(int numSteps, TimeSpan timeout)
 		{
 			lock (lockObject)
 			{
@@ -57,13 +60,29 @@ namespace WizardsChess.Movement.Drv
 						break;
 					case CounterState.Counting:
 						var stepsSoFar = Position - startPosition;
+						if (numSteps == 0)
+						{
+							targetNumSteps = stepsSoFar;
+							state = CounterState.WaitingForExtraSteps;
+							onTargetReached(numSteps);
+							return;
+						}
 						targetNumSteps = stepsSoFar + numSteps;
 						break;
 					case CounterState.Ready:
+						Position = 0;
 						startPosition = Position;
 						targetNumSteps = numSteps;
 						break;
 				}
+				timeoutCallback = Task.Delay(timeout);
+				timeoutCallback.ContinueWith((prev) =>
+					{
+						if (prev == this.timeoutCallback)
+						{
+							onMoveTimeOut();
+						}
+				});
 				state = CounterState.Counting;
 			}
 		}
@@ -91,26 +110,6 @@ namespace WizardsChess.Movement.Drv
 			}
 		}
 
-		private void onTargetReached()
-		{
-			FinishedCounting?.Invoke(this, new Events.StepEventArgs(targetNumSteps));
-			state = CounterState.WaitingForExtraSteps;
-		}
-
-		private void onAdditionalStepsCounted()
-		{
-			if (isAdditionalStepsCanceled)
-			{
-				isAdditionalStepsCanceled = false;
-				return;
-			}
-			lock (lockObject)
-			{
-				AdditionalStepsCounted?.Invoke(this, new Events.StepEventArgs(Position - (startPosition + targetNumSteps)));
-				state = CounterState.Ready;
-			}
-		}
-
 		private void sendAdditionalSteps()
 		{
 			if (additionalStepsCallback == null || (int)additionalStepsCallback.Status > 4)
@@ -122,12 +121,64 @@ namespace WizardsChess.Movement.Drv
 			}
 		}
 
+		private void onTargetReached()
+		{
+			int numSteps;
+			lock (lockObject)
+			{
+				numSteps = targetNumSteps;
+				state = CounterState.WaitingForExtraSteps;
+			}
+			onTargetReached(numSteps);
+		}
+
+		private void onTargetReached(int numSteps)
+		{
+			FinishedCounting?.Invoke(this, new Events.StepEventArgs(numSteps));
+		}
+
+		private void onAdditionalStepsCounted()
+		{
+			if (isAdditionalStepsCanceled)
+			{
+				isAdditionalStepsCanceled = false;
+				return;
+			}
+			int numSteps = 0;
+			lock (lockObject)
+			{
+				numSteps = Position - (startPosition + targetNumSteps);
+				state = CounterState.Ready;
+			}
+			AdditionalStepsCounted?.Invoke(this, new Events.StepEventArgs(numSteps));
+		}
+
+		private void onMoveTimeOut()
+		{
+			int numSteps = 0;
+			lock(lockObject)
+			{
+				if (state == CounterState.Counting)
+				{
+					state = CounterState.Ready;
+					numSteps = Position - startPosition;
+				}
+				else
+				{
+					return;
+				}
+			}
+
+			MoveTimedOut?.Invoke(this, new Events.StepEventArgs(numSteps));
+		}
+
 		private CounterState state;
 		private GpioPin pin;
 		private GpioPin clearPin;
 		private int startPosition;
 		private int targetNumSteps;
 		private Task additionalStepsCallback;
+		private Task timeoutCallback;
 		private bool isAdditionalStepsCanceled;
 		private Object lockObject;
 
