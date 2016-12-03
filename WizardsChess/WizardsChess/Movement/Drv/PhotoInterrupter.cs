@@ -8,15 +8,18 @@ using WizardsChess.Movement.Drv.Events;
 
 namespace WizardsChess.Movement.Drv
 {
-	public class PhotoInterrupter
+	class PhotoInterrupter : IPhotoInterrupter
 	{
+		public int GridPosition { get; }
 		public event InterruptEventHandler EdgeDetected;
 
-		public PhotoInterrupter(int pinNum)
+		public PhotoInterrupter(int pinNum, int gridPosition)
 		{
 			var gpio = GpioController.GetDefault();
 			pin = gpio.OpenPin(pinNum);
 			pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
+
+			GridPosition = gridPosition;
 
 			pin.ValueChanged += detectEdge;
 		}
@@ -41,9 +44,5 @@ namespace WizardsChess.Movement.Drv
 		}
 
 		private GpioPin pin;
-		private GpioPin clearPin;
-		private int targetPosition;
-		private int targetNumSteps;
-		private Task additionalStepsCallback;
 	}
 }
