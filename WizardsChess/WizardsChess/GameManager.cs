@@ -84,14 +84,49 @@ namespace WizardsChess
 			throw new NotImplementedException("Congratulate winner not yet implemented");
 		}
 
-		private ICommandInterpreter cmdInterpreter;
-		private ChessLogic chessLogic;
-		private IMoveManager moveManager;
-		private GameState gameState;
-
 		private void CommandReceived(Object sender, CommandEventArgs args)
 		{
 			System.Diagnostics.Debug.WriteLine($"Received command of type {args.Command.Type}.");
+			//TODO: fill in comments below
+			switch (args.Command.Type)
+			{
+				case CommandType.Move:
+					var moveCmd = args.Command as MoveCommand;
+					currentMoveCommand = moveCmd;
+					//R: await performMoveOnUiIfValidAsync(moveCmd);
+
+					//numPossible = number of moves fitting that description possible
+					//switch numPossible
+					//	case 0
+					//		give user feedback
+					//	case 1
+					//		preform move
+					//	case 2 //2+, but I don't think any more than 2 possibilities can be relevant
+					//		give user feedback asking which one
+				break;
+				case CommandType.ConfirmPiece:
+					var pieceConfirmation = args.Command as ConfirmPieceCommand;
+					if (currentMoveCommand == null)
+					{
+						//R: throw new Exception("Received piece confirmation command when currentMoveCommand was null");
+						//Output that a piece isn't what was being looked for, or do nothing
+					}
+					currentMoveCommand.Position = pieceConfirmation.Position;
+					//R:await performMoveOnUiIfValidAsync(currentMoveCommand);
+				break;
+				//case yes
+				//case no
+				//case undo?
+				//case cancel?
+				//case MotorMove?
+				//case Magnet?
+				//case castle?
+				default:
+					//debug writing done above
+				break;
+			}
+			
+
 #if DEBUG
 			if (args.Command.Type.GetFamily() == CommandFamily.Debug)
 			{
@@ -100,6 +135,12 @@ namespace WizardsChess
 			}
 #endif
 		}
+
+		private ICommandInterpreter cmdInterpreter;
+		private ChessLogic chessLogic;
+		private IMoveManager moveManager;
+		private GameState gameState;
+		private MoveCommand currentMoveCommand;
 
 #if DEBUG
 		public IMovePerformer DebugMovePerformer;
