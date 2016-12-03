@@ -99,6 +99,7 @@
     <Compile Include="GameManager.cs" />
     <Compile Include="Movement\Drv\MagnetDrv.cs" />
     <Compile Include="Movement\Drv\MotorDrv.cs" />
+    <Compile Include="Movement\Drv\PhotoInterrupter.cs" />
     <Compile Include="Movement\Drv\StepCounter.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -55,9 +55,11 @@
     <Compile Include="Chess\Position.cs" />
     <Compile Include="Movement\Axis.cs" />
     <Compile Include="Movement\CalibratedMotorMover.cs" />
+    <Compile Include="Movement\Drv\Events\InterruptEventArgs.cs" />
     <Compile Include="Movement\Drv\Events\StepEventArgs.cs" />
     <Compile Include="Movement\Drv\IMagnetDrv.cs" />
     <Compile Include="Movement\Drv\IMotorDrv.cs" />
+    <Compile Include="Movement\Drv\IGpioInterrupter.cs" />
     <Compile Include="Movement\Drv\IStepCounter.cs" />
     <Compile Include="Movement\IMoveManager.cs" />
     <Compile Include="Movement\IMovePlanner.cs" />
