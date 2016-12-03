@@ -7,6 +7,13 @@ using Windows.Devices.Gpio;
 
 namespace WizardsChess.Movement.Drv
 {
+	enum CounterState
+	{
+		Ready,
+		Counting,
+		WaitingForExtraSteps
+	}
+
 	class StepCounter : IDisposable, IStepCounter
 	{
 		public event StepEventHandler FinishedCounting;
@@ -25,28 +32,39 @@ namespace WizardsChess.Movement.Drv
 			clearPin.Write(GpioPinValue.Low);
 			clearPin.SetDriveMode(GpioPinDriveMode.Output);
 			Position = 0;
-			targetPosition = 0;
+			startPosition = 0;
 			targetNumSteps = 0;
+
+			state = CounterState.Ready;
+			isAdditionalStepsCanceled = false;
 
 			pin.ValueChanged += countStep;
 		}
 
-		public int Position
-		{
-			get;
-			set;
-		}
+		public int Position { get; private set; }
 
 		public void CountSteps(int numSteps)
 		{
-			if (additionalStepsCallback != null && (int)additionalStepsCallback.Status < 5)
+			lock (lockObject)
 			{
-				additionalStepsCallback.ContinueWith((prev) => { this.CountSteps(numSteps); });
-			}
-			else
-			{
-				targetPosition = Position + numSteps;
-				targetNumSteps = numSteps;
+				switch (state)
+				{
+					case CounterState.WaitingForExtraSteps:
+						isAdditionalStepsCanceled = true;
+						var extraSteps = Position - (startPosition + targetNumSteps);
+						startPosition = Position - extraSteps;
+						targetNumSteps = numSteps + extraSteps;
+						break;
+					case CounterState.Counting:
+						var stepsSoFar = Position - startPosition;
+						targetNumSteps = stepsSoFar + numSteps;
+						break;
+					case CounterState.Ready:
+						startPosition = Position;
+						targetNumSteps = numSteps;
+						break;
+				}
+				state = CounterState.Counting;
 			}
 		}
 
@@ -54,12 +72,19 @@ namespace WizardsChess.Movement.Drv
 		{
 			if (args.Edge == GpioPinEdge.FallingEdge)
 			{
-				Position++;
-				if (Position == targetPosition)
+				int numSteps;
+				lock (lockObject)
 				{
-					onTargetReached();
+					Position++;
+					numSteps = Position - startPosition;
+
+					if (numSteps == targetNumSteps)
+					{
+						onTargetReached();
+					}
 				}
-				else if (Position > targetPosition)
+
+				if (numSteps > targetNumSteps)
 				{
 					sendAdditionalSteps();
 				}
@@ -69,11 +94,21 @@ namespace WizardsChess.Movement.Drv
 		private void onTargetReached()
 		{
 			FinishedCounting?.Invoke(this, new Events.StepEventArgs(targetNumSteps));
+			state = CounterState.WaitingForExtraSteps;
 		}
 
 		private void onAdditionalStepsCounted()
 		{
-			AdditionalStepsCounted?.Invoke(this, new Events.StepEventArgs(Position - targetPosition));
+			if (isAdditionalStepsCanceled)
+			{
+				isAdditionalStepsCanceled = false;
+				return;
+			}
+			lock (lockObject)
+			{
+				AdditionalStepsCounted?.Invoke(this, new Events.StepEventArgs(Position - (startPosition + targetNumSteps)));
+				state = CounterState.Ready;
+			}
 		}
 
 		private void sendAdditionalSteps()
@@ -87,11 +122,14 @@ namespace WizardsChess.Movement.Drv
 			}
 		}
 
+		private CounterState state;
 		private GpioPin pin;
 		private GpioPin clearPin;
-		private int targetPosition;
+		private int startPosition;
 		private int targetNumSteps;
 		private Task additionalStepsCallback;
+		private bool isAdditionalStepsCanceled;
+		private Object lockObject;
 
 		#region IDisposable Support
 		private bool disposedValue = false; // To detect redundant calls

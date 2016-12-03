@@ -9,6 +9,8 @@ namespace WizardsChess.Movement.Drv
 {
 	public interface IStepCounter
 	{
+		int Position { get; }
+
 		void CountSteps(int numSteps);
 
 		event StepEventHandler FinishedCounting;
