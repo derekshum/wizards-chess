@@ -51,18 +51,18 @@ namespace WizardsChess
 
 		private void MotorMoveX_Click(object sender, RoutedEventArgs e)
 		{
-			movePerformer.MoveMotor(Axis.X, 1000);
+			movePerformer.MoveMotorAsync(Axis.X, 1000);
 		}
 
 		private void MotorMoveY_Click(object sender, RoutedEventArgs e)
 		{
-			movePerformer.MoveMotor(Axis.Y, 1000);
+			movePerformer.MoveMotorAsync(Axis.Y, 1000);
 		}
 
 		private void MotorStop_Click(object sender, RoutedEventArgs e)
 		{
-			movePerformer.MoveMotor(Axis.X, 0);
-			movePerformer.MoveMotor(Axis.Y, 0);
+			movePerformer.MoveMotorAsync(Axis.X, 0);
+			movePerformer.MoveMotorAsync(Axis.Y, 0);
 		}
 
 		private void ElectroMagToggle_Click(object sender, RoutedEventArgs e)

@@ -17,7 +17,7 @@ namespace WizardsChess.Movement
 			previousMove = new List<IList<Point2D>>();
 		}
 
-		public void Move(Point2D start, Point2D end, Point2D? captured = null)
+		public async Task MoveAsync(Point2D start, Point2D end, Point2D? captured = null)
 		{
 			var moveSteps = planner.PlanMove(start, end, captured);
 
@@ -25,10 +25,10 @@ namespace WizardsChess.Movement
 
 			foreach (var setOfSteps in moveSteps)
 			{
-				performer.MovePiece(setOfSteps);
+				await performer.MovePieceAsync(setOfSteps);
 				previousMove.Add(setOfSteps);
 			}
-			performer.GoHome();
+			await performer.GoHomeAsync();
 		}
 
 		private IMovePlanner planner;

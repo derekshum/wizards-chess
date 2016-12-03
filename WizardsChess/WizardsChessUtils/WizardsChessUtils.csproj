@@ -59,7 +59,7 @@
     <Compile Include="Movement\Drv\Events\StepEventArgs.cs" />
     <Compile Include="Movement\Drv\IMagnetDrv.cs" />
     <Compile Include="Movement\Drv\IMotorDrv.cs" />
-    <Compile Include="Movement\Drv\IGpioInterrupter.cs" />
+    <Compile Include="Movement\Drv\IPhotoInterrupter.cs" />
     <Compile Include="Movement\Drv\IStepCounter.cs" />
     <Compile Include="Movement\IMoveManager.cs" />
     <Compile Include="Movement\IMovePlanner.cs" />

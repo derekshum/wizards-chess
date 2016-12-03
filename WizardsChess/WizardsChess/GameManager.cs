@@ -43,9 +43,13 @@ namespace WizardsChess
 			var motorDriverY = new MotorDrv(20, 21);
 			var stepCounterX = new StepCounter(6, 19);
 			var stepCounterY = new StepCounter(5, 13);
+			var topInterrupterX = new PhotoInterrupter(9, 1);
+			var bottomInterrupterX = new PhotoInterrupter(10, -1);
+			var topInterrupterY = new PhotoInterrupter(11, 1);
+			var bottomInterrupterY = new PhotoInterrupter(12, -1);
 
-			var calXMover = new CalibratedMotorMover(Axis.X, motorDriverX, stepCounterX, 14, -14);
-			var calYMover = new CalibratedMotorMover(Axis.Y, motorDriverY, stepCounterY, 14, -14);
+			var calXMover = new CalibratedMotorMover(Axis.X, 17, -17, motorDriverX, stepCounterX, topInterrupterX, bottomInterrupterX);
+			var calYMover = new CalibratedMotorMover(Axis.Y, 23, -23, motorDriverY, stepCounterY, topInterrupterY, bottomInterrupterY);
 
 			var magnetDriver = new MagnetDrv(26);
 
@@ -110,7 +114,7 @@ namespace WizardsChess
 			{
 				case CommandType.MotorMove:
 					var mtrMvCmd = command as MotorMoveCommand;
-					DebugMovePerformer.MoveMotor(mtrMvCmd.Axis, mtrMvCmd.Steps);
+					DebugMovePerformer.MoveMotorAsync(mtrMvCmd.Axis, mtrMvCmd.Steps);
 					break;
 				case CommandType.Magnet:
 					var magnetCmd = command as MagnetCommand;

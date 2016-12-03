@@ -8,9 +8,9 @@ namespace WizardsChess.Movement
 {
 	public interface IMovePerformer
 	{
-		Task MovePiece(List<Point2D> steps);
-		void MoveMotor(Axis axis, int gridUnits);
-		void GoHome();
+		Task MovePieceAsync(List<Point2D> steps);
+		Task MoveMotorAsync(Axis axis, int gridUnits);
+		Task GoHomeAsync();
 		void EnableMagnet(bool enable);
 	}
 }
