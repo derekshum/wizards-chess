@@ -41,7 +41,8 @@ namespace WizardsChess.Chess
 		{
 			if (!IsMoveValid(startPosition, endPosition))
 			{
-				throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
+				System.Diagnostics.Debug.WriteLine($"Preforming illegal move.");
+				//throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
 			}
 
 			board.MovePiece(startPosition, endPosition);

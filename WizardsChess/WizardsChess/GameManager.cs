@@ -108,6 +108,10 @@ namespace WizardsChess
 					currentMoveCommand.Position = pieceConfirmation.Position;
 					await performMoveIfValidAsync(currentMoveCommand);
 				break;
+				case CommandType.Undo:
+					//no output when undo not possible, basically ignore it
+					await performUndoIfPossible();
+				break;
 				//case yes
 				//case no
 				//case undo?
@@ -169,6 +173,12 @@ namespace WizardsChess
 				await moveManager.MoveAsync(new Point2D((Position)moveCmd.Position), new Point2D(moveCmd.Destination));
 			}
 			chessLogic.MovePiece((Position)moveCmd.Position, moveCmd.Destination);
+		}
+
+		private async Task performUndoIfPossible()
+		{
+			await moveManager.UndoMoveAsync();
+			chessLogic.UndoMove();
 		}
 
 		private ICommandInterpreter cmdInterpreter;
