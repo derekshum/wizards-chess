@@ -8,11 +8,12 @@ namespace WizardsChess.Chess
 {
 	public class MoveSpecification
 	{
-		public MoveSpecification (Position s, Position e, Position? c = null)
+		public MoveSpecification (Position s, Position e, Position? cap = null, bool cast = false)
 		{
 			Start = s;
 			End = e;
-			Capture = c;
+			Capture = cap;
+			Castle = cast;
 		}
 		/*
 		public MoveSpecification Get()
@@ -34,6 +35,7 @@ namespace WizardsChess.Chess
 		*/
 		public Position Start;	//end position of the move
 		public Position End;	//end position of the move
-		public Position? Capture;	//true if this move involved capturing a piece
+		public Position? Capture;   //true if this move involved capturing a piece
+		public bool Castle;
 	}
 }

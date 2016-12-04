@@ -174,22 +174,17 @@ namespace WizardsChess.Chess
 
 		//TODO: detect Checkmate
 
-		//TODO: castle
-
-		public int numValidCastles()	//TODO: this method could be made into castling or return more helpful things
+		public void Castle()
 		{
+			//TODO: write this ***
+		}
+
+		public List<Point2D> validRookLocationsForCastling()	//TODO: this method could be made into castling or return more helpful things
+		{
+			List<Point2D> validRookLocations = new List<Point2D>();
 			var kingLocations = board.PieceLocationsByType[PieceType.King];
 			Point2D kingLocation = new Point2D();
 			ChessPiece king;
-
-			var allRookLocations = board.PieceLocationsByType[PieceType.Rook];
-			List<Point2D> validRookLocations = new List<Point2D>();
-			List<ChessPiece> validRooks = new List<ChessPiece>();
-			
-			int x;
-			int y;
-			int kingToRookDir;
-			bool thisSideOkay;
 
 			foreach (var aKingLocation in kingLocations)
 			{
@@ -203,34 +198,40 @@ namespace WizardsChess.Chess
 				throw new InvalidOperationException($"missing king");
 			}
 			king = board.PieceAt(kingLocation);
-			if (king.HasMoved == true)
+			if (king.HasMoved == true || inCheck(kingLocation, board.WhoseTurn))	//if the king has moved or is in check, castling is not legal
 			{
-				return 0;
+				return validRookLocations;
 			}
-			//TODO: if kingLocation is in check, cannot castle
+
+			var allRookLocations = board.PieceLocationsByType[PieceType.Rook];
+			int x;
+			int y;
+			int kingToRookDir;
+			bool thisSideOkay;
+
 			foreach (var location in allRookLocations)
 			{
-				//TODO: if this location is in check, cannot castle
 				var rook = board.PieceAt(location);
-				if (rook.Team == board.WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location))
+				//if the rook in question is on the team that isn't moving, has move, or has its location in check, it cannot provide a legal castle
+				if (rook.Team == board.WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location) && !inCheck(location, board.WhoseTurn))
 				{
 					thisSideOkay = true;
 					y = kingLocation.Y;
 					kingToRookDir = Math.Sign(location.X - kingLocation.X);
 					for (x = kingLocation.X + kingToRookDir; x != location.X; x += kingToRookDir) {
-						if (board.PieceAt(x,y) != null)	//add check checking for all those square
+						if (board.PieceAt(x,y) != null || inCheck(new Point2D(x,y), board.WhoseTurn))	//if any squares between the king and rook contain a piece or are in check, the move is illegal
 						{
 							thisSideOkay = false;
+							break;	//could be replaced with a double break of sorts, and then the valid rook adding could be without an if statement
 						}
 					}
 					if (thisSideOkay)
 					{
 						validRookLocations.Add(location);
-						validRooks.Add(rook);
 					}
 				}
 			}
-			return validRooks.Count;
+			return validRookLocations;
 		}
 
 		//TODO: en passant

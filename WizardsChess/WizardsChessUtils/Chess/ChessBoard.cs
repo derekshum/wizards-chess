@@ -130,15 +130,22 @@ namespace WizardsChess.Chess
 		public void UndoMove()
 		{
 			MoveSpecification lastMove = pastMoves[pastMoves.Count - 1];
-			SetPieceAt(lastMove.Start, PieceAt(lastMove.End));
-			SetPieceAtToNull(lastMove.End);
-			if (lastMove.Capture != null)
+			if (lastMove.Castle)
 			{
-				SetPieceAt((Position)lastMove.Capture,capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]);
-				capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam.Count - 1);
+				//TODO: write castling undos
 			}
-			pastMoves.RemoveAt(pastMoves.Count - 1);
-			changeTurn();
+			else
+			{
+				SetPieceAt(lastMove.Start, PieceAt(lastMove.End));
+				SetPieceAtToNull(lastMove.End);
+				if (lastMove.Capture != null)
+				{
+					SetPieceAt((Position)lastMove.Capture, capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]);
+					capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam.Count - 1);
+				}
+				pastMoves.RemoveAt(pastMoves.Count - 1);
+				changeTurn();
+			}
 		}
 
 		//TODO: board reset
