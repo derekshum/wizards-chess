@@ -11,6 +11,7 @@ namespace WizardsChess.Movement
 		Task MovePieceAsync(List<Point2D> steps);
 		Task MoveMotorAsync(Axis axis, int gridUnits);
 		Task GoHomeAsync();
+		Task CalibrateAsync();
 		void EnableMagnet(bool enable);
 	}
 }

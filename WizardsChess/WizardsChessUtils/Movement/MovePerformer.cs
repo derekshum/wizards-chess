@@ -37,12 +37,6 @@ namespace WizardsChess.Movement
 			magnet.TurnOff();
 		}
 
-		public async Task GoHomeAsync()
-		{
-			await xMover.MoveAsync(-xMover.GridPosition);
-			await yMover.MoveAsync(-yMover.GridPosition);
-		}
-
 		public async Task MoveMotorAsync(Axis axis, int gridUnits)
 		{
 			switch (axis)
@@ -57,6 +51,18 @@ namespace WizardsChess.Movement
 					System.Diagnostics.Debug.WriteLine("MovePerformer.MoveMotor() received an invalid axis.");
 					break;
 			}
+		}
+
+		public async Task GoHomeAsync()
+		{
+			await xMover.MoveAsync(-xMover.GridPosition);
+			await yMover.MoveAsync(-yMover.GridPosition);
+		}
+
+		public async Task CalibrateAsync()
+		{
+			await xMover.CalibrateAsync();
+			await yMover.CalibrateAsync();
 		}
 
 		public void EnableMagnet(bool enable)

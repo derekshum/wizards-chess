@@ -58,11 +58,15 @@ namespace WizardsChess
 			var magnetDriver = new MagnetDrv(26);
 
 			var movePerformer = new MovePerformer(calXMover, calYMover, magnetDriver);
+			var motorCalibrationTask = movePerformer.CalibrateAsync();
+
 			var movePlanner = new MovePlanner(logic.Board);
 
 			var moveManager = new MoveManager(movePlanner, movePerformer);
 
 			GameManager manager = new GameManager(await commandInterpreterConstructor, logic, moveManager);
+
+			await motorCalibrationTask;
 #if DEBUG
 			manager.DebugMovePerformer = movePerformer;
 #endif
