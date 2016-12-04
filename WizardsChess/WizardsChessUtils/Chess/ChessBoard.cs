@@ -92,7 +92,7 @@ namespace WizardsChess.Chess
 		{
 			MoveSpecification move = new MoveSpecification(startPosition, endPosition);
 			// Kill the piece at the destination, if there is one
-			var endPiece = boardMatrix[endPosition.Row, endPosition.Column];
+			var endPiece = PieceAt(endPosition);
 			if (endPiece != null)
 			{
 				move.Capture = endPosition;
@@ -101,10 +101,10 @@ namespace WizardsChess.Chess
 				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
 				listOfEndPieceType.Remove(endPosition);
 			} //TODO: else if en passant
-			var startPiece = boardMatrix[startPosition.Row, startPosition.Column];
+			var startPiece = PieceAt(startPosition);
 			startPiece.HasMoved = true;
-			boardMatrix[endPosition.Row, endPosition.Column] = startPiece;
-			boardMatrix[startPosition.Row, startPosition.Column] = null;
+			SetPieceAt(endPosition, startPiece);
+			SetPieceAtToNull(startPosition);
 
 			var listOfStartPieceTypes = pieceLocationsByType[startPiece.Type];
 			// Replace the old position for this piece with the new position in the pieceLocationsByType list
