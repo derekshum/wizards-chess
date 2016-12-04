@@ -15,7 +15,7 @@ namespace WizardsChess.Chess
 		ChessPiece PieceAt(Position location);
 		int NumCapturedPieces(ChessTeam team);
 		Dictionary<PieceType, IList<Point2D>> PieceLocationsByType { get; }
-		IDictionary<ChessTeam, ISet<ChessPiece>> CapturedPiecesByTeam { get; }
+		IDictionary<ChessTeam, IList<ChessPiece>> CapturedPiecesByTeam { get; }
 		IList<MoveSpecification> PastMoves { get; }
 	}
 }

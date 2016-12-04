@@ -16,6 +16,8 @@ namespace WizardsChess.Chess
 			boardMatrix = new ChessPiece[Size, Size];
 			WhoseTurn = ChessTeam.White;
 			setBoard();
+			capturedPiecesByTeam[ChessTeam.White] = new List<ChessPiece>();
+			capturedPiecesByTeam[ChessTeam.Black] = new List<ChessPiece>();
 		}
 
 		/// <summary>
@@ -167,13 +169,6 @@ namespace WizardsChess.Chess
 		{
 			return boardMatrix[location.Row, location.Column];
 		}
-		//TODO:? piece accessor by alphanumeric string
-
-		/*//TODO: accessor (public dictionary) for positionLocationsByType (the whole thing)
-		public IReadOnlyDictionary<PieceType, IReadOnlyList<Point2D>> PieceLocationByType()
-		{
-		   get { return pieceLocationByType; }
-		}*/
 
         //access the number of captured pieces on a team
         public int NumCapturedPieces(ChessTeam team)
@@ -185,7 +180,7 @@ namespace WizardsChess.Chess
         public ChessTeam WhoseTurn;	//TODO: move to ChessLogic? Change to Private (and add modifiers and an accessor?)
 
 		private ChessPiece[,] boardMatrix;
-		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();    //TODO: figure out how to expose pieceLocationsByType properly
+		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>() {;    //TODO: figure out how to expose pieceLocationsByType properly
 		public Dictionary<PieceType, IList<Point2D>> PieceLocationsByType
 		{
 			get
@@ -194,12 +189,8 @@ namespace WizardsChess.Chess
 				return temp;
 			}
 		}
-		private IDictionary<ChessTeam, ISet<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
-		{
-			{ChessTeam.White, new HashSet<ChessPiece>()},
-			{ChessTeam.Black, new HashSet<ChessPiece>()}
-		};
-		public IDictionary<ChessTeam, ISet<ChessPiece>> CapturedPiecesByTeam
+		private IDictionary<ChessTeam, IList<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, IList<ChessPiece>>();
+		public IDictionary<ChessTeam, IList<ChessPiece>> CapturedPiecesByTeam
 		{
 			get
 			{
