@@ -26,7 +26,7 @@ namespace WizardsChess.Movement
 			StepPosition = 0;
 			GridPosition = 0;
 			estimatedExtraSteps = 100;
-			StepsPerGridUnit = 225;
+			StepsPerGridUnit = 100;
 			millisecondsPerStep = msPerStep;
 
 			this.axis = axis;
@@ -145,9 +145,9 @@ namespace WizardsChess.Movement
 				// Adjust the number of steps if it is very close to the estimated number of Extra steps
 				if (steps < estimatedExtraSteps / 2)
 					steps = Math.Abs(distanceToMove) / 2;
-				System.Diagnostics.Debug.WriteLine($"Moving the {axis} axis {steps} steps.");
-				stepCounter.CountSteps(steps, getMoveTimeout(steps));
 				var newMotorState = distanceToMove > 0 ? MotorState.Forward : MotorState.Backward;
+				System.Diagnostics.Debug.WriteLine($"Moving the {axis} axis {steps} steps {newMotorState} from position {StepPosition}.");
+				stepCounter.CountSteps(steps, getMoveTimeout(steps));
 				currentMovePolarity = distanceToMove > 0 ? 1 : -1;
 				motorDrv.SetState(newMotorState);
 			}
@@ -165,7 +165,7 @@ namespace WizardsChess.Movement
 			{
 				var newMotorState = steps > 0 ? MotorState.Forward : MotorState.Backward;
 				currentMovePolarity = steps > 0 ? 1 : -1;
-				System.Diagnostics.Debug.WriteLine($"Moving the {axis} axis {steps} steps.");
+				System.Diagnostics.Debug.WriteLine($"Moving the {axis} axis {steps} steps {newMotorState} from position {StepPosition}.");
 				stepCounter.CountSteps(Math.Abs(steps), getMoveTimeout(steps));
 				motorDrv.SetState(newMotorState);
 			}
@@ -188,6 +188,7 @@ namespace WizardsChess.Movement
 			var expectedTopPos = topInterrupt.GridPosition * StepsPerGridUnit;
 			int offset = (int)Math.Round(topPos - expectedTopPos);
 
+			System.Diagnostics.Debug.WriteLine($"Subtracting {offset} from StepPosition {StepPosition}.");
 			StepPosition -= offset;
 			GridPosition = convertStepsToGridUnits(StepPosition);
 			System.Diagnostics.Debug.WriteLine($"{axis} axis updated stepPosition to {StepPosition} with GridPosition {GridPosition}, and stepsPerGridUnit {StepsPerGridUnit}.");
@@ -205,13 +206,14 @@ namespace WizardsChess.Movement
 
 		private void finishedCounting(object sender, StepEventArgs stepEventArgs)
 		{
+			System.Diagnostics.Debug.WriteLine($"Counted {stepEventArgs.NumSteps} regular steps in the {axis} axis in state {state}");
 			motorDrv.SetState(MotorState.Stopped);
 			updatePosition(stepEventArgs.NumSteps);
 		}
 
 		private void additionalStepsCounted(object sender, StepEventArgs stepEventArgs)
 		{
-			System.Diagnostics.Debug.WriteLine($"Counted {stepEventArgs.NumSteps} additional steps in the {axis} axis");
+			System.Diagnostics.Debug.WriteLine($"Counted {stepEventArgs.NumSteps} additional steps in the {axis} axis in state {state}");
 			updatePosition(stepEventArgs.NumSteps);
 			estimatedExtraSteps = stepEventArgs.NumSteps;
 
@@ -221,7 +223,7 @@ namespace WizardsChess.Movement
 		private void moveTimedOut(object sender, StepEventArgs stepEventArgs)
 		{
 			motorDrv.SetState(MotorState.Stopped);
-			System.Diagnostics.Debug.WriteLine($"Move timed out after {stepEventArgs.NumSteps} steps in the {axis} axis.");
+			System.Diagnostics.Debug.WriteLine($"Move timed out after {stepEventArgs.NumSteps} steps in the {axis} axis in state {state}.");
 			updatePosition(stepEventArgs.NumSteps);
 			if (state == MoveState.Moving)
 			{
@@ -244,6 +246,7 @@ namespace WizardsChess.Movement
 				state = MoveState.Stopped;
 				moveAsync(gridMin - gridMax).Wait();
 				state = MoveState.HomingBackwards;
+				return;
 			}
 			else if (state == MoveState.HomingBackwards)
 			{
@@ -254,7 +257,6 @@ namespace WizardsChess.Movement
 			{
 				System.Diagnostics.Debug.WriteLine($"{axis} axis finished PreparingToCalibrate.");
 				// Ready to turn around to calibrate
-				calibrationStartPosition = StepPosition;
 				// Turn around and go "calibrationSteps" number of steps
 				moveInSteps(CALIBRATION_STEPS * currentMovePolarity * -1);
 				state = MoveState.Calibrating;
@@ -278,8 +280,8 @@ namespace WizardsChess.Movement
 
 		private void topEdgeDetected(object sender, GpioValueChangedEventArgs edgeDetectArgs)
 		{
-			var pos = stepCounter.Position*currentMovePolarity + calibrationStartPosition;
-			System.Diagnostics.Debug.WriteLine($"{axis} axis detected the top interrupter's edge {edgeDetectArgs.Edge}.");
+			var pos = stepCounter.Position*currentMovePolarity + StepPosition;
+			System.Diagnostics.Debug.WriteLine($"{axis} axis detected the top interrupter's {edgeDetectArgs.Edge} during {state}.");
 			switch (state)
 			{
 				case MoveState.HomingForwards:
@@ -287,8 +289,8 @@ namespace WizardsChess.Movement
 					{
 						// Passed the upper top edge, time to turn around and calibrate
 						// Stop the motor
-						moveAsync(0).Wait();
 						System.Diagnostics.Debug.WriteLine($"Preparing to perform the Calibrate move for the {axis} axis.");
+						moveAsync(0).Wait();
 						state = MoveState.PreparingToCalibrate;
 					}
 					break;
@@ -360,8 +362,8 @@ namespace WizardsChess.Movement
 
 		private void bottomEdgeDetected(object sender, GpioValueChangedEventArgs edgeDetectArgs)
 		{
-			var pos = stepCounter.Position * currentMovePolarity + calibrationStartPosition;
-			System.Diagnostics.Debug.WriteLine($"{axis} axis detected the bottom interrupter's edge {edgeDetectArgs.Edge}.");
+			var pos = stepCounter.Position * currentMovePolarity + StepPosition;
+			System.Diagnostics.Debug.WriteLine($"{axis} axis detected the bottom interrupter's {edgeDetectArgs.Edge} during {state}.");
 			switch (state)
 			{
 				
@@ -369,7 +371,7 @@ namespace WizardsChess.Movement
 					// Reached the upper part of the top interrupt, enter calibration without stopping
 					if (edgeDetectArgs.Edge == GpioEdge.FallingEdge)
 					{
-						upperTopPosition = pos;
+						lowerBottomPosition = pos;
 						state = MoveState.Calibrating;
 						System.Diagnostics.Debug.WriteLine($"Performing the Calibrate move for the {axis} axis.");
 						moveInSteps(CALIBRATION_STEPS * currentMovePolarity);
@@ -380,8 +382,8 @@ namespace WizardsChess.Movement
 					{
 						// Passed the upper top edge, time to turn around and calibrate
 						// Stop the motor
-						moveAsync(0).Wait();
 						System.Diagnostics.Debug.WriteLine($"Preparing to perform the Calibrate move for the {axis} axis.");
+						moveAsync(0).Wait();
 						state = MoveState.PreparingToCalibrate;
 					}
 					break;
@@ -460,7 +462,6 @@ namespace WizardsChess.Movement
 		private const int CALIBRATION_STEPS = 650;
 
 		private bool isCalibrating;
-		private int calibrationStartPosition;
 		private int? upperTopPosition;
 		private int? lowerTopPosition;
 		private int? upperBottomPosition;

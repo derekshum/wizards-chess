@@ -12,6 +12,10 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 	{
 		public event GpioValueChangedEventHandler ValueChanged;
 
+		public int PinNum { get; }
+
+		public MockGpio() { PinNum = 1; }
+
 		protected void onValueChanged()
 		{
 			ValueChanged?.Invoke(this, new GpioValueChangedEventArgs(_edge));

@@ -11,10 +11,12 @@ namespace WizardsChess.Movement.Drv
 	class GpioPinWrapper : IGpioPin, IDisposable
 	{
 		public event GpioValueChangedEventHandler ValueChanged;
+		public int PinNum { get; }
 
 		public GpioPinWrapper(int pinNum, GpioPinDriveMode mode, GpioPinValue value=GpioPinValue.Low)
 		{
 			var gpio = GpioController.GetDefault();
+			this.PinNum = pinNum;
 			pin = gpio.OpenPin(pinNum);
 			pin.Write(value);
 			pin.SetDriveMode(mode);

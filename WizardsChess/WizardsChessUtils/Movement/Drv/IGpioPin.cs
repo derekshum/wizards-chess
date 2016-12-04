@@ -17,6 +17,8 @@ namespace WizardsChess.Movement.Drv
 	{
 		event GpioValueChangedEventHandler ValueChanged;
 
+		int PinNum { get; }
+
 		GpioValue Read();
 
 		void Write(GpioValue val);

@@ -63,6 +63,7 @@ namespace WizardsChess.Movement
 		{
 			await xMover.CalibrateAsync();
 			await yMover.CalibrateAsync();
+			await GoHomeAsync();
 		}
 
 		public void EnableMagnet(bool enable)

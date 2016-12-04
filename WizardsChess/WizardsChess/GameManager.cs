@@ -39,21 +39,21 @@ namespace WizardsChess
 
 			ChessLogic logic = new ChessLogic();
 
-			var motorDriverX = new MotorDrv(23, 24);
-			var motorDriverY = new MotorDrv(20, 21);
-			var stepCountPinX = new GpioPinWrapper(6, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
-			var stepCountPinY = new GpioPinWrapper(5, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
-			var stepClearPinX = new GpioPinWrapper(19, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
-			var stepClearPinY = new GpioPinWrapper(13, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
+			var motorDriverX = new MotorDrv(20, 21);
+			var motorDriverY = new MotorDrv(24, 23);
+			var stepCountPinX = new GpioPinWrapper(5, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
+			var stepCountPinY = new GpioPinWrapper(6, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
+			var stepClearPinX = new GpioPinWrapper(13, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
+			var stepClearPinY = new GpioPinWrapper(19, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
 			var stepCounterX = new StepCounter(stepCountPinX, stepClearPinX);
-			var stepCounterY = new StepCounter(stepClearPinX, stepClearPinY);
-			var topInterrupterX = new PhotoInterrupter(9, 1);
-			var bottomInterrupterX = new PhotoInterrupter(10, -1);
-			var topInterrupterY = new PhotoInterrupter(11, 1);
-			var bottomInterrupterY = new PhotoInterrupter(12, -1);
+			var stepCounterY = new StepCounter(stepCountPinY, stepClearPinY);
+			var topInterrupterX = new PhotoInterrupter(17, 1);
+			var bottomInterrupterX = new PhotoInterrupter(27, -1);
+			var topInterrupterY = new PhotoInterrupter(25, 1);
+			var bottomInterrupterY = new PhotoInterrupter(22, -1);
 
-			var calXMover = new CalibratedMotorMover(Axis.X, 17, -17, 3, motorDriverX, stepCounterX, topInterrupterX, bottomInterrupterX);
-			var calYMover = new CalibratedMotorMover(Axis.Y, 23, -23, 3, motorDriverY, stepCounterY, topInterrupterY, bottomInterrupterY);
+			var calXMover = new CalibratedMotorMover(Axis.X, 23, -23, 3, motorDriverX, stepCounterX, topInterrupterX, bottomInterrupterX);
+			var calYMover = new CalibratedMotorMover(Axis.Y, 17, -17, 3, motorDriverY, stepCounterY, topInterrupterY, bottomInterrupterY);
 
 			var magnetDriver = new MagnetDrv(26);
 

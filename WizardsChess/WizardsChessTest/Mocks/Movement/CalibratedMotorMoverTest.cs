@@ -15,23 +15,50 @@ namespace WizardsChessTest.Mocks.Movement
 			stepCounter = new StepCounter(mockMotor, new MockGpio());
 			topInterrupter = new MockPhotoInterrupter(1, stepsPerGridUnit - 5, stepsPerGridUnit + 5, mockMotor);
 			bottomInterrupter = new MockPhotoInterrupter(-1, -stepsPerGridUnit - 5, -stepsPerGridUnit + 5, mockMotor);
-
-			calibratedMover = new CalibratedMotorMover(Axis.X, 10, -10, 15, mockMotor, stepCounter, topInterrupter, bottomInterrupter);
 		}
 
 		[TestMethod]
 		public void TestMotorCalibration()
 		{
+			constructFreshCalibrator();
 			calibratedMover.CalibrateAsync().Wait();
 			Assert.AreEqual(50, (int)Math.Round(calibratedMover.StepsPerGridUnit), "Steps per grid unit were incorrect.");
+			Assert.IsTrue(calibratedMover.StepPosition < -50, $"Final position {calibratedMover.StepPosition} should be less than -50.");
 		}
 
 		[TestMethod]
 		public void TestOffsetMotorCalibration()
 		{
 			mockMotor.Position = 20;
+			constructFreshCalibrator();
 			calibratedMover.CalibrateAsync().Wait();
 			Assert.AreEqual(50, (int)Math.Round(calibratedMover.StepsPerGridUnit), "Steps per grid unit were incorrect.");
+			Assert.IsTrue(calibratedMover.StepPosition < -50, $"Final position {calibratedMover.StepPosition} should be less than -50.");
+		}
+
+		[TestMethod]
+		public void TestMotorCalibrationFromAboveInterrupts()
+		{
+			mockMotor.Position = 100;
+			constructFreshCalibrator();
+			calibratedMover.CalibrateAsync().Wait();
+			Assert.AreEqual(50, (int)Math.Round(calibratedMover.StepsPerGridUnit), "Steps per grid unit were incorrect.");
+			Assert.IsTrue(calibratedMover.StepPosition < -50, $"Final position {calibratedMover.StepPosition} should be less than -50.");
+		}
+
+		[TestMethod]
+		public void TestMotorCalibrationFromBelowInterrupts()
+		{
+			mockMotor.Position = -100;
+			constructFreshCalibrator();
+			calibratedMover.CalibrateAsync().Wait();
+			Assert.AreEqual(50, (int)Math.Round(calibratedMover.StepsPerGridUnit), "Steps per grid unit were incorrect.");
+			Assert.IsTrue(calibratedMover.StepPosition > 50, $"Final position {calibratedMover.StepPosition} should be greater than 50.");
+		}
+
+		private void constructFreshCalibrator()
+		{
+			calibratedMover = new CalibratedMotorMover(Axis.X, 3, -3, 20, mockMotor, stepCounter, topInterrupter, bottomInterrupter);
 		}
 
 		private IStepCounter stepCounter;
