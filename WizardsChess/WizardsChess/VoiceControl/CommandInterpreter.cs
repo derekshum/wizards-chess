@@ -76,7 +76,7 @@ namespace WizardsChess.VoiceControl
 			}
 			confirmPieceSpeech.Append($"or {possiblePositions[i]}?");
 
-			await communicator.Speak(confirmPieceSpeech.ToString());
+			await speakAsync(confirmPieceSpeech.ToString());
 
 			possiblePieceType = pieceType;
 			possiblePiecePositions = possiblePositions;
@@ -193,7 +193,7 @@ namespace WizardsChess.VoiceControl
 			//await listener.StopListeningAsync();
 			commandHypothesis = e;
 			await changeStateAsync(ListeningState.Hypothesis);
-			await communicator.Speak($"Did you say: {e.CommandText}");
+			await speakAsync($"Did you say: {e.CommandText}");
 			//await listener.StartListeningAsync();
 		}
 
@@ -266,7 +266,7 @@ namespace WizardsChess.VoiceControl
 					break;
 				case ListeningState.Move:
 				default:
-					await communicator.Speak("Ok. Please repeat your previous command.");
+					await speakAsync("Ok. Please repeat your previous command.");
 					break;
 			}
 		}
@@ -290,14 +290,14 @@ namespace WizardsChess.VoiceControl
 			else if (command.Type != CommandType.Cancel)
 			{
 				// Try piece confirmation again if their answer just didn't make sense
-				await communicator.Speak("That position was not valid.");
+				await speakAsync("That position was not valid.");
 				await ConfirmPieceSelectionAsync(possiblePieceType, possiblePiecePositions);
 				return;
 			}
 			else
 			{
 				// If they cancel, return to move command state
-				await communicator.Speak("Ok. Please repeat your move command.");
+				await speakAsync("Ok. Please repeat your move command.");
 			}
 			await changeStateAsync(ListeningState.Move);
 		}
@@ -314,6 +314,13 @@ namespace WizardsChess.VoiceControl
 			}
 
 			return false;
+		}
+
+		private async Task speakAsync(string text)
+		{
+			await listener.StopListeningAsync();
+			await communicator.SpeakAsync(text);
+			await listener.StartListeningAsync();
 		}
 		#endregion
 	}

@@ -8,6 +8,6 @@ namespace WizardsChess.VoiceControl
 {
 	public interface ICommunicator
 	{
-		Task Speak(string text);
+		Task SpeakAsync(string text);
 	}
 }
