@@ -24,13 +24,13 @@ namespace WizardsChessTest.Chess
 			//logic.MovePiece(new Position("C", "4"), new Position("C", "4")); //threw appropriate exception
 			//board.MovePiece(new Position("C", "4"), new Position("C", "4"));
 			Assert.AreEqual(logic.Board.ToString(), board.ToString());
-			Assert.AreEqual(logic.Board.ToString(), "a");	//display board
+			//Assert.AreEqual(logic.Board.ToString(), "a");	//display board
 		}
 		[TestMethod]
 		public void TestMethod2()
 		{
 			ChessLogic logic = new ChessLogic();
-			var pawnPlaces = logic.FindPotentialPiecesForMove(PieceType.Rook, new Position("C","3"));
+			var pawnPlaces = logic.FindPotentialPiecesForMove(PieceType.Pawn, new Position("C","3"));
 			Assert.AreEqual(pawnPlaces.Count, 1);
 		}
 		[TestMethod]
