@@ -174,9 +174,9 @@ namespace WizardsChess.Chess
 
 		//TODO: detect Checkmate
 
-		public void Castle()
+		public void Castle(Point2D rookPos)
 		{
-			//TODO: write this ***
+			board.Castle(rookPos);
 		}
 
 		public List<Point2D> validRookLocationsForCastling()	//TODO: this method could be made into castling or return more helpful things

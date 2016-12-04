@@ -187,7 +187,7 @@ namespace WizardsChess
 			}
 			else if (validRookLocations.Count == 1)
 			{
-				//chessLogic.Castle(validRookLocations[1])
+				chessLogic.Castle(validRookLocations[0]);
 			}
 			else	// validRookLocations.Count == 2
 			{

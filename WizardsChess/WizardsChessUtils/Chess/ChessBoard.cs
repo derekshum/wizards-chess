@@ -114,6 +114,20 @@ namespace WizardsChess.Chess
 			changeTurn();
 		}
 
+		public void Castle(Point2D rookPos)	//use position?
+		{
+			//TODO: write this *** use king Col and the row of the rook to logic it out
+			/*
+			if (WhoseTurn == ChessTeam.White)
+			{
+				//TODO: write this ***
+			}
+			else //WhoseTurn == ChessTeam.Black
+			{
+				//TODO: write this ***
+			}
+			*/
+		}
 		public void changeTurn()
 		{
 			if (WhoseTurn == ChessTeam.Black)
@@ -155,9 +169,19 @@ namespace WizardsChess.Chess
 			boardMatrix[p.Row, p.Column] = piece;
 		}
 
+		private void SetPieceAt(Point2D p2, ChessPiece piece)
+		{
+			boardMatrix[p2.Y, p2.X] = piece;
+		}
+
 		private void SetPieceAtToNull(Position p)
 		{
 			boardMatrix[p.Row, p.Column] = null;
+		}
+
+		private void SetPieceAtToNull(Point2D p2)
+		{
+			boardMatrix[p2.Y, p2.X] = null;
 		}
 
 
