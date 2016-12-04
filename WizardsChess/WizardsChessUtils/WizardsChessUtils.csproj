@@ -56,7 +56,6 @@
     <Compile Include="Movement\Axis.cs" />
     <Compile Include="Movement\CalibratedMotorMover.cs" />
     <Compile Include="Movement\Drv\Events\GpioValueChangedEventArgs.cs" />
-    <Compile Include="Movement\Drv\Events\InterruptEventArgs.cs" />
     <Compile Include="Movement\Drv\Events\StepEventArgs.cs" />
     <Compile Include="Movement\Drv\IGpioPin.cs" />
     <Compile Include="Movement\Drv\IMagnetDrv.cs" />

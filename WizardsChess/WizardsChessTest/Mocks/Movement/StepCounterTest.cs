@@ -14,7 +14,7 @@ namespace WizardsChessTest.Mocks.Movement
 	{
 		public StepCounterTest()
 		{
-			mockMotor = new MotorDrv();
+			mockMotor = new MockMotor();
 		}
 
 		[TestMethod]
@@ -92,11 +92,39 @@ namespace WizardsChessTest.Mocks.Movement
 			{
 				Task.Delay(10).Wait();
 			}
+			var firstStepsReceived = stepsReceived;
 			Assert.IsTrue(stepsReceived < 100, $"Overlapping count step did not reset target count properly. Counted {stepsReceived} steps.");
+			isCounting = true;
+			Task.Delay(convertStepsToTimeOut(100)).Wait();
+			Assert.AreEqual(firstStepsReceived, stepsReceived, "Counted more steps after delay!");
 			checkForErrors();
 		}
 
-		private MotorDrv mockMotor;
+		[TestMethod]
+		public void TestStepCounterStopMidCount()
+		{
+			if (stepCounter == null)
+			{
+				TestStepCounterConstruction();
+			}
+
+			resetTestVariables();
+
+			isCounting = true;
+			stepCounter.CountSteps(100, convertStepsToTimeOut(100));
+			runMotor();
+			Task.Delay(80).Wait();
+			stepCounter.CountSteps(0, convertStepsToTimeOut(0));
+			while (isCounting)
+			{
+				Task.Delay(10).Wait();
+			}
+			var firstStepsReceived = stepsReceived;
+			Assert.IsTrue(stepsReceived < 100 && stepsReceived > 0, $"Overlapping count step did not reset target count properly. Counted {stepsReceived} steps which was not between 0 and 100.");
+			checkForErrors();
+		}
+
+		private MockMotor mockMotor;
 		private StepCounter stepCounter;
 
 		private int stepsReceived;
@@ -114,7 +142,7 @@ namespace WizardsChessTest.Mocks.Movement
 			var pos = mockMotor.Position;
 			assert(pos == e.NumSteps, $"Expected {pos} at finished counting, received {e.NumSteps}.");
 			stepsReceived = e.NumSteps;
-			softStopMotorAsync();
+			stopMotor();
 		}
 
 		private void additionalStepsCounted(object sender, StepEventArgs e)
@@ -140,11 +168,6 @@ namespace WizardsChessTest.Mocks.Movement
 		private void stopMotor()
 		{
 			mockMotor.SetState(MotorState.Stopped);
-		}
-
-		private async Task softStopMotorAsync()
-		{
-			await Task.Delay(300).ContinueWith((prev) => { mockMotor.SetState(MotorState.Stopped); });
 		}
 
 		private void runMotor()

@@ -30,7 +30,25 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 			}
 		}
 
-		protected GpioValue value;
+		protected GpioValue value
+		{
+			get { return _value; }
+			set
+			{
+				if (value != _value)
+				{
+					_value = value;
+					if (_value == GpioValue.High)
+					{
+						edge = GpioEdge.RisingEdge;
+					}
+					else
+					{
+						edge = GpioEdge.FallingEdge;
+					}
+				}
+			}
+		}
 
 		public GpioValue Read()
 		{
@@ -43,5 +61,6 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 		}
 
 		private GpioEdge _edge;
+		private GpioValue _value;
 	}
 }

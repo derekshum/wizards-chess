@@ -7,11 +7,8 @@ using WizardsChess.Movement.Drv.Events;
 
 namespace WizardsChess.Movement.Drv
 {
-	public interface IPhotoInterrupter
+	public interface IPhotoInterrupter : IGpioPin
 	{
 		int GridPosition { get; }
-		event InterruptEventHandler EdgeDetected;
 	}
-
-	public delegate void InterruptEventHandler(Object sender, InterruptEventArgs e);
 }

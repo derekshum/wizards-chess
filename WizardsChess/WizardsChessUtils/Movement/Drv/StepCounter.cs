@@ -61,7 +61,7 @@ namespace WizardsChess.Movement.Drv
 						{
 							targetNumSteps = stepsSoFar;
 							state = CounterState.WaitingForExtraSteps;
-							onTargetReached(numSteps);
+							onTargetReached(targetNumSteps);
 							return;
 						}
 						targetNumSteps = stepsSoFar + numSteps;
@@ -111,7 +111,7 @@ namespace WizardsChess.Movement.Drv
 		{
 			if (additionalStepsCallback == null || (int)additionalStepsCallback.Status > 4)
 			{
-				additionalStepsCallback = Task.Delay(500);
+				additionalStepsCallback = Task.Delay(1000);
 				additionalStepsCallback.ContinueWith((prev) => {
 					onAdditionalStepsCounted();
 				});

@@ -20,13 +20,14 @@ namespace WizardsChess.Movement
 	
 	public class CalibratedMotorMover
 	{
-		public CalibratedMotorMover(Axis axis, int gridMax, int gridMin, IMotorDrv mtrDrv, IStepCounter stepCntr,
+		public CalibratedMotorMover(Axis axis, int gridMax, int gridMin, int msPerStep, IMotorDrv mtrDrv, IStepCounter stepCntr,
 			IPhotoInterrupter topPhotoInterrupt, IPhotoInterrupter bottomPhotoInterrupt)
 		{
-			stepPosition = 0;
+			StepPosition = 0;
 			GridPosition = 0;
 			estimatedExtraSteps = 100;
-			stepsPerGridUnit = 225;
+			StepsPerGridUnit = 225;
+			millisecondsPerStep = msPerStep;
 
 			this.axis = axis;
 			state = MoveState.Stopped;
@@ -43,14 +44,24 @@ namespace WizardsChess.Movement
 			stepCounter.FinishedCounting += finishedCounting;
 			stepCounter.AdditionalStepsCounted += additionalStepsCounted;
 			stepCounter.MoveTimedOut += moveTimedOut;
-			topInterrupt.EdgeDetected += topEdgeDetected;
-			bottomInterrupt.EdgeDetected += bottomEdgeDetected;
+			topInterrupt.ValueChanged += topEdgeDetected;
+			bottomInterrupt.ValueChanged += bottomEdgeDetected;
 		}
 
 		/// <summary>
 		/// The current GridPosition. This is invalid if CalibratedMotorMove is in the middle of a move.
 		/// </summary>
 		public int GridPosition { get; private set; }
+
+		/// <summary>
+		/// The current StepPosition. This is invalid if CalibratedMotorMove is in the middle of a move.
+		/// </summary>
+		public int StepPosition { get; private set; }
+
+		/// <summary>
+		/// The number of steps between grid units, as a double.
+		/// </summary>
+		public double StepsPerGridUnit { get; private set; }
 
 		/// <summary>
 		/// Calibrates this motor. This moves the motor across the photointerrupters to determine the grid size and absolute position.
@@ -69,15 +80,15 @@ namespace WizardsChess.Movement
 			lowerTopPosition = null;
 			upperTopPosition = null;
 
-			state = MoveState.HomingForwards;
-			isCalibrating = true;
-
 			// TODO: Optimize move direction based on current position
 			// Look for the interrupter going forwards first
+			isCalibrating = true;
+			System.Diagnostics.Debug.WriteLine($"Homing forwards on {axis} axis.");
 			await moveAsync((gridMax - gridMin) / 2);
+			state = MoveState.HomingForwards;
 
 			// Don't return until calibration is complete
-			while(isCalibrating)
+			while (isCalibrating)
 			{
 				await Task.Delay(300);
 			}
@@ -116,26 +127,28 @@ namespace WizardsChess.Movement
 		{
 			if (gridUnits == 0)
 			{
+				System.Diagnostics.Debug.WriteLine($"Stopping the {axis} axis.");
 				motorDrv.SetState(MotorState.Stopped);
 				stepCounter.CountSteps(0, TimeSpan.FromMilliseconds(100));
 			}
 			else
 			{
-				var newMotorState = gridUnits > 0 ? MotorState.Forward : MotorState.Backward;
-				currentMovePolarity = gridUnits > 0 ? 1 : -1;
 				while (state != MoveState.Stopped)
 				{
 					await Task.Delay(50);
 				}
 
-				var offset = stepPosition - GridPosition;
+				var offset = StepPosition - convertGridUnitsToSteps(GridPosition);
 				var distanceToMove = convertGridUnitsToSteps(gridUnits) - offset;
 
 				var steps = Math.Abs(distanceToMove) - estimatedExtraSteps;
 				// Adjust the number of steps if it is very close to the estimated number of Extra steps
 				if (steps < estimatedExtraSteps / 2)
 					steps = Math.Abs(distanceToMove) / 2;
+				System.Diagnostics.Debug.WriteLine($"Moving the {axis} axis {steps} steps.");
 				stepCounter.CountSteps(steps, getMoveTimeout(steps));
+				var newMotorState = distanceToMove > 0 ? MotorState.Forward : MotorState.Backward;
+				currentMovePolarity = distanceToMove > 0 ? 1 : -1;
 				motorDrv.SetState(newMotorState);
 			}
 		}
@@ -144,6 +157,7 @@ namespace WizardsChess.Movement
 		{
 			if (steps == 0)
 			{
+				System.Diagnostics.Debug.WriteLine($"Stopping the {axis} axis.");
 				motorDrv.SetState(MotorState.Stopped);
 				stepCounter.CountSteps(0, TimeSpan.FromMilliseconds(100));
 			}
@@ -151,39 +165,42 @@ namespace WizardsChess.Movement
 			{
 				var newMotorState = steps > 0 ? MotorState.Forward : MotorState.Backward;
 				currentMovePolarity = steps > 0 ? 1 : -1;
-				stepCounter.CountSteps(steps, getMoveTimeout(steps));
+				System.Diagnostics.Debug.WriteLine($"Moving the {axis} axis {steps} steps.");
+				stepCounter.CountSteps(Math.Abs(steps), getMoveTimeout(steps));
 				motorDrv.SetState(newMotorState);
 			}
 		}
 
 		private TimeSpan getMoveTimeout(int steps)
 		{
-			return TimeSpan.FromMilliseconds(steps * 3);
+			return TimeSpan.FromMilliseconds(Math.Abs(steps) * millisecondsPerStep * 2);
 		}
 
 		private void updateCalibrationSettings()
 		{
+			System.Diagnostics.Debug.WriteLine($"Measured interrupt positions:\n\ttop: {lowerTopPosition}\t{upperTopPosition}\n\tbottom: {lowerBottomPosition}\t{upperBottomPosition}");
 			float topPos = (float)(upperTopPosition.Value + lowerTopPosition.Value) / 2;
 			float bottomPos = (float)(upperBottomPosition.Value + lowerBottomPosition.Value) / 2;
 
 			var differenceInGridUnits = topInterrupt.GridPosition - bottomInterrupt.GridPosition;
-			stepsPerGridUnit = (topPos - bottomPos) / differenceInGridUnits;
+			StepsPerGridUnit = (topPos - bottomPos) / differenceInGridUnits;
 
-			var expectedTopPos = topInterrupt.GridPosition * stepsPerGridUnit;
+			var expectedTopPos = topInterrupt.GridPosition * StepsPerGridUnit;
 			int offset = (int)Math.Round(topPos - expectedTopPos);
 
-			stepPosition -= offset;
-			GridPosition = convertStepsToGridUnits(stepPosition);
+			StepPosition -= offset;
+			GridPosition = convertStepsToGridUnits(StepPosition);
+			System.Diagnostics.Debug.WriteLine($"{axis} axis updated stepPosition to {StepPosition} with GridPosition {GridPosition}, and stepsPerGridUnit {StepsPerGridUnit}.");
 		}
 
 		private int convertGridUnitsToSteps(int gridUnits)
 		{
-			return (int)Math.Round(gridUnits * stepsPerGridUnit);
+			return (int)Math.Round(gridUnits * StepsPerGridUnit);
 		}
 
 		private int convertStepsToGridUnits(int steps)
 		{
-			return (int)Math.Round((float)steps / stepsPerGridUnit);
+			return (int)Math.Round((float)steps / StepsPerGridUnit);
 		}
 
 		private void finishedCounting(object sender, StepEventArgs stepEventArgs)
@@ -237,7 +254,7 @@ namespace WizardsChess.Movement
 			{
 				System.Diagnostics.Debug.WriteLine($"{axis} axis finished PreparingToCalibrate.");
 				// Ready to turn around to calibrate
-				calibrationStartPosition = stepPosition;
+				calibrationStartPosition = StepPosition;
 				// Turn around and go "calibrationSteps" number of steps
 				moveInSteps(CALIBRATION_STEPS * currentMovePolarity * -1);
 				state = MoveState.Calibrating;
@@ -255,36 +272,39 @@ namespace WizardsChess.Movement
 
 		private void updatePosition(int numSteps)
 		{
-			stepPosition += numSteps * currentMovePolarity;
-			GridPosition = convertStepsToGridUnits(stepPosition);
+			StepPosition += numSteps * currentMovePolarity;
+			GridPosition = convertStepsToGridUnits(StepPosition);
 		}
 
-		private void topEdgeDetected(object sender, InterruptEventArgs interruptEventArgs)
+		private void topEdgeDetected(object sender, GpioValueChangedEventArgs edgeDetectArgs)
 		{
 			var pos = stepCounter.Position*currentMovePolarity + calibrationStartPosition;
+			System.Diagnostics.Debug.WriteLine($"{axis} axis detected the top interrupter's edge {edgeDetectArgs.Edge}.");
 			switch (state)
 			{
 				case MoveState.HomingForwards:
-					if (interruptEventArgs.Edge == InterruptEdge.RisingEdge)
+					if (edgeDetectArgs.Edge == GpioEdge.RisingEdge)
 					{
 						// Passed the upper top edge, time to turn around and calibrate
 						// Stop the motor
 						moveAsync(0).Wait();
+						System.Diagnostics.Debug.WriteLine($"Preparing to perform the Calibrate move for the {axis} axis.");
 						state = MoveState.PreparingToCalibrate;
 					}
 					break;
 				case MoveState.HomingBackwards:
 					// Reached the upper part of the top interrupt, enter calibration without stopping
-					if (interruptEventArgs.Edge == InterruptEdge.FallingEdge)
+					if (edgeDetectArgs.Edge == GpioEdge.FallingEdge)
 					{
 						upperTopPosition = pos;
+						System.Diagnostics.Debug.WriteLine($"Performing the Calibrate move for the {axis} axis.");
 						state = MoveState.Calibrating;
 						moveInSteps(CALIBRATION_STEPS * currentMovePolarity);
 					}
 					break;
 				case MoveState.Calibrating:
 					// Update position
-					if (interruptEventArgs.Edge == InterruptEdge.FallingEdge)
+					if (edgeDetectArgs.Edge == GpioEdge.FallingEdge)
 					{
 						if (currentMovePolarity > 0)
 						{
@@ -306,12 +326,13 @@ namespace WizardsChess.Movement
 						{
 							upperTopPosition = pos;
 							// Done calibrating, time to stop
+							System.Diagnostics.Debug.WriteLine($"{axis} axis done calibration move, stopping motor.");
 							moveAsync(0).Wait();
 						}
 					}
 					break;
 				case MoveState.Moving:
-					if (interruptEventArgs.Edge == InterruptEdge.FallingEdge)
+					if (edgeDetectArgs.Edge == GpioEdge.FallingEdge)
 					{
 						if (currentMovePolarity > 0)
 						{
@@ -337,33 +358,36 @@ namespace WizardsChess.Movement
 			}
 		}
 
-		private void bottomEdgeDetected(object sender, InterruptEventArgs interruptEventArgs)
+		private void bottomEdgeDetected(object sender, GpioValueChangedEventArgs edgeDetectArgs)
 		{
 			var pos = stepCounter.Position * currentMovePolarity + calibrationStartPosition;
+			System.Diagnostics.Debug.WriteLine($"{axis} axis detected the bottom interrupter's edge {edgeDetectArgs.Edge}.");
 			switch (state)
 			{
 				
 				case MoveState.HomingForwards:
 					// Reached the upper part of the top interrupt, enter calibration without stopping
-					if (interruptEventArgs.Edge == InterruptEdge.FallingEdge)
+					if (edgeDetectArgs.Edge == GpioEdge.FallingEdge)
 					{
 						upperTopPosition = pos;
 						state = MoveState.Calibrating;
+						System.Diagnostics.Debug.WriteLine($"Performing the Calibrate move for the {axis} axis.");
 						moveInSteps(CALIBRATION_STEPS * currentMovePolarity);
 					}
 					break;
 				case MoveState.HomingBackwards:
-					if (interruptEventArgs.Edge == InterruptEdge.RisingEdge)
+					if (edgeDetectArgs.Edge == GpioEdge.RisingEdge)
 					{
 						// Passed the upper top edge, time to turn around and calibrate
 						// Stop the motor
 						moveAsync(0).Wait();
+						System.Diagnostics.Debug.WriteLine($"Preparing to perform the Calibrate move for the {axis} axis.");
 						state = MoveState.PreparingToCalibrate;
 					}
 					break;
 				case MoveState.Calibrating:
 					// Update position
-					if (interruptEventArgs.Edge == InterruptEdge.FallingEdge)
+					if (edgeDetectArgs.Edge == GpioEdge.FallingEdge)
 					{
 						if (currentMovePolarity > 0)
 						{
@@ -381,6 +405,7 @@ namespace WizardsChess.Movement
 						{
 							lowerBottomPosition = pos;
 							// Done calibrating, time to stop
+							System.Diagnostics.Debug.WriteLine($"{axis} axis done calibration move, stopping motor.");
 							moveAsync(0).Wait();
 						}
 						else
@@ -390,7 +415,7 @@ namespace WizardsChess.Movement
 					}
 					break;
 				case MoveState.Moving:
-					if (interruptEventArgs.Edge == InterruptEdge.FallingEdge)
+					if (edgeDetectArgs.Edge == GpioEdge.FallingEdge)
 					{
 						if (currentMovePolarity > 0)
 						{
@@ -425,12 +450,11 @@ namespace WizardsChess.Movement
 			}
 		}
 		
-		private int stepPosition;
 		private int gridMax;
 		private int gridMin;
-		private double stepsPerGridUnit;
 		private int estimatedExtraSteps;
 		private int currentMovePolarity;
+		private int millisecondsPerStep;
 
 		private const int INTERRUPT_TOLERANCE = 75;
 		private const int CALIBRATION_STEPS = 650;

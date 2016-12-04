@@ -52,8 +52,8 @@ namespace WizardsChess
 			var topInterrupterY = new PhotoInterrupter(11, 1);
 			var bottomInterrupterY = new PhotoInterrupter(12, -1);
 
-			var calXMover = new CalibratedMotorMover(Axis.X, 17, -17, motorDriverX, stepCounterX, topInterrupterX, bottomInterrupterX);
-			var calYMover = new CalibratedMotorMover(Axis.Y, 23, -23, motorDriverY, stepCounterY, topInterrupterY, bottomInterrupterY);
+			var calXMover = new CalibratedMotorMover(Axis.X, 17, -17, 3, motorDriverX, stepCounterX, topInterrupterX, bottomInterrupterX);
+			var calYMover = new CalibratedMotorMover(Axis.Y, 23, -23, 3, motorDriverY, stepCounterY, topInterrupterY, bottomInterrupterY);
 
 			var magnetDriver = new MagnetDrv(26);
 
