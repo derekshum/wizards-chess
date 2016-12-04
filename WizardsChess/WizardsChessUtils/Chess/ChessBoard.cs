@@ -26,15 +26,17 @@ namespace WizardsChess.Chess
 		/// <param name="endPosition"></param>
 		public void MovePiece(Position startPosition, Position endPosition)
 		{
+			MoveSpecification move = new MoveSpecification(startPosition, endPosition);
             // Kill the piece at the destination, if there is one
             var endPiece = boardMatrix[endPosition.Row, endPosition.Column];
 			if (endPiece != null)
 			{
+				move.Capture = endPosition;
 				capturedPiecesByTeam[endPiece.Team].Add(endPiece);
 				// Remove a killed piece from our valid pieceLocationsByType list
 				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
 				listOfEndPieceType.Remove(endPosition);
-			} 
+			} //TODO: else if en passant
 			var startPiece = boardMatrix[startPosition.Row, startPosition.Column];
 			startPiece.HasMoved = true;
 			boardMatrix[endPosition.Row, endPosition.Column] = startPiece;
@@ -44,6 +46,20 @@ namespace WizardsChess.Chess
 			// Replace the old position for this piece with the new position in the pieceLocationsByType list
 			listOfStartPieceTypes.Remove(startPosition);
 			listOfStartPieceTypes.Add(endPosition);
+			pastMoves.Add(move);
+			changeTurn();
+		}
+
+		public void changeTurn()
+		{
+			if (WhoseTurn == ChessTeam.Black)
+			{
+				WhoseTurn = ChessTeam.White;
+			}
+			else
+			{
+				WhoseTurn = ChessTeam.Black;
+			}
 		}
 
 		/// <summary>
@@ -191,18 +207,26 @@ namespace WizardsChess.Chess
 				return temp;
 			}
 		}
-
-		private const int WhiteBackRow = 0;
-		private const int WhiteFrontRow = 1;
-		private const int BlackBackRow = 7;
-		private const int BlackFrontRow = 6;
-		private const int LeftRookCol = 0;
-		private const int LeftKnightCol = 1;
-		private const int LeftBishopCol = 2;
-		private const int KingCol = 3;
-		private const int QueenCol = 4;
-		private const int RightBishopCol = 5;
-		private const int RightKnightCol = 6;
-		private const int RightRookCol = 7;
+		private List<MoveSpecification> pastMoves = new List<MoveSpecification>();
+		public IList<MoveSpecification> PastMoves
+		{
+			get
+			{
+				var temp = pastMoves;
+				return temp;
+			}
+		}
+		public const int WhiteBackRow = 0;
+		public const int WhiteFrontRow = 1;
+		public const int BlackBackRow = 7;
+		public const int BlackFrontRow = 6;
+		public const int LeftRookCol = 0;
+		public const int LeftKnightCol = 1;
+		public const int LeftBishopCol = 2;
+		public const int KingCol = 3;
+		public const int QueenCol = 4;
+		public const int RightBishopCol = 5;
+		public const int RightKnightCol = 6;
+		public const int RightRookCol = 7;
 	}
 }

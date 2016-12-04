@@ -45,15 +45,6 @@ namespace WizardsChess.Chess
 			}
 
 			board.MovePiece(startPosition, endPosition);
-
-			if (WhoseTurn == ChessTeam.Black)
-			{
-				WhoseTurn = ChessTeam.White;
-			}
-			else
-			{
-				WhoseTurn = ChessTeam.Black;
-			}
 		}
 
 		/// <summary>
@@ -78,7 +69,7 @@ namespace WizardsChess.Chess
 			}
 
 			// It's not this pieces turn to move
-			if (startPiece.Team != WhoseTurn)
+			if (startPiece.Team != board.WhoseTurn)
 			{
 				return false;
 			}
@@ -189,7 +180,7 @@ namespace WizardsChess.Chess
 
 			foreach (var aKingLocation in kingLocations)
 			{
-				if (board.PieceAt(aKingLocation).Team == WhoseTurn)
+				if (board.PieceAt(aKingLocation).Team == board.WhoseTurn)
 				{
 					kingLocation = aKingLocation;
 				}
@@ -207,7 +198,7 @@ namespace WizardsChess.Chess
 			foreach (var location in allRookLocations)
 			{
 				var rook = board.PieceAt(location);
-				if (rook.Team == WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location))
+				if (rook.Team == board.WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location))
 				{
 					clear = true;
 					y = kingLocation.Y;
@@ -234,7 +225,7 @@ namespace WizardsChess.Chess
 			Point2D kingLocation = new Point2D();
 			foreach (var aKingLocation in kingLocations)
 			{
-				if (board.PieceAt(aKingLocation).Team == WhoseTurn)
+				if (board.PieceAt(aKingLocation).Team == board.WhoseTurn)
 				{
 					kingLocation = aKingLocation;
 				}
@@ -243,7 +234,7 @@ namespace WizardsChess.Chess
 			{
 				throw new InvalidOperationException($"missing king");
 			}
-			return inCheck(kingLocation, WhoseTurn);
+			return inCheck(kingLocation, board.WhoseTurn);
 		}
 
 		// Checks if the specified location is in check for the specified team 
@@ -323,6 +314,5 @@ namespace WizardsChess.Chess
 				return board;
 			}
 		}
-		private ChessTeam WhoseTurn;
 	}
 }

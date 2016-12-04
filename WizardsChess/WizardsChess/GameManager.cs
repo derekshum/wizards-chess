@@ -169,16 +169,6 @@ namespace WizardsChess
 				await moveManager.MoveAsync(new Point2D((Position)moveCmd.Position), new Point2D(moveCmd.Destination));
 			}
 			chessLogic.MovePiece((Position)moveCmd.Position, moveCmd.Destination);
-
-			/*try
-			{
-				chessLogic.MovePiece(moveCmd.Position.Value, moveCmd.Destination);
-			}
-			catch (Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine(e.Message);
-			}
-			chessBoard.UpdatePieceLocations();*/
 		}
 
 		private ICommandInterpreter cmdInterpreter;
