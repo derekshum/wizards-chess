@@ -161,15 +161,15 @@ namespace WizardsChess.Movement
 
 		//constants pointConversion needs
 		const int spacing = 2;    //number of points per square in one dimension
-        const int xOffset = 4;    //x-index of the centre of the left most playing board column
-        const int yOffset = 1;    //y-index of the centre of the bottom row
+        const int xOffset = -7;    //x-index of the centre of the left most playing board column
+        const int yOffset = -7;    //y-index of the centre of the bottom row
         //constants getCapturedPath needs
-        const int whiteEmptyCol = 20;     //index of the centre of the empty column in between the board and white captured pieces
-        const int blackEmptyCol = 2;      //index of the centre of the empty column in between the board and black captured pieces
-        const int whiteCapturedCol = 22;     //x-index of the centre of the column where white captured pieces are stored
-        const int blackCapturedCol = 0;      //x-index of the centre of the column where black captured pieces are stored
-        const int whiteCapturedStart = 1;    //y-index where the first white piece captured is placed
-        const int blackCapturedStart = 15;   //y-index where the first black piece captured is placed
+        const int whiteEmptyCol = 9;     //index of the centre of the empty column in between the board and white captured pieces
+        const int blackEmptyCol = -9;      //index of the centre of the empty column in between the board and black captured pieces
+        const int whiteCapturedCol = 11;     //x-index of the centre of the column where white captured pieces are stored
+        const int blackCapturedCol = -11;      //x-index of the centre of the column where black captured pieces are stored
+        const int whiteCapturedStart = -7;    //y-index where the first white piece captured is placed
+        const int blackCapturedStart = 7;   //y-index where the first black piece captured is placed
         const int whiteRemovalDir = -1;   //y-direction the white pieces are pulled a half square in before being captured off the board
         const int blackRemovalDir = 1;    //y-direction the black pieces are pulled a half square in before being captured off the board
         const int whiteCapturedAddDir = 1;   //y-direction white pieces are added to the white captured trough
