@@ -112,13 +112,12 @@ namespace WizardsChess
 					//no output when undo not possible, basically ignore it
 					await performUndoIfPossible();
 				break;
+				//Case castle
 				//case yes
 				//case no
-				//case undo?
 				//case cancel?
 				//case MotorMove?
 				//case Magnet?
-				//case castle?
 				default:
 					//debug writing done above
 				break;
