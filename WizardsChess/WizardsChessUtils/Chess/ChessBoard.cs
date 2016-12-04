@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -128,10 +129,28 @@ namespace WizardsChess.Chess
 		//undoes the last move (can be called repeatedly)
 		public void UndoMove()
 		{
-			//TODO: finish
+			MoveSpecification lastMove = pastMoves[pastMoves.Count];
+			SetPieceAt(lastMove.Start, PieceAt(lastMove.End));
+			SetPieceAtToNull(lastMove.End);
+			if (lastMove.Capture != null)
+			{
+				SetPieceAt((Position)lastMove.Capture,capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count]);
+			}
+			changeTurn();
 		}
 
 		//TODO: board reset
+
+		private void SetPieceAt(Position p, ChessPiece piece)
+		{
+			boardMatrix[p.Row, p.Column] = piece;
+		}
+
+		private void SetPieceAtToNull(Position p)
+		{
+			boardMatrix[p.Row, p.Column] = null;
+		}
+
 
 		//Prints a representation of the board.
 		public override string ToString()
@@ -154,7 +173,6 @@ namespace WizardsChess.Chess
 			}
 			return strBuild.ToString();
 		}
-
 
 		//piece accessor by x and y indexes
 		public ChessPiece PieceAt(int x, int y)
@@ -184,7 +202,7 @@ namespace WizardsChess.Chess
         public ChessTeam WhoseTurn;	//TODO: move to ChessLogic? Change to Private (and add modifiers and an accessor?)
 
 		private ChessPiece[,] boardMatrix;
-		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>() {;    //TODO: figure out how to expose pieceLocationsByType properly
+		private Dictionary<PieceType, IList<Point2D>> pieceLocationsByType = new Dictionary<PieceType, IList<Point2D>>();    //TODO: figure out how to expose pieceLocationsByType properly
 		public Dictionary<PieceType, IList<Point2D>> PieceLocationsByType
 		{
 			get
