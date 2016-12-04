@@ -37,6 +37,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="Windows.Devices.DevicesLowLevelContract">
+      <HintPath>C:\Program Files (x86)\Windows Kits\10\References\Windows.Devices.DevicesLowLevelContract\2.0.0.0\Windows.Devices.DevicesLowLevelContract.winmd</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -55,6 +58,9 @@
   <ItemGroup>
     <Compile Include="Chess\PieceTypeTest.cs" />
     <Compile Include="Chess\ChessLogicTest.cs" />
+    <Compile Include="Mocks\Movement\Drv\MockGpio.cs" />
+    <Compile Include="Mocks\Movement\Drv\MotorDrv.cs" />
+    <Compile Include="Mocks\Movement\StepCounterTest.cs" />
     <Compile Include="Movement\MovementPlannerTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VoiceControl\Commands\CommandTest.cs" />

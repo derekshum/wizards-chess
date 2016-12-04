@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Devices.Gpio;
+using WizardsChess.Movement.Drv.Events;
 
 namespace WizardsChess.Movement.Drv
 {
@@ -14,7 +14,7 @@ namespace WizardsChess.Movement.Drv
 		WaitingForExtraSteps
 	}
 
-	class StepCounter : IDisposable, IStepCounter
+	public class StepCounter : IDisposable, IStepCounter
 	{
 		public event StepEventHandler FinishedCounting;
 		public event StepEventHandler AdditionalStepsCounted;
@@ -23,17 +23,14 @@ namespace WizardsChess.Movement.Drv
 		/// <summary>
 		/// Count the steps read at the specified input pin. Position is updated on the falling edge.
 		/// </summary>
-		/// <param name="pinNum">The GPIO pin to read steps from.</param>
-		public StepCounter(int pinNum, int clearPinNum)
+		/// <param name="countPin">The pin used for counting.</param>
+		/// <param name="clearCounterPin">The pin used to clear the counter.</param>
+		public StepCounter(IGpioPin countPin, IGpioPin clearCounterPin)
 		{
 			lockObject = new object();
 
-			var gpio = GpioController.GetDefault();
-			pin = gpio.OpenPin(pinNum);
-			pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
-			clearPin = gpio.OpenPin(clearPinNum);
-			clearPin.Write(GpioPinValue.Low);
-			clearPin.SetDriveMode(GpioPinDriveMode.Output);
+			pin = countPin;
+			clearPin = clearCounterPin;
 			Position = 0;
 			startPosition = 0;
 			targetNumSteps = 0;
@@ -87,9 +84,9 @@ namespace WizardsChess.Movement.Drv
 			}
 		}
 
-		protected virtual void countStep(GpioPin p, GpioPinValueChangedEventArgs args)
+		protected virtual void countStep(object p, GpioValueChangedEventArgs args)
 		{
-			if (args.Edge == GpioPinEdge.FallingEdge)
+			if (args.Edge == GpioEdge.FallingEdge)
 			{
 				int numSteps;
 				lock (lockObject)
@@ -173,8 +170,8 @@ namespace WizardsChess.Movement.Drv
 		}
 
 		private CounterState state;
-		private GpioPin pin;
-		private GpioPin clearPin;
+		private IGpioPin pin;
+		private IGpioPin clearPin;
 		private int startPosition;
 		private int targetNumSteps;
 		private Task additionalStepsCallback;
