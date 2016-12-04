@@ -23,15 +23,19 @@ namespace WizardsChess.Movement
 			var start = steps[0];
 			steps.RemoveAt(0);
 
-			await xMover.MoveAsync(start.X);
-			await yMover.MoveAsync(start.Y);
+			var startVector = convertAbsoluteToRelative(start);
+			System.Diagnostics.Debug.WriteLine($"MovePerformer sending relative move {startVector}");
+			await xMover.MoveAsync(startVector.X);
+			await yMover.MoveAsync(startVector.Y);
 
 			magnet.TurnOn();
 
 			foreach(var point in steps)
 			{
-				await xMover.MoveAsync(point.X);
-				await yMover.MoveAsync(point.Y);
+				var moveVector = convertAbsoluteToRelative(point);
+				System.Diagnostics.Debug.WriteLine($"MovePerformer sending relative move {moveVector}");
+				await xMover.MoveAsync(moveVector.X);
+				await yMover.MoveAsync(moveVector.Y);
 			}
 
 			magnet.TurnOff();
@@ -76,6 +80,13 @@ namespace WizardsChess.Movement
 			{
 				magnet.TurnOff();
 			}
+		}
+
+		private Vector2D convertAbsoluteToRelative(Point2D absoluteEnd)
+		{
+			int xDiff = absoluteEnd.X - xMover.GridPosition;
+			int yDiff = absoluteEnd.Y - yMover.GridPosition;
+			return new Vector2D(xDiff, yDiff);
 		}
 
 		private CalibratedMotorMover xMover;

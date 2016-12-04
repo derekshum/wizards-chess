@@ -67,6 +67,13 @@ namespace WizardsChess.Movement.Drv
 						targetNumSteps = stepsSoFar + numSteps;
 						break;
 					case CounterState.Ready:
+						if (numSteps == 0)
+						{
+							System.Diagnostics.Debug.WriteLine("Error!! Called CountSteps with zero steps when in Ready state.");
+							onTargetReached(0);
+							onAdditionalStepsCounted(0);
+							return;
+						}
 						Position = 0;
 						startPosition = Position;
 						targetNumSteps = numSteps;
@@ -147,6 +154,11 @@ namespace WizardsChess.Movement.Drv
 				numSteps = Position - (startPosition + targetNumSteps);
 				state = CounterState.Ready;
 			}
+			onAdditionalStepsCounted(numSteps);
+		}
+
+		private void onAdditionalStepsCounted(int numSteps)
+		{
 			AdditionalStepsCounted?.Invoke(this, new Events.StepEventArgs(numSteps));
 		}
 

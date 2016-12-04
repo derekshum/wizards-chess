@@ -104,6 +104,11 @@ namespace WizardsChess.Movement
 		/// <returns>An awaitable Task.</returns>
 		public async Task MoveAsync(int gridUnits)
 		{
+			if (gridUnits == 0)
+			{
+				return;
+			}
+
 			if (GridPosition + gridUnits > gridMax)
 			{
 				gridUnits = gridMax - GridPosition;
@@ -190,6 +195,10 @@ namespace WizardsChess.Movement
 
 			System.Diagnostics.Debug.WriteLine($"Subtracting {offset} from StepPosition {StepPosition}.");
 			StepPosition -= offset;
+			upperTopPosition -= offset;
+			lowerTopPosition -= offset;
+			upperBottomPosition -= offset;
+			lowerBottomPosition -= offset;
 			GridPosition = convertStepsToGridUnits(StepPosition);
 			System.Diagnostics.Debug.WriteLine($"{axis} axis updated stepPosition to {StepPosition} with GridPosition {GridPosition}, and stepsPerGridUnit {StepsPerGridUnit}.");
 		}
@@ -214,8 +223,18 @@ namespace WizardsChess.Movement
 		private void additionalStepsCounted(object sender, StepEventArgs stepEventArgs)
 		{
 			System.Diagnostics.Debug.WriteLine($"Counted {stepEventArgs.NumSteps} additional steps in the {axis} axis in state {state}");
-			updatePosition(stepEventArgs.NumSteps);
-			estimatedExtraSteps = stepEventArgs.NumSteps;
+			if (state != MoveState.Stopped)
+			{
+				updatePosition(stepEventArgs.NumSteps);
+			}
+			if (estimatedExtraSteps == 0)
+			{
+				estimatedExtraSteps = stepEventArgs.NumSteps + 5;
+			}
+			else
+			{
+				estimatedExtraSteps = (stepEventArgs.NumSteps + estimatedExtraSteps) / 2 + 5;
+			}
 
 			handleMoveEnd();
 		}
