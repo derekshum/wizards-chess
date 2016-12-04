@@ -121,7 +121,7 @@ namespace WizardsChess.Chess
 
 		//TODO: overload of: public bool IsMoveValid(Point2D, Point2D)
 
-		public bool DoesMoveCapture(Position start, Position end)
+		public bool DoesMoveCapture(Position start, Position end)	//TODO: make MovePiece use DoesMoveCapture and CaptureLocation methods
 		{
 			if (board.PieceAt(end) != null)
 			{

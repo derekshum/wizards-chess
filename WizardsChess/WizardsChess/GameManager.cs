@@ -103,11 +103,10 @@ namespace WizardsChess
 					var pieceConfirmation = args.Command as ConfirmPieceCommand;
 					if (currentMoveCommand == null)
 					{
-						//R: throw new Exception("Received piece confirmation command when currentMoveCommand was null");
-						//Output that a piece isn't what was being looked for, or do nothing
+						System.Diagnostics.Debug.WriteLine($"Received piece confirmation command when currentMoveCommand was null");
 					}
 					currentMoveCommand.Position = pieceConfirmation.Position;
-					//R:await performMoveOnUiIfValidAsync(currentMoveCommand);
+					await performMoveIfValidAsync(currentMoveCommand);
 				break;
 				//case yes
 				//case no
