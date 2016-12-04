@@ -188,7 +188,7 @@ namespace WizardsChess.Chess
 			int x;
 			int y;
 			int kingToRookDir;
-			bool clear;
+			bool thisSideOkay;
 
 			foreach (var aKingLocation in kingLocations)
 			{
@@ -206,23 +206,27 @@ namespace WizardsChess.Chess
 			{
 				return 0;
 			}
-
+			//TODO: if kingLocation is in check, cannot castle
 			foreach (var location in allRookLocations)
 			{
+				//TODO: if this location is in check, cannot castle
 				var rook = board.PieceAt(location);
 				if (rook.Team == board.WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location))
 				{
-					clear = true;
+					thisSideOkay = true;
 					y = kingLocation.Y;
 					kingToRookDir = Math.Sign(location.X - kingLocation.X);
 					for (x = kingLocation.X + kingToRookDir; x != location.X; x += kingToRookDir) {
-						if (board.PieceAt(x,y) != null)
+						if (board.PieceAt(x,y) != null)	//add check checking for all those square
 						{
-							clear = false;
+							thisSideOkay = false;
 						}
 					}
-					validRookLocations.Add(location);
-					validRooks.Add(rook);
+					if (thisSideOkay)
+					{
+						validRookLocations.Add(location);
+						validRooks.Add(rook);
+					}
 				}
 			}
 			return validRooks.Count;

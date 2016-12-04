@@ -129,13 +129,15 @@ namespace WizardsChess.Chess
 		//undoes the last move (can be called repeatedly)
 		public void UndoMove()
 		{
-			MoveSpecification lastMove = pastMoves[pastMoves.Count];
+			MoveSpecification lastMove = pastMoves[pastMoves.Count - 1];
 			SetPieceAt(lastMove.Start, PieceAt(lastMove.End));
 			SetPieceAtToNull(lastMove.End);
 			if (lastMove.Capture != null)
 			{
-				SetPieceAt((Position)lastMove.Capture,capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count]);
+				SetPieceAt((Position)lastMove.Capture,capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]);
+				capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam.Count - 1);
 			}
+			pastMoves.RemoveAt(pastMoves.Count - 1);
 			changeTurn();
 		}
 

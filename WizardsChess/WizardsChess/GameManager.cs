@@ -176,7 +176,6 @@ namespace WizardsChess
 		private IMoveManager moveManager;
 		private GameState gameState;
 		private MoveCommand currentMoveCommand;
-		private Windows.UI.Core.CoreDispatcher uiDispatcher;
 
 #if DEBUG
 		public IMovePerformer DebugMovePerformer;
