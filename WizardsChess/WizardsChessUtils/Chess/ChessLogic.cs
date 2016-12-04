@@ -119,6 +119,35 @@ namespace WizardsChess.Chess
 			return isPathClear(startPosition, endPosition);
 		}
 
+		//TODO: overload of: public bool IsMoveValid(Point2D, Point2D)
+
+		public bool DoesMoveCapture(Position start, Position end)
+		{
+			if (board.PieceAt(end) != null)
+			{
+				return true;
+			}
+			//TODO: add en passant conditions
+			else
+			{
+				return false;
+			}
+		}
+
+		public Position CaptureLocation(Position start, Position end)
+		{
+			return end;	//remove this to implement en passant
+			/*if (board.PieceAt(end)!=null)
+			{
+				return end;
+			}
+			else
+			{
+				//en passant location
+			}*/
+			
+		}
+
 		private bool isPathClear(Point2D startPosition, Point2D endPosition)
 		{
 			var requestedMoveVector = endPosition - startPosition;

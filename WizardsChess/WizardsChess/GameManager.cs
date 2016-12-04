@@ -98,15 +98,6 @@ namespace WizardsChess
 					var moveCmd = args.Command as MoveCommand;
 					currentMoveCommand = moveCmd;
 					await performMoveIfValidAsync(moveCmd);
-
-					//numPossible = number of moves fitting that description possible
-					//switch numPossible
-					//	case 0
-					//		give user feedback
-					//	case 1
-					//		preform move
-					//	case 2 //2+, but I don't think any more than 2 possibilities can be relevant
-					//		give user feedback asking which one
 				break;
 				case CommandType.ConfirmPiece:
 					var pieceConfirmation = args.Command as ConfirmPieceCommand;
@@ -148,7 +139,7 @@ namespace WizardsChess
 				if (possibleStartPositions.Count == 0)
 				{
 					System.Diagnostics.Debug.WriteLine($"Could not find a possible starting piece of type {moveCmd.Piece.Value} going to {moveCmd.Destination}");
-					//TODO: 
+					//TODO: output saying no valid moves fit that description
 					return;
 				}
 				else if (possibleStartPositions.Count == 1)
@@ -161,8 +152,26 @@ namespace WizardsChess
 					return;
 				}
 			}
+			else
+			{
+				if (!chessLogic.IsMoveValid((Position)moveCmd.Position, moveCmd.Destination))
+				{
+					System.Diagnostics.Debug.WriteLine($"Specified move not valid.");
+					//TODO: output saying no valid moves fit that description
+					return;
+				}
+			}
+			if (chessLogic.DoesMoveCapture((Position)moveCmd.Position, moveCmd.Destination))	//piece captured
+			{
+				await moveManager.MoveAsync(new Point2D((Position)moveCmd.Position), new Point2D(moveCmd.Destination), new Point2D(chessLogic.CaptureLocation((Position)moveCmd.Position, moveCmd.Destination)));
+			}
+			else
+			{
+				await moveManager.MoveAsync(new Point2D((Position)moveCmd.Position), new Point2D(moveCmd.Destination));
+			}
+			chessLogic.MovePiece((Position)moveCmd.Position, moveCmd.Destination);
 
-			try
+			/*try
 			{
 				chessLogic.MovePiece(moveCmd.Position.Value, moveCmd.Destination);
 			}
@@ -170,7 +179,7 @@ namespace WizardsChess
 			{
 				System.Diagnostics.Debug.WriteLine(e.Message);
 			}
-			//chessBoard.UpdatePieceLocations();
+			chessBoard.UpdatePieceLocations();*/
 		}
 
 		private ICommandInterpreter cmdInterpreter;
