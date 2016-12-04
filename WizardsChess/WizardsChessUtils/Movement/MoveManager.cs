@@ -14,25 +14,42 @@ namespace WizardsChess.Movement
 		{
 			planner = movePlanner;
 			performer = movePerformer;
-			previousMove = new List<IList<Point2D>>();
+			previousMoves = new List<IList<IList<Point2D>>>();
 		}
 
 		public async Task MoveAsync(Point2D start, Point2D end, Point2D? captured = null)
 		{
 			var moveSteps = planner.PlanMove(start, end, captured);
-
-			previousMove.Clear();
-
 			foreach (var setOfSteps in moveSteps)
 			{
 				await performer.MovePieceAsync(setOfSteps);
-				previousMove.Add(setOfSteps);
+				//TODO: remove: previousMoves[previousMoves.Count - 1].Add(setOfSteps);
 			}
+			previousMoves.Add(moveSteps);
 			await performer.GoHomeAsync();
+			
+		}
+
+		public async Task UndoMoveAsync()
+		{
+			if (previousMoves.Count > 0) {
+				var lastMove = previousMoves[previousMoves.Count - 1];
+				lastMove.Reverse();
+				foreach (var setOfSteps in lastMove)
+				{
+					setOfSteps.Reverse();
+					await performer.MovePieceAsync(setOfSteps);
+				}
+				previousMoves.RemoveAt(previousMoves.Count - 1);
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine($"No previous moves to do the reverse moves of.");
+			}
 		}
 
 		private IMovePlanner planner;
 		private IMovePerformer performer;
-		private IList<IList<Point2D>> previousMove;
+		private IList<IList<IList<Point2D>>> previousMoves;
 	}
 }

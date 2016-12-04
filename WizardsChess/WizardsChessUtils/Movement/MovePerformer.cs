@@ -18,7 +18,7 @@ namespace WizardsChess.Movement
 			magnet = magnetDrv;
 		}
 
-		public async Task MovePieceAsync(List<Point2D> steps)
+		public async Task MovePieceAsync(IList<Point2D> steps)
 		{
 			var start = steps[0];
 			steps.RemoveAt(0);

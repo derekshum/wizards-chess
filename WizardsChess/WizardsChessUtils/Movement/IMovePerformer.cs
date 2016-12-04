@@ -8,7 +8,7 @@ namespace WizardsChess.Movement
 {
 	public interface IMovePerformer
 	{
-		Task MovePieceAsync(List<Point2D> steps);
+		Task MovePieceAsync(IList<Point2D> steps);
 		Task MoveMotorAsync(Axis axis, int gridUnits);
 		Task GoHomeAsync();
 		Task CalibrateAsync();

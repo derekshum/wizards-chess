@@ -14,9 +14,9 @@ namespace WizardsChess.Movement
             board = b;
         }
 
-        public List<List<Point2D>> PlanMove(Point2D start, Point2D end, Point2D? captured=null)
+        public List<IList<Point2D>> PlanMove(Point2D start, Point2D end, Point2D? captured=null)
         {
-            List<List<Point2D>> paths = new List<List<Point2D>>();
+            List<IList<Point2D>> paths = new List<IList<Point2D>>();
             
 			if (captured.HasValue)
 			{
@@ -174,21 +174,5 @@ namespace WizardsChess.Movement
         const int blackRemovalDir = 1;    //y-direction the black pieces are pulled a half square in before being captured off the board
         const int whiteCapturedAddDir = 1;   //y-direction white pieces are added to the white captured trough
         const int blackCapturedAddDir = -1;  //y-direction black pieces are added to the black captured trough
-
-		//TODO: remove debugging methods below when they're no longer needed
-        public String PrintDebug(List<List<Point2D>> paths)
-        {
-			String toPrint = "";
-            paths.ForEach((path) => 
-			{
-				toPrint += "start move\n";
-                path.ForEach((point) => 
-				{
-					toPrint += point.ToString() + "\n";
-                });
-				toPrint += "end move\n";
-			});
-			return toPrint;
-        }
 	}
 }

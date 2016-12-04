@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,34 +17,8 @@ namespace WizardsChess.Chess
 			boardMatrix = new ChessPiece[Size, Size];
 			WhoseTurn = ChessTeam.White;
 			setBoard();
-		}
-
-		/// <summary>
-		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
-		/// Throws an InvalidOperationException if this is an invalid move.	//TODO: take this out once it's no longer done here
-		/// </summary>
-		/// <param name="startPosition"></param>
-		/// <param name="endPosition"></param>
-		public void MovePiece(Position startPosition, Position endPosition)
-		{
-            // Kill the piece at the destination, if there is one
-            var endPiece = boardMatrix[endPosition.Row, endPosition.Column];
-			if (endPiece != null)
-			{
-				capturedPiecesByTeam[endPiece.Team].Add(endPiece);
-				// Remove a killed piece from our valid pieceLocationsByType list
-				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
-				listOfEndPieceType.Remove(endPosition);
-			} 
-			var startPiece = boardMatrix[startPosition.Row, startPosition.Column];
-			startPiece.HasMoved = true;
-			boardMatrix[endPosition.Row, endPosition.Column] = startPiece;
-			boardMatrix[startPosition.Row, startPosition.Column] = null;
-
-			var listOfStartPieceTypes = pieceLocationsByType[startPiece.Type];
-			// Replace the old position for this piece with the new position in the pieceLocationsByType list
-			listOfStartPieceTypes.Remove(startPosition);
-			listOfStartPieceTypes.Add(endPosition);
+			capturedPiecesByTeam[ChessTeam.White] = new List<ChessPiece>();
+			capturedPiecesByTeam[ChessTeam.Black] = new List<ChessPiece>();
 		}
 
 		/// <summary>
@@ -107,11 +82,79 @@ namespace WizardsChess.Chess
 			}
 		}
 
+		/// <summary>
+		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
+		/// Throws an InvalidOperationException if this is an invalid move.	//TODO: take this out once it's no longer done here
+		/// </summary>
+		/// <param name="startPosition"></param>
+		/// <param name="endPosition"></param>
+		public void MovePiece(Position startPosition, Position endPosition)
+		{
+			MoveSpecification move = new MoveSpecification(startPosition, endPosition);
+			// Kill the piece at the destination, if there is one
+			var endPiece = PieceAt(endPosition);
+			if (endPiece != null)
+			{
+				move.Capture = endPosition;
+				capturedPiecesByTeam[endPiece.Team].Add(endPiece);
+				// Remove a killed piece from our valid pieceLocationsByType list
+				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
+				listOfEndPieceType.Remove(endPosition);
+			} //TODO: else if en passant
+			var startPiece = PieceAt(startPosition);
+			startPiece.HasMoved = true;
+			SetPieceAt(endPosition, startPiece);
+			SetPieceAtToNull(startPosition);
+
+			var listOfStartPieceTypes = pieceLocationsByType[startPiece.Type];
+			// Replace the old position for this piece with the new position in the pieceLocationsByType list
+			listOfStartPieceTypes.Remove(startPosition);
+			listOfStartPieceTypes.Add(endPosition);
+			pastMoves.Add(move);
+			changeTurn();
+		}
+
+		public void changeTurn()
+		{
+			if (WhoseTurn == ChessTeam.Black)
+			{
+				WhoseTurn = ChessTeam.White;
+			}
+			else
+			{
+				WhoseTurn = ChessTeam.Black;
+			}
+		}
+
+		//undoes the last move (can be called repeatedly)
+		public void UndoMove()
+		{
+			MoveSpecification lastMove = pastMoves[pastMoves.Count - 1];
+			SetPieceAt(lastMove.Start, PieceAt(lastMove.End));
+			SetPieceAtToNull(lastMove.End);
+			if (lastMove.Capture != null)
+			{
+				SetPieceAt((Position)lastMove.Capture,capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]);
+				capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam.Count - 1);
+			}
+			pastMoves.RemoveAt(pastMoves.Count - 1);
+			changeTurn();
+		}
+
 		//TODO: board reset
 
-		//TODO:? WhoseTurn modifiers(increment or set to a certain team's) and an accessor?- not if Whoseturn is stored in logic
+		private void SetPieceAt(Position p, ChessPiece piece)
+		{
+			boardMatrix[p.Row, p.Column] = piece;
+		}
 
-		//TODO: Prints a representation of the board.
+		private void SetPieceAtToNull(Position p)
+		{
+			boardMatrix[p.Row, p.Column] = null;
+		}
+
+
+		//Prints a representation of the board.
 		public override string ToString()
 		{
 			StringBuilder strBuild = new StringBuilder();
@@ -133,7 +176,6 @@ namespace WizardsChess.Chess
 			return strBuild.ToString();
 		}
 
-
 		//piece accessor by x and y indexes
 		public ChessPiece PieceAt(int x, int y)
         {
@@ -151,13 +193,6 @@ namespace WizardsChess.Chess
 		{
 			return boardMatrix[location.Row, location.Column];
 		}
-		//TODO:? piece accessor by alphanumeric string
-
-		/*//TODO: accessor (public dictionary) for positionLocationsByType (the whole thing)
-		public IReadOnlyDictionary<PieceType, IReadOnlyList<Point2D>> PieceLocationByType()
-		{
-		   get { return pieceLocationByType; }
-		}*/
 
         //access the number of captured pieces on a team
         public int NumCapturedPieces(ChessTeam team)
@@ -178,12 +213,8 @@ namespace WizardsChess.Chess
 				return temp;
 			}
 		}
-		private IDictionary<ChessTeam, ISet<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, ISet<ChessPiece>>()
-		{
-			{ChessTeam.White, new HashSet<ChessPiece>()},
-			{ChessTeam.Black, new HashSet<ChessPiece>()}
-		};
-		public IDictionary<ChessTeam, ISet<ChessPiece>> CapturedPiecesByTeam
+		private IDictionary<ChessTeam, IList<ChessPiece>> capturedPiecesByTeam = new Dictionary<ChessTeam, IList<ChessPiece>>();
+		public IDictionary<ChessTeam, IList<ChessPiece>> CapturedPiecesByTeam
 		{
 			get
 			{
@@ -191,18 +222,26 @@ namespace WizardsChess.Chess
 				return temp;
 			}
 		}
-
-		private const int WhiteBackRow = 0;
-		private const int WhiteFrontRow = 1;
-		private const int BlackBackRow = 7;
-		private const int BlackFrontRow = 6;
-		private const int LeftRookCol = 0;
-		private const int LeftKnightCol = 1;
-		private const int LeftBishopCol = 2;
-		private const int KingCol = 3;
-		private const int QueenCol = 4;
-		private const int RightBishopCol = 5;
-		private const int RightKnightCol = 6;
-		private const int RightRookCol = 7;
+		private List<MoveSpecification> pastMoves = new List<MoveSpecification>();
+		public IList<MoveSpecification> PastMoves
+		{
+			get
+			{
+				var temp = pastMoves;
+				return temp;
+			}
+		}
+		public const int WhiteBackRow = 0;
+		public const int WhiteFrontRow = 1;
+		public const int BlackBackRow = 7;
+		public const int BlackFrontRow = 6;
+		public const int LeftRookCol = 0;
+		public const int LeftKnightCol = 1;
+		public const int LeftBishopCol = 2;
+		public const int KingCol = 3;
+		public const int QueenCol = 4;
+		public const int RightBishopCol = 5;
+		public const int RightKnightCol = 6;
+		public const int RightRookCol = 7;
 	}
 }

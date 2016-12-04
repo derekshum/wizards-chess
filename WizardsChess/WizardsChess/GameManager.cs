@@ -96,14 +96,43 @@ namespace WizardsChess
 			throw new NotImplementedException("Congratulate winner not yet implemented");
 		}
 
-		private ICommandInterpreter cmdInterpreter;
-		private ChessLogic chessLogic;
-		private IMoveManager moveManager;
-		private GameState gameState;
-
-		private void CommandReceived(Object sender, CommandEventArgs args)
+		private async void CommandReceived(Object sender, CommandEventArgs args)
 		{
 			System.Diagnostics.Debug.WriteLine($"Received command of type {args.Command.Type}.");
+			//TODO: fill in comments below
+			switch (args.Command.Type)
+			{
+				case CommandType.Move:
+					var moveCmd = args.Command as MoveCommand;
+					currentMoveCommand = moveCmd;
+					await performMoveIfValidAsync(moveCmd);
+				break;
+				case CommandType.ConfirmPiece:
+					var pieceConfirmation = args.Command as ConfirmPieceCommand;
+					if (currentMoveCommand == null)
+					{
+						System.Diagnostics.Debug.WriteLine($"Received piece confirmation command when currentMoveCommand was null");
+					}
+					currentMoveCommand.Position = pieceConfirmation.Position;
+					await performMoveIfValidAsync(currentMoveCommand);
+				break;
+				case CommandType.Undo:
+					//no output when undo not possible, basically ignore it
+					await performUndoIfPossible();
+				break;
+				//case yes
+				//case no
+				//case undo?
+				//case cancel?
+				//case MotorMove?
+				//case Magnet?
+				//case castle?
+				default:
+					//debug writing done above
+				break;
+			}
+			
+
 #if DEBUG
 			if (args.Command.Type.GetFamily() == CommandFamily.Debug)
 			{
@@ -112,6 +141,59 @@ namespace WizardsChess
 			}
 #endif
 		}
+
+		private async Task performMoveIfValidAsync(MoveCommand moveCmd)
+		{
+			if (!moveCmd.Position.HasValue)
+			{
+				var possibleStartPositions = chessLogic.FindPotentialPiecesForMove(moveCmd.Piece.Value, moveCmd.Destination);
+				if (possibleStartPositions.Count == 0)
+				{
+					System.Diagnostics.Debug.WriteLine($"Could not find a possible starting piece of type {moveCmd.Piece.Value} going to {moveCmd.Destination}");
+					//TODO: output saying no valid moves fit that description
+					return;
+				}
+				else if (possibleStartPositions.Count == 1)
+				{
+					moveCmd.Position = possibleStartPositions.First();
+				}
+				else
+				{
+					await cmdInterpreter.ConfirmPieceSelectionAsync(moveCmd.Piece.Value, possibleStartPositions.ToList());
+					return;
+				}
+			}
+			else
+			{
+				if (!chessLogic.IsMoveValid((Position)moveCmd.Position, moveCmd.Destination))
+				{
+					System.Diagnostics.Debug.WriteLine($"Specified move not valid.");
+					//TODO: output saying no valid moves fit that description
+					return;
+				}
+			}
+			if (chessLogic.DoesMoveCapture((Position)moveCmd.Position, moveCmd.Destination))	//piece captured
+			{
+				await moveManager.MoveAsync(new Point2D((Position)moveCmd.Position), new Point2D(moveCmd.Destination), new Point2D(chessLogic.CaptureLocation((Position)moveCmd.Position, moveCmd.Destination)));
+			}
+			else
+			{
+				await moveManager.MoveAsync(new Point2D((Position)moveCmd.Position), new Point2D(moveCmd.Destination));
+			}
+			chessLogic.MovePiece((Position)moveCmd.Position, moveCmd.Destination);
+		}
+
+		private async Task performUndoIfPossible()
+		{
+			await moveManager.UndoMoveAsync();
+			chessLogic.UndoMove();
+		}
+
+		private ICommandInterpreter cmdInterpreter;
+		private ChessLogic chessLogic;
+		private IMoveManager moveManager;
+		private GameState gameState;
+		private MoveCommand currentMoveCommand;
 
 #if DEBUG
 		public IMovePerformer DebugMovePerformer;

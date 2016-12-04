@@ -41,21 +41,25 @@ namespace WizardsChess.Chess
 		{
 			if (!IsMoveValid(startPosition, endPosition))
 			{
-				throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
+				System.Diagnostics.Debug.WriteLine($"Preforming illegal move.");
+				//throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
 			}
 
 			board.MovePiece(startPosition, endPosition);
+		}
 
-			if (WhoseTurn == ChessTeam.Black)
+		public void UndoMove ()
+		{
+			if (board.PastMoves.Count == 0)
 			{
-				WhoseTurn = ChessTeam.White;
+				System.Diagnostics.Debug.WriteLine($"No previous moves to undo.");
+				//throw new InvalidOperationException($"No previous moves to undo.");
 			}
 			else
 			{
-				WhoseTurn = ChessTeam.Black;
+				board.UndoMove();
 			}
 		}
-
 		/// <summary>
 		/// Checks if the move from startPosition to endPosition is valid.
 		/// Assumes that startPosition and endPosition are valid parameters.
@@ -78,7 +82,7 @@ namespace WizardsChess.Chess
 			}
 
 			// It's not this pieces turn to move
-			if (startPiece.Team != WhoseTurn)
+			if (startPiece.Team != board.WhoseTurn)
 			{
 				return false;
 			}
@@ -119,6 +123,35 @@ namespace WizardsChess.Chess
 			return isPathClear(startPosition, endPosition);
 		}
 
+		//TODO: overload of: public bool IsMoveValid(Point2D, Point2D)
+
+		public bool DoesMoveCapture(Position start, Position end)	//TODO: make MovePiece use DoesMoveCapture and CaptureLocation methods
+		{
+			if (board.PieceAt(end) != null)
+			{
+				return true;
+			}
+			//TODO: add en passant conditions
+			else
+			{
+				return false;
+			}
+		}
+
+		public Position CaptureLocation(Position start, Position end)
+		{
+			return end;	//remove this to implement en passant
+			/*if (board.PieceAt(end)!=null)
+			{
+				return end;
+			}
+			else
+			{
+				//en passant location
+			}*/
+			
+		}
+
 		private bool isPathClear(Point2D startPosition, Point2D endPosition)
 		{
 			var requestedMoveVector = endPosition - startPosition;
@@ -156,11 +189,11 @@ namespace WizardsChess.Chess
 			int x;
 			int y;
 			int kingToRookDir;
-			bool clear;
+			bool thisSideOkay;
 
 			foreach (var aKingLocation in kingLocations)
 			{
-				if (board.PieceAt(aKingLocation).Team == WhoseTurn)
+				if (board.PieceAt(aKingLocation).Team == board.WhoseTurn)
 				{
 					kingLocation = aKingLocation;
 				}
@@ -174,23 +207,27 @@ namespace WizardsChess.Chess
 			{
 				return 0;
 			}
-
+			//TODO: if kingLocation is in check, cannot castle
 			foreach (var location in allRookLocations)
 			{
+				//TODO: if this location is in check, cannot castle
 				var rook = board.PieceAt(location);
-				if (rook.Team == WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location))
+				if (rook.Team == board.WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location))
 				{
-					clear = true;
+					thisSideOkay = true;
 					y = kingLocation.Y;
 					kingToRookDir = Math.Sign(location.X - kingLocation.X);
 					for (x = kingLocation.X + kingToRookDir; x != location.X; x += kingToRookDir) {
-						if (board.PieceAt(x,y) != null)
+						if (board.PieceAt(x,y) != null)	//add check checking for all those square
 						{
-							clear = false;
+							thisSideOkay = false;
 						}
 					}
-					validRookLocations.Add(location);
-					validRooks.Add(rook);
+					if (thisSideOkay)
+					{
+						validRookLocations.Add(location);
+						validRooks.Add(rook);
+					}
 				}
 			}
 			return validRooks.Count;
@@ -205,7 +242,7 @@ namespace WizardsChess.Chess
 			Point2D kingLocation = new Point2D();
 			foreach (var aKingLocation in kingLocations)
 			{
-				if (board.PieceAt(aKingLocation).Team == WhoseTurn)
+				if (board.PieceAt(aKingLocation).Team == board.WhoseTurn)
 				{
 					kingLocation = aKingLocation;
 				}
@@ -214,7 +251,7 @@ namespace WizardsChess.Chess
 			{
 				throw new InvalidOperationException($"missing king");
 			}
-			return inCheck(kingLocation, WhoseTurn);
+			return inCheck(kingLocation, board.WhoseTurn);
 		}
 
 		// Checks if the specified location is in check for the specified team 
@@ -294,6 +331,5 @@ namespace WizardsChess.Chess
 				return board;
 			}
 		}
-		private ChessTeam WhoseTurn;
 	}
 }

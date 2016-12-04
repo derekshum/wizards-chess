@@ -20,6 +20,6 @@ namespace WizardsChess.Movement
 		/// A list of List<Point2D>s. Each List<Point2D> indicates a piece move from start to finish.
 		/// Point2Ds are in movement logical units (between ChessBoard units and motor step units).
 		/// </returns>
-		List<List<Point2D>> PlanMove(Point2D start, Point2D end, Point2D? captured=null);
+		List<IList<Point2D>> PlanMove(Point2D start, Point2D end, Point2D? captured=null);
 	}
 }

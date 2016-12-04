@@ -23,11 +23,15 @@ namespace WizardsChess.Movement
 			X = vec.X;
 			Y = vec.Y;
 		}
-
 		public Point2D(Vector2D vec, Point2D origin)
 		{
 			X = vec.X + origin.X;
 			Y = vec.Y + origin.Y;
+		}
+		public Point2D(Position p)
+		{
+			X = p.Column;
+			Y = p.Row;
 		}
 
 		public int X { get; }

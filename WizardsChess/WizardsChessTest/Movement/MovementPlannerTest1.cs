@@ -28,14 +28,12 @@ namespace WizardsChessTest
 			Point2D moveW1Start = new Point2D(4, 1);    //start location of the first white move (0-7, 0-7)
 			Point2D moveW1End = new Point2D(4, 3);
 
-			List<List<Point2D>> paths = new List<List<Point2D>>();
+			List<IList<Point2D>> paths = new List<IList<Point2D>>();
 			String printString = "";
 			ChessBoard board = new ChessBoard();
 			MovePlanner planner = new MovePlanner(board);
 			paths = planner.PlanMove(moveW1Start, moveW1End);
 			board.MovePiece(new Position(moveW1Start), new Position(moveW1End));
-
-			printString = planner.PrintDebug(paths);
 			//System.Diagnostics.Debug.Write(printString);
 			Assert.AreEqual("[12, 3]", paths[0][0].ToString());
 			Assert.AreEqual("[12, 7]", paths[0][1].ToString());
@@ -50,7 +48,7 @@ namespace WizardsChessTest
 			Point2D moveW1Start = new Point2D(4, 1);    //start location of the first white move (0-7, 0-7)
 			Point2D moveW1End = new Point2D(4, 6);
 
-			List<List<Point2D>> paths = new List<List<Point2D>>();
+			List<IList<Point2D>> paths = new List<IList<Point2D>>();
 			ChessBoard board = new ChessBoard();
 			MovePlanner planner = new MovePlanner(board);
 			paths = planner.PlanMove(moveW1Start, moveW1End);
