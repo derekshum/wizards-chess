@@ -47,6 +47,18 @@ namespace WizardsChess.Chess
 			board.MovePiece(startPosition, endPosition);
 		}
 
+		public void UndoMove ()
+		{
+			if (board.PastMoves.Count == 0)
+			{
+				System.Diagnostics.Debug.WriteLine($"No previous moves to undo.");
+				//throw new InvalidOperationException($"No previous moves to undo.");
+			}
+			else
+			{
+				board.UndoMove();
+			}
+		}
 		/// <summary>
 		/// Checks if the move from startPosition to endPosition is valid.
 		/// Assumes that startPosition and endPosition are valid parameters.

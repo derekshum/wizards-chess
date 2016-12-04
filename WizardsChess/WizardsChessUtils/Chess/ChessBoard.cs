@@ -21,50 +21,6 @@ namespace WizardsChess.Chess
 		}
 
 		/// <summary>
-		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
-		/// Throws an InvalidOperationException if this is an invalid move.	//TODO: take this out once it's no longer done here
-		/// </summary>
-		/// <param name="startPosition"></param>
-		/// <param name="endPosition"></param>
-		public void MovePiece(Position startPosition, Position endPosition)
-		{
-			MoveSpecification move = new MoveSpecification(startPosition, endPosition);
-            // Kill the piece at the destination, if there is one
-            var endPiece = boardMatrix[endPosition.Row, endPosition.Column];
-			if (endPiece != null)
-			{
-				move.Capture = endPosition;
-				capturedPiecesByTeam[endPiece.Team].Add(endPiece);
-				// Remove a killed piece from our valid pieceLocationsByType list
-				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
-				listOfEndPieceType.Remove(endPosition);
-			} //TODO: else if en passant
-			var startPiece = boardMatrix[startPosition.Row, startPosition.Column];
-			startPiece.HasMoved = true;
-			boardMatrix[endPosition.Row, endPosition.Column] = startPiece;
-			boardMatrix[startPosition.Row, startPosition.Column] = null;
-
-			var listOfStartPieceTypes = pieceLocationsByType[startPiece.Type];
-			// Replace the old position for this piece with the new position in the pieceLocationsByType list
-			listOfStartPieceTypes.Remove(startPosition);
-			listOfStartPieceTypes.Add(endPosition);
-			pastMoves.Add(move);
-			changeTurn();
-		}
-
-		public void changeTurn()
-		{
-			if (WhoseTurn == ChessTeam.Black)
-			{
-				WhoseTurn = ChessTeam.White;
-			}
-			else
-			{
-				WhoseTurn = ChessTeam.Black;
-			}
-		}
-
-		/// <summary>
 		/// Sets up the board with the black and white pieces in their starting arrangement.
 		/// </summary>
 		private void setBoard()
@@ -125,11 +81,59 @@ namespace WizardsChess.Chess
 			}
 		}
 
+		/// <summary>
+		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
+		/// Throws an InvalidOperationException if this is an invalid move.	//TODO: take this out once it's no longer done here
+		/// </summary>
+		/// <param name="startPosition"></param>
+		/// <param name="endPosition"></param>
+		public void MovePiece(Position startPosition, Position endPosition)
+		{
+			MoveSpecification move = new MoveSpecification(startPosition, endPosition);
+			// Kill the piece at the destination, if there is one
+			var endPiece = boardMatrix[endPosition.Row, endPosition.Column];
+			if (endPiece != null)
+			{
+				move.Capture = endPosition;
+				capturedPiecesByTeam[endPiece.Team].Add(endPiece);
+				// Remove a killed piece from our valid pieceLocationsByType list
+				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
+				listOfEndPieceType.Remove(endPosition);
+			} //TODO: else if en passant
+			var startPiece = boardMatrix[startPosition.Row, startPosition.Column];
+			startPiece.HasMoved = true;
+			boardMatrix[endPosition.Row, endPosition.Column] = startPiece;
+			boardMatrix[startPosition.Row, startPosition.Column] = null;
+
+			var listOfStartPieceTypes = pieceLocationsByType[startPiece.Type];
+			// Replace the old position for this piece with the new position in the pieceLocationsByType list
+			listOfStartPieceTypes.Remove(startPosition);
+			listOfStartPieceTypes.Add(endPosition);
+			pastMoves.Add(move);
+			changeTurn();
+		}
+
+		public void changeTurn()
+		{
+			if (WhoseTurn == ChessTeam.Black)
+			{
+				WhoseTurn = ChessTeam.White;
+			}
+			else
+			{
+				WhoseTurn = ChessTeam.Black;
+			}
+		}
+
+		//undoes the last move (can be called repeatedly)
+		public void UndoMove()
+		{
+			//TODO: finish
+		}
+
 		//TODO: board reset
 
-		//TODO:? WhoseTurn modifiers(increment or set to a certain team's) and an accessor?- not if Whoseturn is stored in logic
-
-		//TODO: Prints a representation of the board.
+		//Prints a representation of the board.
 		public override string ToString()
 		{
 			StringBuilder strBuild = new StringBuilder();
