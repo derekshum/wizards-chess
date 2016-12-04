@@ -117,6 +117,7 @@ namespace WizardsChess.Chess
 		public void Castle(Point2D rookPos)	//use position?
 		{
 			//TODO: write this *** use king Col and the row of the rook to logic it out
+
 			/*
 			if (WhoseTurn == ChessTeam.White)
 			{

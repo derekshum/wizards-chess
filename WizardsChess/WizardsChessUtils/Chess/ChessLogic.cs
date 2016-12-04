@@ -212,17 +212,24 @@ namespace WizardsChess.Chess
 			foreach (var location in allRookLocations)
 			{
 				var rook = board.PieceAt(location);
-				//if the rook in question is on the team that isn't moving, has move, or has its location in check, it cannot provide a legal castle
-				if (rook.Team == board.WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location) && !inCheck(location, board.WhoseTurn))
+				//if the rook in question is on the team that isn't moving, has move, it cannot provide a legal castle
+				if (rook.Team == board.WhoseTurn && rook.HasMoved == false && isPathClear(kingLocation, location))
 				{
 					thisSideOkay = true;
 					y = kingLocation.Y;
 					kingToRookDir = Math.Sign(location.X - kingLocation.X);
 					for (x = kingLocation.X + kingToRookDir; x != location.X; x += kingToRookDir) {
-						if (board.PieceAt(x,y) != null || inCheck(new Point2D(x,y), board.WhoseTurn))	//if any squares between the king and rook contain a piece or are in check, the move is illegal
+						if (board.PieceAt(x,y) != null)	//if any squares between the king and the rook contain piece, that castle is illegal
 						{
 							thisSideOkay = false;
 							break;	//could be replaced with a double break of sorts, and then the valid rook adding could be without an if statement
+						}
+						if (Math.Abs(kingLocation.X-x) <= 2) //if the square is 1 or two over from the king, the king will pass through it, so it must not be in check
+						{
+							if (inCheck(new Point2D(x, y), board.WhoseTurn))
+							{
+
+							}
 						}
 					}
 					if (thisSideOkay)
