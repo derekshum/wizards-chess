@@ -332,6 +332,24 @@ namespace WizardsChess.Chess
 			return isPathClear(startPoint, endPoint);
 		}
 
+		//piece accessor by x and y indexes
+		public ChessPiece PieceAt(int x, int y)
+		{
+			return board.PieceAt(x, y);
+		}
+
+		//piece accessor by Point2D
+		public ChessPiece PieceAt(Point2D point)
+		{
+			return board.PieceAt(point);
+		}
+
+		//piece accessor by Position
+		public ChessPiece PieceAt(Position pos)
+		{
+			return board.PieceAt(pos);
+		}
+
 		private ChessBoard board;
 		public IChessBoard Board
 		{
