@@ -126,11 +126,11 @@ namespace WizardsChess.Movement
 
             if (team == ChessTeam.White)
             {
-                path = getCapturedPathWithTeam(startPoint, whiteRemovalDir, whiteEmptyCol, whiteCapturedCol, whiteCapturedStart - whiteCapturedAddDir * numCaptured);
+                path = getCapturedPathWithTeam(startPoint, whiteRemovalDir, whiteEmptyCol, whiteCapturedCol, whiteCapturedStart + whiteCapturedAddDir * numCaptured);
 			}
             else    //team == ChessTeam.Black
             {
-                path = getCapturedPathWithTeam(startPoint, blackRemovalDir, blackEmptyCol, blackCapturedCol, blackCapturedStart - blackCapturedAddDir * numCaptured);
+                path = getCapturedPathWithTeam(startPoint, blackRemovalDir, blackEmptyCol, blackCapturedCol, blackCapturedStart + blackCapturedAddDir * numCaptured);
 			}
             return path;
         }

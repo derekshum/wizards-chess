@@ -42,7 +42,7 @@ namespace WizardsChessTest
 		}
 
 		[TestMethod]
-		public void CapturingMovementTest()	//tests move taking by enacting an impossible pawn zoom
+		public void CapturingMovementTest() //tests move taking by enacting an impossible pawn zoom
 		{
 			//White King Pawn to E2 (magic!)
 			Point2D moveW1Start = new Point2D(4, 1);    //start location of the first white move (0-7, 0-7)
@@ -104,5 +104,11 @@ namespace WizardsChessTest
 			Assert.AreEqual("[12, 9]", listOfPaths[2][1][3].ToString());
 			
 		}*/
+		[TestMethod]
+		public void CapturingMovementTestFromLab() //tests move taking by enacting an impossible pawn zoom
+		{
+			ChessLogic logic = new ChessLogic();
+			MovePlanner planner = new MovePlanner(logic.Board);
+		}
 	}
 }
