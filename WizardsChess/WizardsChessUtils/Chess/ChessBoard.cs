@@ -92,7 +92,7 @@ namespace WizardsChess.Chess
 		{
 			MoveSpecification move = new MoveSpecification(startPosition, endPosition);
 			// Kill the piece at the destination, if there is one
-			var endPiece = PieceAt(endPosition);
+			var endPiece = PieceAt(endPosition);	//TODO: could be replaced with boardMatrix reference
 			if (endPiece != null)
 			{
 				move.Capture = endPosition;
@@ -101,7 +101,7 @@ namespace WizardsChess.Chess
 				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
 				listOfEndPieceType.Remove(endPosition);
 			} //TODO: else if en passant
-			var startPiece = PieceAt(startPosition);
+			var startPiece = PieceAt(startPosition);	//TODO: could be replaced with boardMatrix reference
 			startPiece.HasMoved = true;
 			SetPieceAt(endPosition, startPiece);
 			SetPieceAtToNull(startPosition);
@@ -127,7 +127,7 @@ namespace WizardsChess.Chess
 			listOfStartPieceTypes.Add(new Position(KingCol + 2 * rookDir, rookPos.Y));
 
 			boardMatrix[rookPos.Y, rookPos.X].HasMoved = true;
-			SetPieceAt(new Point2D(KingCol + rookDir, rookPos.Y), PieceAt(rookPos));
+			SetPieceAt(new Point2D(KingCol + rookDir, rookPos.Y), PieceAt(rookPos));    //TODO: PieceAt could be replaced with boardMatrix reference
 			SetPieceAtToNull(rookPos);
 
 			listOfStartPieceTypes = pieceLocationsByType[PieceType.Rook];
@@ -159,7 +159,7 @@ namespace WizardsChess.Chess
 			}
 			else
 			{
-				SetPieceAt(lastMove.Start, PieceAt(lastMove.End));
+				SetPieceAt(lastMove.Start, PieceAt(lastMove.End));  //TODO: PieceAt could be replaced with boardMatrix reference
 				SetPieceAtToNull(lastMove.End);
 				if (lastMove.Capture != null)
 				{
@@ -221,19 +221,39 @@ namespace WizardsChess.Chess
 		//piece accessor by x and y indexes
 		public ChessPiece PieceAt(int x, int y)
         {
-            return boardMatrix[y, x];
-        }
+			if (boardMatrix[y,x] != null)
+			{
+				return boardMatrix[y, x].DeepCopy();
+			}
+			else
+			{
+				return null;
+			}
+		}
 
 		//piece accessor by Point2D
-        public ChessPiece PieceAt(Point2D location)
+        public ChessPiece PieceAt(Point2D point)
         {
-            return boardMatrix[location.Y, location.X];
+			if (boardMatrix[point.Y, point.X] != null)
+			{
+				return boardMatrix[point.Y, point.X].DeepCopy();
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		//piece accessor by Position
-		public ChessPiece PieceAt(Position location)
+		public ChessPiece PieceAt(Position pos)
 		{
-			return boardMatrix[location.Row, location.Column];
+			if (boardMatrix[pos.Row, pos.Column] != null) {
+				return boardMatrix[pos.Row, pos.Column].DeepCopy();
+			}
+			else
+			{
+				return null;
+			}
 		}
 
         //access the number of captured pieces on a team
