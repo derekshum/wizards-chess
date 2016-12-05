@@ -183,6 +183,7 @@ namespace WizardsChess.Chess
 		{
 			List<Point2D> validRookLocations = new List<Point2D>();
 			var kingLocations = board.PieceLocationsByType[PieceType.King];
+
 			Point2D kingLocation = new Point2D();
 			ChessPiece king;
 
@@ -202,7 +203,6 @@ namespace WizardsChess.Chess
 			{
 				return validRookLocations;
 			}
-
 			var allRookLocations = board.PieceLocationsByType[PieceType.Rook];
 			int x;
 			int y;
@@ -228,7 +228,8 @@ namespace WizardsChess.Chess
 						{
 							if (inCheck(new Point2D(x, y), board.WhoseTurn))
 							{
-
+								thisSideOkay = false;
+								break;  //could be replaced with a double break of sorts, and then the valid rook adding could be without an if statement
 							}
 						}
 					}

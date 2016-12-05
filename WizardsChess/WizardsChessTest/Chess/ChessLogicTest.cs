@@ -10,7 +10,7 @@ namespace WizardsChessTest.Chess
 	public class ChessLogicTest
 	{
 		[TestMethod]
-		public void TestMethod1()	//test against move that already exsists in chessboard
+		public void LogicMoveTesting()	//test against move that already exsists in chessboard
 		{
 			ChessLogic logic = new ChessLogic();
 			ChessBoard board = new ChessBoard();
@@ -27,14 +27,14 @@ namespace WizardsChessTest.Chess
 			//Assert.AreEqual(logic.Board.ToString(), "a");	//display board
 		}
 		[TestMethod]
-		public void TestMethod2()
+		public void LogicPieceByLocationTesting()
 		{
 			ChessLogic logic = new ChessLogic();
 			var pawnPlaces = logic.FindPotentialPiecesForMove(PieceType.Pawn, new Position("C","3"));
 			Assert.AreEqual(pawnPlaces.Count, 1);
 		}
 		[TestMethod]
-		public void TestMethod3()
+		public void LogicUndo()
 		{
 			ChessLogic logic = new ChessLogic();
 			ChessLogic logic2 = new ChessLogic();
@@ -63,8 +63,29 @@ namespace WizardsChessTest.Chess
 			Assert.AreEqual(logic2.Board.ToString(), logic3.Board.ToString());
 			logic2.UndoMove();
 			Assert.AreEqual(logic2.Board.ToString(), logic.Board.ToString());
-
-
 		}
+		[TestMethod]
+		public void LogicCastleTesting()
+		{
+			ChessLogic logic = new ChessLogic();
+			logic.MovePiece(new Position("E", "2"), new Position("E", "4"));
+			logic.MovePiece(new Position("D", "7"), new Position("D", "6"));
+			logic.MovePiece(new Position("G", "1"), new Position("F", "3"));
+			logic.MovePiece(new Position("C", "8"), new Position("E", "6"));
+			logic.MovePiece(new Position("F", "1"), new Position("D", "3"));
+			logic.MovePiece(new Position("B", "8"), new Position("C", "6"));
+			logic.MovePiece(new Position("E", "1"), new Position("E", "2"));
+			System.Diagnostics.Debug.WriteLine(logic.Board.ToString());
+			System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!! About to get rook for Black Castle Kingside");
+			var rookPos = logic.validRookLocationsForCastling();	//TODO: this is the problem line
+			System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!! About to Black Castle Kingside with rook at " + rookPos[0]);
+			logic.Castle(rookPos[0]);
+			System.Diagnostics.Debug.WriteLine(logic.Board.ToString());
+			System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!! About to get rook for White Castle Queenside");
+			rookPos = logic.validRookLocationsForCastling();
+			System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!! About to White Castle Queenside");
+			logic.Castle(rookPos[0]);
+		}
+
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace WizardsChess.Movement
 			}
 			else if (start.X != end.X && start.Y != end.Y)	//diagonal movement, could be removed if diagonal movement of the motors is achived
 			{
-				return getDiagonalMove(startPoint, endPoint);
+				return getDiagonalMovePath(startPoint, endPoint);
 			}
 			else // piece moving is a non knight piece
 			{
@@ -77,7 +78,7 @@ namespace WizardsChess.Movement
             return path;
         }
 
-		private List<Point2D> getDiagonalMove(Point2D startPoint, Point2D endPoint)
+		private List<Point2D> getDiagonalMovePath(Point2D startPoint, Point2D endPoint)
 		{
 			List<Point2D> path = new List<Point2D>();
 			int Dist = Math.Abs(endPoint.X - startPoint.X);	//number of points moving in each direction
@@ -119,18 +120,18 @@ namespace WizardsChess.Movement
         {
             Point2D startPoint = pointConversion(start);
             ChessTeam team = board.PieceAt(start).Team; 
-            int numCaptured = board.NumCapturedPieces(team); 
+            int numCaptured = board.NumCapturedPieces(team);
 
             List<Point2D> path = new List<Point2D>();
 
             if (team == ChessTeam.White)
             {
                 path = getCapturedPathWithTeam(startPoint, whiteRemovalDir, whiteEmptyCol, whiteCapturedCol, whiteCapturedStart - whiteCapturedAddDir * numCaptured);
-            }
+			}
             else    //team == ChessTeam.Black
             {
                 path = getCapturedPathWithTeam(startPoint, blackRemovalDir, blackEmptyCol, blackCapturedCol, blackCapturedStart - blackCapturedAddDir * numCaptured);
-            }
+			}
             return path;
         }
 
@@ -146,7 +147,7 @@ namespace WizardsChess.Movement
             {
                 path.Add(new Point2D(emptyCol, path[path.Count - 1].Y));
                 path.Add(new Point2D(path[path.Count - 1].X, troughIndex));
-            }
+			}
             path.Add(new Point2D(capturedCol, troughIndex));
             return path;
         }
@@ -168,8 +169,8 @@ namespace WizardsChess.Movement
         const int blackEmptyCol = -9;      //index of the centre of the empty column in between the board and black captured pieces
         const int whiteCapturedCol = 11;     //x-index of the centre of the column where white captured pieces are stored
         const int blackCapturedCol = -11;      //x-index of the centre of the column where black captured pieces are stored
-        const int whiteCapturedStart = -8;    //y-index where the first white piece captured is placed
-        const int blackCapturedStart = 8;   //y-index where the first black piece captured is placed
+        const int whiteCapturedStart = -7;    //y-index where the first white piece captured is placed
+        const int blackCapturedStart = 7;   //y-index where the first black piece captured is placed
         const int whiteRemovalDir = -1;   //y-direction the white pieces are pulled a half square in before being captured off the board
         const int blackRemovalDir = 1;    //y-direction the black pieces are pulled a half square in before being captured off the board
         const int whiteCapturedAddDir = 1;   //y-direction white pieces are added to the white captured trough

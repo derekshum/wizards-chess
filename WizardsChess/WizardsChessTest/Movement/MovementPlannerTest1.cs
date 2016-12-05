@@ -35,8 +35,8 @@ namespace WizardsChessTest
 			paths = planner.PlanMove(moveW1Start, moveW1End);
 			board.MovePiece(new Position(moveW1Start), new Position(moveW1End));
 			//System.Diagnostics.Debug.Write(printString);
-			Assert.AreEqual("[12, 3]", paths[0][0].ToString());
-			Assert.AreEqual("[12, 7]", paths[0][1].ToString());
+			Assert.AreEqual("[1, -5]", paths[0][0].ToString());
+			Assert.AreEqual("[1, -1]", paths[0][1].ToString());
 			//Assert.AreEqual(correctPoints, printString);
 
 		}
@@ -51,16 +51,17 @@ namespace WizardsChessTest
 			List<IList<Point2D>> paths = new List<IList<Point2D>>();
 			ChessBoard board = new ChessBoard();
 			MovePlanner planner = new MovePlanner(board);
+			System.Diagnostics.Debug.WriteLine("about to get path");
 			paths = planner.PlanMove(moveW1Start, moveW1End);
 			//board.MovePiece(new Position(moveW1Start), new Position(moveW1End));
 
-			Assert.AreEqual("[12, 13]", paths[0][0].ToString());
-			Assert.AreEqual("[12, 14]", paths[0][1].ToString());
-			Assert.AreEqual("[2, 14]", paths[0][2].ToString());
-			Assert.AreEqual("[2, 15]", paths[0][3].ToString());
-			Assert.AreEqual("[0, 15]", paths[0][4].ToString());
-			Assert.AreEqual("[12, 3]", paths[1][0].ToString());
-			Assert.AreEqual("[12, 13]", paths[1][1].ToString());
+			Assert.AreEqual("[1, 5]", paths[0][0].ToString());
+			Assert.AreEqual("[1, 6]", paths[0][1].ToString());
+			Assert.AreEqual("[-9, 6]", paths[0][2].ToString());
+			Assert.AreEqual("[-9, 7]", paths[0][3].ToString());
+			Assert.AreEqual("[-11, 7]", paths[0][4].ToString());
+			Assert.AreEqual("[1, -5]", paths[1][0].ToString());
+			Assert.AreEqual("[1, 5]", paths[1][1].ToString());
 		}
 
 		/*

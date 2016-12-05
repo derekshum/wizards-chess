@@ -114,20 +114,28 @@ namespace WizardsChess.Chess
 			changeTurn();
 		}
 
-		public void Castle(Point2D rookPos)	//use position?
+		public void Castle(Point2D rookPos)
 		{
-			//TODO: write this *** use king Col and the row of the rook to logic it out
+			MoveSpecification move = new MoveSpecification(new Position(rookPos), new Position(1,1), null, true);
+			int rookDir = Math.Sign(rookPos.X - KingCol);
+			boardMatrix[rookPos.Y, KingCol].HasMoved = true;
+			SetPieceAt(new Point2D(KingCol + 2 * rookDir, rookPos.Y), PieceAt(KingCol, rookPos.Y));
+			SetPieceAtToNull(new Point2D(KingCol, rookPos.Y));
 
-			/*
-			if (WhoseTurn == ChessTeam.White)
-			{
-				//TODO: write this ***
-			}
-			else //WhoseTurn == ChessTeam.Black
-			{
-				//TODO: write this ***
-			}
-			*/
+			var listOfStartPieceTypes = pieceLocationsByType[PieceType.King];
+			listOfStartPieceTypes.Remove(new Position(KingCol, rookPos.Y));
+			listOfStartPieceTypes.Add(new Position(KingCol + 2 * rookDir, rookPos.Y));
+
+			boardMatrix[rookPos.Y, rookPos.X].HasMoved = true;
+			SetPieceAt(new Point2D(KingCol + rookDir, rookPos.Y), PieceAt(rookPos));
+			SetPieceAtToNull(rookPos);
+
+			listOfStartPieceTypes = pieceLocationsByType[PieceType.Rook];
+			listOfStartPieceTypes.Remove(rookPos);
+			listOfStartPieceTypes.Add(new Position(KingCol + rookDir, rookPos.Y));
+
+			pastMoves.Add(move);
+			changeTurn();
 		}
 		public void changeTurn()
 		{
@@ -189,11 +197,13 @@ namespace WizardsChess.Chess
 		//Prints a representation of the board.
 		public override string ToString()
 		{
+			int presentedRow;
 			StringBuilder strBuild = new StringBuilder();
 			strBuild.Append("\n\tA\tB\tC\tD\tE\tF\tG\tH\n");
 			for (int row = Size - 1; row >= 0; row--)
 			{
-				strBuild.Append(row).Append("\t");
+				presentedRow = row + 1;
+				strBuild.Append(presentedRow).Append("\t");
 				for (int col = 0; col < Size; col++)
 				{
 					var piece = boardMatrix[row, col];
