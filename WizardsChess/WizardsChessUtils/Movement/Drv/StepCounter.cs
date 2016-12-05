@@ -98,6 +98,10 @@ namespace WizardsChess.Movement.Drv
 				int numSteps;
 				lock (lockObject)
 				{
+					if (state == CounterState.Ready)
+					{
+						return;
+					}
 					Position++;
 					numSteps = Position - startPosition;
 

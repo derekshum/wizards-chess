@@ -94,7 +94,8 @@ namespace WizardsChess.VoiceControl
 				}
 				else if (args.Result.Confidence == SpeechRecognitionConfidence.Low)
 				{
-					onCommandHypothesized(new CommandHypothesisEventArgs(convertSpeechToCommand(args.Result), args.Result.Text));
+					// Throw the response away
+					//onCommandHypothesized(new CommandHypothesisEventArgs(convertSpeechToCommand(args.Result), args.Result.Text));
 				}
 				else
 				{

@@ -126,6 +126,18 @@ namespace WizardsChess.Movement
 			{
 				await Task.Delay(100);
 			}
+
+			var stillToMove = convertGridUnitsToSteps(GridPosition) - StepPosition;
+			if (stillToMove > 5)
+			{
+				moveInSteps((int)((float)stillToMove / 1.5));
+				state = MoveState.Moving;
+			}
+
+			while (state != MoveState.Stopped)
+			{
+				await Task.Delay(100);
+			}
 		}
 
 		private async Task moveAsync(int gridUnits)
@@ -147,9 +159,13 @@ namespace WizardsChess.Movement
 				var distanceToMove = convertGridUnitsToSteps(gridUnits) - offset;
 
 				var steps = Math.Abs(distanceToMove) - estimatedExtraSteps;
-				// Adjust the number of steps if it is very close to the estimated number of Extra steps
-				if (steps < estimatedExtraSteps / 2)
+				if (steps < 0)
+				{
 					steps = Math.Abs(distanceToMove) / 2;
+				}
+				// Adjust the number of steps if it is very close to the estimated number of Extra steps
+				//if (steps < estimatedExtraSteps / 2)
+				//	steps = Math.Abs(distanceToMove) / 2;
 				var newMotorState = distanceToMove > 0 ? MotorState.Forward : MotorState.Backward;
 				System.Diagnostics.Debug.WriteLine($"Moving the {axis} axis {steps} steps {newMotorState} from position {StepPosition}.");
 				stepCounter.CountSteps(steps, getMoveTimeout(steps));
@@ -178,7 +194,7 @@ namespace WizardsChess.Movement
 
 		private TimeSpan getMoveTimeout(int steps)
 		{
-			return TimeSpan.FromMilliseconds(Math.Abs(steps) * millisecondsPerStep * 2);
+			return TimeSpan.FromMilliseconds(Math.Abs(steps) * millisecondsPerStep * 2 + 100);
 		}
 
 		private void updateCalibrationSettings()
@@ -247,7 +263,7 @@ namespace WizardsChess.Movement
 			if (state == MoveState.Moving)
 			{
 				state = MoveState.Stopped;
-				throw new Exception("Motors timed out during a regular move.");
+				//throw new Exception("Motors timed out during a regular move.");
 			}
 			else
 			{
