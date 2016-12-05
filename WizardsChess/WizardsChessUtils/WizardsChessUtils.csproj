@@ -64,6 +64,7 @@
     <Compile Include="Movement\Drv\IPhotoInterrupter.cs" />
     <Compile Include="Movement\Drv\IStepCounter.cs" />
     <Compile Include="Movement\Drv\StepCounter.cs" />
+    <Compile Include="Movement\Exceptions\CalibrationException.cs" />
     <Compile Include="Movement\IMoveManager.cs" />
     <Compile Include="Movement\IMovePlanner.cs" />
     <Compile Include="Movement\IMovePerformer.cs" />

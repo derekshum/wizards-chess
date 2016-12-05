@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Movement.Drv;
 using WizardsChess.Movement.Drv.Events;
+using WizardsChess.Movement.Exceptions;
 
 namespace WizardsChess.Movement
 {
@@ -23,8 +24,8 @@ namespace WizardsChess.Movement
 		public CalibratedMotorMover(Axis axis, int gridMax, int gridMin, int msPerStep, IMotorDrv mtrDrv, IStepCounter stepCntr,
 			IPhotoInterrupter topPhotoInterrupt, IPhotoInterrupter bottomPhotoInterrupt)
 		{
-			StepPosition = 0;
-			GridPosition = 0;
+			stepPosition = 0;
+			gridPosition = 0;
 			estimatedExtraSteps = 100;
 			StepsPerGridUnit = 100;
 			millisecondsPerStep = msPerStep;
@@ -51,12 +52,12 @@ namespace WizardsChess.Movement
 		/// <summary>
 		/// The current GridPosition. This is invalid if CalibratedMotorMove is in the middle of a move.
 		/// </summary>
-		public int GridPosition { get; private set; }
+		public int GridPosition { get { return gridPosition; } }
 
 		/// <summary>
 		/// The current StepPosition. This is invalid if CalibratedMotorMove is in the middle of a move.
 		/// </summary>
-		public int StepPosition { get; private set; }
+		public int StepPosition { get { return stepPosition; } }
 
 		/// <summary>
 		/// The number of steps between grid units, as a double.
@@ -200,6 +201,10 @@ namespace WizardsChess.Movement
 		private void updateCalibrationSettings()
 		{
 			System.Diagnostics.Debug.WriteLine($"Measured interrupt positions:\n\ttop: {lowerTopPosition}\t{upperTopPosition}\n\tbottom: {lowerBottomPosition}\t{upperBottomPosition}");
+			if (!upperTopPosition.HasValue || !lowerTopPosition.HasValue || !upperBottomPosition.HasValue || !lowerBottomPosition.HasValue)
+			{
+				throw new CalibrationException("UpdateCalibrationSettings called with at least one null interrupter position.");
+			}
 			float topPos = (float)(upperTopPosition.Value + lowerTopPosition.Value) / 2;
 			float bottomPos = (float)(upperBottomPosition.Value + lowerBottomPosition.Value) / 2;
 
@@ -210,12 +215,12 @@ namespace WizardsChess.Movement
 			int offset = (int)Math.Round(topPos - expectedTopPos);
 
 			System.Diagnostics.Debug.WriteLine($"Subtracting {offset} from StepPosition {StepPosition}.");
-			StepPosition -= offset;
+			stepPosition -= offset;
 			upperTopPosition -= offset;
 			lowerTopPosition -= offset;
 			upperBottomPosition -= offset;
 			lowerBottomPosition -= offset;
-			GridPosition = convertStepsToGridUnits(StepPosition);
+			gridPosition = convertStepsToGridUnits(StepPosition);
 			System.Diagnostics.Debug.WriteLine($"{axis} axis updated stepPosition to {StepPosition} with GridPosition {GridPosition}, and stepsPerGridUnit {StepsPerGridUnit}.");
 		}
 
@@ -309,8 +314,8 @@ namespace WizardsChess.Movement
 
 		private void updatePosition(int numSteps)
 		{
-			StepPosition += numSteps * currentMovePolarity;
-			GridPosition = convertStepsToGridUnits(StepPosition);
+			stepPosition += numSteps * currentMovePolarity;
+			gridPosition = convertStepsToGridUnits(StepPosition);
 		}
 
 		private void topEdgeDetected(object sender, GpioValueChangedEventArgs edgeDetectArgs)
@@ -491,7 +496,9 @@ namespace WizardsChess.Movement
 		private int gridMin;
 		private int estimatedExtraSteps;
 		private int currentMovePolarity;
-		private int millisecondsPerStep;
+		private readonly int millisecondsPerStep;
+		private volatile int stepPosition;
+		private volatile int gridPosition;
 
 		private const int INTERRUPT_TOLERANCE = 75;
 		private const int CALIBRATION_STEPS = 650;
@@ -502,8 +509,8 @@ namespace WizardsChess.Movement
 		private int? upperBottomPosition;
 		private int? lowerBottomPosition;
 
-		private Axis axis;
-		private MoveState state;
+		private readonly Axis axis;
+		private volatile MoveState state;
 
 		private IMotorDrv motorDrv;
 		private IStepCounter stepCounter;

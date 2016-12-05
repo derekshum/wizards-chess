@@ -17,6 +17,7 @@ namespace WizardsChessTest.Mocks.Movement
 			bottomInterrupter = new MockPhotoInterrupter(-1, -stepsPerGridUnit - 5, -stepsPerGridUnit + 5, mockMotor);
 		}
 
+		[TestCategory("Motor Calibration")]
 		[TestMethod]
 		public void TestMotorCalibration()
 		{
@@ -26,6 +27,7 @@ namespace WizardsChessTest.Mocks.Movement
 			Assert.IsTrue(calibratedMover.StepPosition < -50, $"Final position {calibratedMover.StepPosition} should be less than -50.");
 		}
 
+		[TestCategory("Motor Calibration")]
 		[TestMethod]
 		public void TestOffsetMotorCalibration()
 		{
@@ -36,6 +38,7 @@ namespace WizardsChessTest.Mocks.Movement
 			Assert.IsTrue(calibratedMover.StepPosition < -50, $"Final position {calibratedMover.StepPosition} should be less than -50.");
 		}
 
+		[TestCategory("Motor Calibration")]
 		[TestMethod]
 		public void TestMotorCalibrationFromAboveInterrupts()
 		{
@@ -46,6 +49,7 @@ namespace WizardsChessTest.Mocks.Movement
 			Assert.IsTrue(calibratedMover.StepPosition < -50, $"Final position {calibratedMover.StepPosition} should be less than -50.");
 		}
 
+		[TestCategory("Motor Calibration")]
 		[TestMethod]
 		public void TestMotorCalibrationFromBelowInterrupts()
 		{

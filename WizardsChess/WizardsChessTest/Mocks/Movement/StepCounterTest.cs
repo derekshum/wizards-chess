@@ -17,6 +17,7 @@ namespace WizardsChessTest.Mocks.Movement
 			mockMotor = new MockMotor();
 		}
 
+		[TestCategory("Step Counter")]
 		[TestMethod]
 		public void TestStepCounterConstruction()
 		{
@@ -27,6 +28,7 @@ namespace WizardsChessTest.Mocks.Movement
 			stepCounter.MoveTimedOut += timeout;
 		}
 
+		[TestCategory("Step Counter")]
 		[TestMethod]
 		public void TestStepCounterBasic()
 		{
@@ -49,6 +51,7 @@ namespace WizardsChessTest.Mocks.Movement
 			checkForErrors();
 		}
 
+		[TestCategory("Step Counter")]
 		[TestMethod]
 		public void TestStepCounterStall()
 		{
@@ -73,6 +76,7 @@ namespace WizardsChessTest.Mocks.Movement
 			checkForErrors();
 		}
 
+		[TestCategory("Step Counter")]
 		[TestMethod]
 		public void TestStepCounterOverlappingCounts()
 		{
@@ -100,6 +104,7 @@ namespace WizardsChessTest.Mocks.Movement
 			checkForErrors();
 		}
 
+		[TestCategory("Step Counter")]
 		[TestMethod]
 		public void TestStepCounterStopMidCount()
 		{
