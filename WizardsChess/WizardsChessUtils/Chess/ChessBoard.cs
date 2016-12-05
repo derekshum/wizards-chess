@@ -92,22 +92,27 @@ namespace WizardsChess.Chess
 		{
 			MoveSpecification move = new MoveSpecification(startPosition, endPosition);
 			// Kill the piece at the destination, if there is one
-			var endPiece = PieceAt(endPosition);	//TODO: could be replaced with boardMatrix reference
+			var endPiece = internalPieceAt(endPosition);
 			if (endPiece != null)
 			{
 				move.Capture = endPosition;
 				capturedPiecesByTeam[endPiece.Team].Add(endPiece);
+				
 				// Remove a killed piece from our valid pieceLocationsByType list
 				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
 				listOfEndPieceType.Remove(endPosition);
 			} //TODO: else if en passant
-			var startPiece = PieceAt(startPosition);	//TODO: could be replaced with boardMatrix reference
-			startPiece.HasMoved = true;
-			SetPieceAt(endPosition, startPiece);
+			var movingPiece = internalPieceAt(startPosition);
+			if (!movingPiece.HasMoved)
+			{
+				movingPiece.HasMoved = true;
+				move.HasMovedChange = true;
+			}
+			SetPieceAt(endPosition, movingPiece);
 			SetPieceAtToNull(startPosition);
 
-			var listOfStartPieceTypes = pieceLocationsByType[startPiece.Type];
 			// Replace the old position for this piece with the new position in the pieceLocationsByType list
+			var listOfStartPieceTypes = pieceLocationsByType[movingPiece.Type];
 			listOfStartPieceTypes.Remove(startPosition);
 			listOfStartPieceTypes.Add(endPosition);
 			pastMoves.Add(move);
@@ -117,8 +122,11 @@ namespace WizardsChess.Chess
 		public void Castle(Point2D rookPos)
 		{
 			MoveSpecification move = new MoveSpecification(new Position(rookPos), new Position(1,1), null, true);
+			
+			boardMatrix[rookPos.Y, KingCol].HasMoved = true;    //update HasMoved in ChessPiece
+			pastMoves.Add(move);    
+
 			int rookDir = Math.Sign(rookPos.X - KingCol);
-			boardMatrix[rookPos.Y, KingCol].HasMoved = true;
 			SetPieceAt(new Point2D(KingCol + 2 * rookDir, rookPos.Y), PieceAt(KingCol, rookPos.Y));
 			SetPieceAtToNull(new Point2D(KingCol, rookPos.Y));
 
@@ -127,14 +135,13 @@ namespace WizardsChess.Chess
 			listOfStartPieceTypes.Add(new Position(KingCol + 2 * rookDir, rookPos.Y));
 
 			boardMatrix[rookPos.Y, rookPos.X].HasMoved = true;
-			SetPieceAt(new Point2D(KingCol + rookDir, rookPos.Y), PieceAt(rookPos));    //TODO: PieceAt could be replaced with boardMatrix reference
+			SetPieceAt(new Point2D(KingCol + rookDir, rookPos.Y), internalPieceAt(rookPos));
 			SetPieceAtToNull(rookPos);
 
 			listOfStartPieceTypes = pieceLocationsByType[PieceType.Rook];
 			listOfStartPieceTypes.Remove(rookPos);
 			listOfStartPieceTypes.Add(new Position(KingCol + rookDir, rookPos.Y));
 
-			pastMoves.Add(move);
 			changeTurn();
 		}
 		public void changeTurn()
@@ -159,16 +166,31 @@ namespace WizardsChess.Chess
 			}
 			else
 			{
-				SetPieceAt(lastMove.Start, PieceAt(lastMove.End));  //TODO: PieceAt could be replaced with boardMatrix reference
+				var movingPiece = internalPieceAt(lastMove.End);
+				if (lastMove.HasMovedChange)
+				{
+					movingPiece.HasMoved = false;
+				}
+				SetPieceAt(lastMove.Start, internalPieceAt(lastMove.End));
 				SetPieceAtToNull(lastMove.End);
+
+				// Replace the old position for this piece with the new position in the pieceLocationsByType list
+				var listOfStartPieceTypes = pieceLocationsByType[internalPieceAt(lastMove.Start).Type];
+				listOfStartPieceTypes.Remove(lastMove.End);
+				listOfStartPieceTypes.Add(lastMove.Start);
+				
 				if (lastMove.Capture != null)
 				{
 					SetPieceAt((Position)lastMove.Capture, capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]);
 					capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam.Count - 1);
+
+					// Add a captured piece to our valid pieceLocationsByType list
+					var listOfEndPieceType = pieceLocationsByType[internalPieceAt((Position)lastMove.Capture).Type];
+					listOfEndPieceType.Add((Position)lastMove.Capture);
 				}
-				pastMoves.RemoveAt(pastMoves.Count - 1);
-				changeTurn();
 			}
+			pastMoves.RemoveAt(pastMoves.Count - 1);
+			changeTurn();
 		}
 
 		//TODO: board reset
@@ -216,6 +238,24 @@ namespace WizardsChess.Chess
 				strBuild.Append("\n");
 			}
 			return strBuild.ToString();
+		}
+
+		//piece accessor by x and y indexes
+		public ChessPiece internalPieceAt(int x, int y)
+		{
+			return boardMatrix[y, x];
+		}
+
+		//piece accessor by Point2D
+		public ChessPiece internalPieceAt(Point2D point)
+		{
+			return boardMatrix[point.Y, point.X];
+		}
+
+		//piece accessor by Position
+		private ChessPiece internalPieceAt(Position pos)
+		{
+			return boardMatrix[pos.Row, pos.Column];
 		}
 
 		//piece accessor by x and y indexes
