@@ -107,6 +107,9 @@ namespace WizardsChess
 					currentMoveCommand = moveCmd;
 					await performMoveIfValidAsync(moveCmd);
 				break;
+				/*case CommandType.Castle	//need to add this
+				*	await performCastleIfValid();
+				*/
 				case CommandType.ConfirmPiece:
 					var pieceConfirmation = args.Command as ConfirmPieceCommand;
 					if (currentMoveCommand == null)
@@ -122,11 +125,9 @@ namespace WizardsChess
 				break;
 				//case yes
 				//case no
-				//case undo?
 				//case cancel?
 				//case MotorMove?
 				//case Magnet?
-				//case castle?
 				default:
 					//debug writing done above
 				break;
@@ -181,6 +182,28 @@ namespace WizardsChess
 				await moveManager.MoveAsync(new Point2D((Position)moveCmd.Position), new Point2D(moveCmd.Destination));
 			}
 			chessLogic.MovePiece((Position)moveCmd.Position, moveCmd.Destination);
+		}
+
+		private async Task performCastleIfValid()
+		{
+			var validRookLocations = chessLogic.validRookLocationsForCastling();
+			if (validRookLocations.Count == 0)
+			{
+				System.Diagnostics.Debug.WriteLine($"No valid castles");
+				//TODO: output saying no valid moves fit that description
+				return;
+			}
+			else if (validRookLocations.Count == 1)
+			{
+				chessLogic.Castle(validRookLocations[0]);
+			}
+			else	// validRookLocations.Count == 2
+			{
+				//await cmdInterpreter.ConfirmPieceSelectionAsync(moveCmd.Piece.Value, numValidCastles.ToList());
+				//TODO: figure out how to make this similar
+				return;
+
+			}
 		}
 
 		private async Task performUndoIfPossible()

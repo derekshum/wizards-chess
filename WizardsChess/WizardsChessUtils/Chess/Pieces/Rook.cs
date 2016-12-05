@@ -25,6 +25,15 @@ namespace WizardsChess.Chess.Pieces
 			}
 		}
 
+		public override ChessPiece DeepCopy()
+		{
+			Rook piece = new Rook(this.Team);
+			piece.HasMoved = this.HasMoved;
+			piece.HasMoved = this.HasMoved;
+			piece.CanJump = this.CanJump;
+			return piece;
+		}
+
 		// contains motions of allowed chess piece
 		private static List<Vector2D> allowedMotionVectors = new List<Vector2D>();
 

@@ -13,6 +13,18 @@ namespace WizardsChess.Chess.Pieces {
 			CanJump = false;
 		}
 
+		/*
+		public ChessPiece(ChessPiece piece)
+		{
+			Type = piece.Type;
+			Team = piece.Team;
+			HasMoved = piece.HasMoved;
+			CanJump = piece.CanJump;
+		}
+		*/
+
+		public abstract ChessPiece DeepCopy();
+
 		public PieceType Type { get; protected set; }
 
 		public ChessTeam Team { get; }

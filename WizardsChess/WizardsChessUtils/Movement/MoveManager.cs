@@ -32,12 +32,13 @@ namespace WizardsChess.Movement
 
 		public async Task UndoMoveAsync()
 		{
+			//TODO: fix this
 			if (previousMoves.Count > 0) {
 				var lastMove = previousMoves[previousMoves.Count - 1];
 				lastMove.Reverse();
 				foreach (var setOfSteps in lastMove)
 				{
-					setOfSteps.Reverse();
+					setOfSteps.Reverse();	//not reversing
 					await performer.MovePieceAsync(setOfSteps);
 				}
 				previousMoves.RemoveAt(previousMoves.Count - 1);
