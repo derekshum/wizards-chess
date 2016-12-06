@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Movement.Drv;
 using WizardsChess.Movement.Drv.Events;
+using WizardsChess.Movement.Events;
 using WizardsChess.Movement.Exceptions;
 
 namespace WizardsChess.Movement
@@ -146,8 +147,8 @@ namespace WizardsChess.Movement
 			if (gridUnits == 0)
 			{
 				System.Diagnostics.Debug.WriteLine($"Stopping the {axis} axis.");
-				motorDrv.SetState(MotorState.Stopped);
-				stepCounter.CountSteps(0, TimeSpan.FromMilliseconds(100));
+				motorDrv.Direction = MoveDirection.Stopped;
+				stepCounter.CountToPosition(0, TimeSpan.FromMilliseconds(100));
 			}
 			else
 			{
@@ -167,11 +168,11 @@ namespace WizardsChess.Movement
 				// Adjust the number of steps if it is very close to the estimated number of Extra steps
 				//if (steps < estimatedExtraSteps / 2)
 				//	steps = Math.Abs(distanceToMove) / 2;
-				var newMotorState = distanceToMove > 0 ? MotorState.Forward : MotorState.Backward;
+				var newMotorState = distanceToMove > 0 ? MoveDirection.Forward : MoveDirection.Backward;
 				System.Diagnostics.Debug.WriteLine($"Moving the {axis} axis {steps} steps {newMotorState} from position {StepPosition}.");
-				stepCounter.CountSteps(steps, getMoveTimeout(steps));
+				stepCounter.CountToPosition(steps, getMoveTimeout(steps));
 				currentMovePolarity = distanceToMove > 0 ? 1 : -1;
-				motorDrv.SetState(newMotorState);
+				motorDrv.Direction = newMotorState;
 			}
 		}
 
@@ -180,16 +181,16 @@ namespace WizardsChess.Movement
 			if (steps == 0)
 			{
 				System.Diagnostics.Debug.WriteLine($"Stopping the {axis} axis.");
-				motorDrv.SetState(MotorState.Stopped);
-				stepCounter.CountSteps(0, TimeSpan.FromMilliseconds(100));
+				motorDrv.Direction = MoveDirection.Stopped;
+				stepCounter.CountToPosition(0, TimeSpan.FromMilliseconds(100));
 			}
 			else
 			{
-				var newMotorState = steps > 0 ? MotorState.Forward : MotorState.Backward;
+				var newMotorState = steps > 0 ? MoveDirection.Forward : MoveDirection.Backward;
 				currentMovePolarity = steps > 0 ? 1 : -1;
 				System.Diagnostics.Debug.WriteLine($"Moving the {axis} axis {steps} steps {newMotorState} from position {StepPosition}.");
-				stepCounter.CountSteps(Math.Abs(steps), getMoveTimeout(steps));
-				motorDrv.SetState(newMotorState);
+				stepCounter.CountToPosition(Math.Abs(steps), getMoveTimeout(steps));
+				motorDrv.Direction = newMotorState;
 			}
 		}
 
@@ -234,47 +235,25 @@ namespace WizardsChess.Movement
 			return (int)Math.Round((float)steps / StepsPerGridUnit);
 		}
 
-		private void finishedCounting(object sender, StepEventArgs stepEventArgs)
+		private void finishedCounting(object sender, PositionChangedEventArgs args)
 		{
-			System.Diagnostics.Debug.WriteLine($"Counted {stepEventArgs.NumSteps} regular steps in the {axis} axis in state {state}");
-			motorDrv.SetState(MotorState.Stopped);
-			updatePosition(stepEventArgs.NumSteps);
+			// Stop the motor
+			motorDrv.Direction = MoveDirection.Stopped;
+			System.Diagnostics.Debug.WriteLine($"{axis} axis reached target position {args.Position} in state {state}");
 		}
 
-		private void additionalStepsCounted(object sender, StepEventArgs stepEventArgs)
+		private void additionalStepsCounted(object sender, PositionChangedEventArgs args)
 		{
-			System.Diagnostics.Debug.WriteLine($"Counted {stepEventArgs.NumSteps} additional steps in the {axis} axis in state {state}");
-			if (state != MoveState.Stopped)
-			{
-				updatePosition(stepEventArgs.NumSteps);
-			}
-			if (estimatedExtraSteps == 0)
-			{
-				estimatedExtraSteps = stepEventArgs.NumSteps + 5;
-			}
-			else
-			{
-				estimatedExtraSteps = (stepEventArgs.NumSteps + estimatedExtraSteps) / 2 + 5;
-			}
-
+			System.Diagnostics.Debug.WriteLine($"{axis} axis reached {args.Position} after stopping in state {state}");
 			handleMoveEnd();
 		}
 
-		private void moveTimedOut(object sender, StepEventArgs stepEventArgs)
+		private void moveTimedOut(object sender, PositionChangedEventArgs args)
 		{
-			motorDrv.SetState(MotorState.Stopped);
-			System.Diagnostics.Debug.WriteLine($"Move timed out after {stepEventArgs.NumSteps} steps in the {axis} axis in state {state}.");
-			updatePosition(stepEventArgs.NumSteps);
-			if (state == MoveState.Moving)
-			{
-				state = MoveState.Stopped;
-				//throw new Exception("Motors timed out during a regular move.");
-			}
-			else
-			{
-				// Probably in calibration, use regular move logic
-				handleMoveEnd();
-			}
+			// Stop the motor
+			motorDrv.Direction = MoveDirection.Stopped;
+			System.Diagnostics.Debug.WriteLine($"Move timed out with motor in position {args.Position} in the {axis} axis in state {state}.");
+			handleMoveEnd();
 		}
 
 		private void handleMoveEnd()
@@ -310,12 +289,6 @@ namespace WizardsChess.Movement
 			}
 
 			state = MoveState.Stopped;
-		}
-
-		private void updatePosition(int numSteps)
-		{
-			stepPosition += numSteps * currentMovePolarity;
-			gridPosition = convertStepsToGridUnits(StepPosition);
 		}
 
 		private void topEdgeDetected(object sender, GpioValueChangedEventArgs edgeDetectArgs)
