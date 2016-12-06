@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Movement.Drv.Events;
-using WizardsChess.Movement.Events;
 
 namespace WizardsChess.Movement.Drv
 {
@@ -17,66 +16,105 @@ namespace WizardsChess.Movement.Drv
 
 	public class StepCounter : IDisposable, IStepCounter
 	{
-		public event PositionChangedEventHandler FinishedCounting;
-		public event PositionChangedEventHandler AdditionalStepsCounted;
-		public event PositionChangedEventHandler MoveTimedOut;
+		public event StepEventHandler FinishedCounting;
+		public event StepEventHandler AdditionalStepsCounted;
+		public event StepEventHandler MoveTimedOut;
 
 		/// <summary>
 		/// Count the steps read at the specified input pin. Position is updated on the falling edge.
 		/// </summary>
 		/// <param name="countPin">The pin used for counting.</param>
 		/// <param name="clearCounterPin">The pin used to clear the counter.</param>
-		public StepCounter(IMotorLocator locator, IGpioPin clearCounterPin)
+		public StepCounter(IGpioPin countPin, IGpioPin clearCounterPin)
 		{
-			motorLocator = locator;
+			lockObject = new object();
+
+			pin = countPin;
 			clearPin = clearCounterPin;
+			Position = 0;
+			startPosition = 0;
+			targetNumSteps = 0;
 
 			state = CounterState.Ready;
 			isAdditionalStepsCanceled = false;
 
-			motorLocator.PositionChanged += positionChanged;
+			pin.ValueChanged += countStep;
 		}
 
 		public int Position { get; private set; }
 
-		public void CountToPosition(int position, TimeSpan timeout)
+		public void CountSteps(int numSteps, TimeSpan timeout)
 		{
-			targetPosition = position;
-			switch (state)
+			lock (lockObject)
 			{
-				case CounterState.WaitingForExtraSteps:
-					isAdditionalStepsCanceled = true;
-					break;
-				case CounterState.Counting:
-				case CounterState.Ready:
-					if (targetPosition == motorLocator.Position)
-					{
-						onTargetReached();
-						onAdditionalStepsCounted();
-						return;
-					}
-					break;
-			}
-			timeoutCallback = Task.Delay(timeout);
-			timeoutCallback.ContinueWith((prev) => {
-				if (prev == this.timeoutCallback)
+				switch (state)
 				{
-					onMoveTimeOut();
+					case CounterState.WaitingForExtraSteps:
+						isAdditionalStepsCanceled = true;
+						var extraSteps = Position - (startPosition + targetNumSteps);
+						startPosition = Position - extraSteps;
+						targetNumSteps = numSteps + extraSteps;
+						break;
+					case CounterState.Counting:
+						var stepsSoFar = Position - startPosition;
+						if (numSteps == 0)
+						{
+							targetNumSteps = stepsSoFar;
+							state = CounterState.WaitingForExtraSteps;
+							onTargetReached(targetNumSteps);
+							return;
+						}
+						targetNumSteps = stepsSoFar + numSteps;
+						break;
+					case CounterState.Ready:
+						if (numSteps == 0)
+						{
+							System.Diagnostics.Debug.WriteLine("Error!! Called CountSteps with zero steps when in Ready state.");
+							onTargetReached(0);
+							onAdditionalStepsCounted(0);
+							return;
+						}
+						Position = 0;
+						startPosition = Position;
+						targetNumSteps = numSteps;
+						break;
 				}
-			});
-			state = CounterState.Counting;
+				timeoutCallback = Task.Delay(timeout);
+				timeoutCallback.ContinueWith((prev) =>
+					{
+						if (prev == this.timeoutCallback)
+						{
+							onMoveTimeOut();
+						}
+				});
+				state = CounterState.Counting;
+			}
 		}
 
-		protected virtual void positionChanged(object locator, PositionChangedEventArgs args)
+		protected virtual void countStep(object p, GpioValueChangedEventArgs args)
 		{
-			if (state == CounterState.Counting && args.Position == targetPosition)
+			if (args.Edge == GpioEdge.FallingEdge)
 			{
-				state = CounterState.WaitingForExtraSteps;
-				onTargetReached();
-			}
-			else if (state == CounterState.WaitingForExtraSteps)
-			{
-				sendAdditionalSteps();
+				int numSteps;
+				lock (lockObject)
+				{
+					if (state == CounterState.Ready)
+					{
+						return;
+					}
+					Position++;
+					numSteps = Position - startPosition;
+
+					if (numSteps == targetNumSteps)
+					{
+						onTargetReached();
+					}
+				}
+
+				if (numSteps > targetNumSteps)
+				{
+					sendAdditionalSteps();
+				}
 			}
 		}
 
@@ -84,7 +122,7 @@ namespace WizardsChess.Movement.Drv
 		{
 			if (additionalStepsCallback == null || (int)additionalStepsCallback.Status > 4)
 			{
-				additionalStepsCallback = Task.Delay(800);
+				additionalStepsCallback = Task.Delay(1000);
 				additionalStepsCallback.ContinueWith((prev) => {
 					onAdditionalStepsCounted();
 				});
@@ -93,7 +131,18 @@ namespace WizardsChess.Movement.Drv
 
 		private void onTargetReached()
 		{
-			FinishedCounting?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position));
+			int numSteps;
+			lock (lockObject)
+			{
+				numSteps = targetNumSteps;
+				state = CounterState.WaitingForExtraSteps;
+			}
+			onTargetReached(numSteps);
+		}
+
+		private void onTargetReached(int numSteps)
+		{
+			FinishedCounting?.Invoke(this, new Events.StepEventArgs(numSteps));
 		}
 
 		private void onAdditionalStepsCounted()
@@ -103,26 +152,48 @@ namespace WizardsChess.Movement.Drv
 				isAdditionalStepsCanceled = false;
 				return;
 			}
-			AdditionalStepsCounted?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position));
+			int numSteps = 0;
+			lock (lockObject)
+			{
+				numSteps = Position - (startPosition + targetNumSteps);
+				state = CounterState.Ready;
+			}
+			onAdditionalStepsCounted(numSteps);
+		}
+
+		private void onAdditionalStepsCounted(int numSteps)
+		{
+			AdditionalStepsCounted?.Invoke(this, new Events.StepEventArgs(numSteps));
 		}
 
 		private void onMoveTimeOut()
 		{
-			if (state != CounterState.Counting)
+			int numSteps = 0;
+			lock(lockObject)
 			{
-				return;
+				if (state == CounterState.Counting)
+				{
+					state = CounterState.Ready;
+					numSteps = Position - startPosition;
+				}
+				else
+				{
+					return;
+				}
 			}
 
-			MoveTimedOut?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position));
+			MoveTimedOut?.Invoke(this, new Events.StepEventArgs(numSteps));
 		}
 
-		private volatile CounterState state;
-		private IMotorLocator motorLocator;
+		private CounterState state;
+		private IGpioPin pin;
 		private IGpioPin clearPin;
-		private int targetPosition;
+		private int startPosition;
+		private int targetNumSteps;
 		private Task additionalStepsCallback;
 		private Task timeoutCallback;
 		private bool isAdditionalStepsCanceled;
+		private Object lockObject;
 
 		#region IDisposable Support
 		private bool disposedValue = false; // To detect redundant calls
@@ -133,7 +204,7 @@ namespace WizardsChess.Movement.Drv
 			{
 				if (disposing)
 				{
-					motorLocator.PositionChanged -= positionChanged;
+					pin.ValueChanged -= countStep;
 				}
 
 				disposedValue = true;

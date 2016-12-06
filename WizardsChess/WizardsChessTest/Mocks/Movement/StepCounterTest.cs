@@ -6,8 +6,6 @@ using WizardsChess.Movement.Drv.Events;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text;
-using WizardsChess.Movement;
-using WizardsChess.Movement.Events;
 
 namespace WizardsChessTest.Mocks.Movement
 {
@@ -23,8 +21,7 @@ namespace WizardsChessTest.Mocks.Movement
 		[TestMethod]
 		public void TestStepCounterConstruction()
 		{
-			motorLocator = new MotorLocator(mockMotor, mockMotor);
-			stepCounter = new StepCounter(motorLocator, new MockGpio());
+			stepCounter = new StepCounter(mockMotor, new MockGpio());
 
 			stepCounter.FinishedCounting += finishedCounting;
 			stepCounter.AdditionalStepsCounted += additionalStepsCounted;
@@ -43,15 +40,14 @@ namespace WizardsChessTest.Mocks.Movement
 			resetTestVariables();
 
 			isCounting = true;
-			var expectedPosition = 20;
-			stepCounter.CountToPosition(expectedPosition, convertPositionToTimeout(expectedPosition));
+			var expectedSteps = 20;
+			stepCounter.CountSteps(expectedSteps, convertStepsToTimeOut(expectedSteps));
 			runMotor();
 			while (isCounting)
 			{
 				Task.Delay(50).Wait();
 			}
-			Assert.AreEqual(expectedPosition, positionOnTargetReached, "Step count was off.");
-			Assert.IsTrue(expectedPosition < positionOnExtraSteps, "Additional steps counted correctly.");
+			Assert.AreEqual(expectedSteps, stepsReceived, "Step count was off.");
 			checkForErrors();
 		}
 
@@ -68,7 +64,7 @@ namespace WizardsChessTest.Mocks.Movement
 			isTimeoutExpected = true;
 
 			isCounting = true;
-			stepCounter.CountToPosition(80, convertPositionToTimeout(80));
+			stepCounter.CountSteps(80, convertStepsToTimeOut(80));
 			runMotor();
 			Task.Delay(20).Wait();
 			stopMotor();
@@ -92,20 +88,19 @@ namespace WizardsChessTest.Mocks.Movement
 			resetTestVariables();
 
 			isCounting = true;
-			stepCounter.CountToPosition(100, convertPositionToTimeout(100));
+			stepCounter.CountSteps(100, convertStepsToTimeOut(100));
 			runMotor();
 			Task.Delay(20).Wait();
-			var shorterTarget = motorLocator.Position + 10;
-			stepCounter.CountToPosition(shorterTarget, convertPositionToTimeout(shorterTarget));
+			stepCounter.CountSteps(5, convertStepsToTimeOut(5));
 			while(isCounting)
 			{
 				Task.Delay(10).Wait();
 			}
-			var firstTargetPositionReached = positionOnTargetReached;
-			Assert.IsTrue(firstTargetPositionReached == shorterTarget, $"Overlapping count step did not reset target count properly. Counted to position {firstTargetPositionReached}.");
+			var firstStepsReceived = stepsReceived;
+			Assert.IsTrue(stepsReceived < 100, $"Overlapping count step did not reset target count properly. Counted {stepsReceived} steps.");
 			isCounting = true;
-			Task.Delay(convertPositionToTimeout(100)).Wait();
-			Assert.AreEqual(firstTargetPositionReached, positionOnTargetReached, "Counted more steps after delay!");
+			Task.Delay(convertStepsToTimeOut(100)).Wait();
+			Assert.AreEqual(firstStepsReceived, stepsReceived, "Counted more steps after delay!");
 			checkForErrors();
 		}
 
@@ -121,26 +116,24 @@ namespace WizardsChessTest.Mocks.Movement
 			resetTestVariables();
 
 			isCounting = true;
-			stepCounter.CountToPosition(100, convertPositionToTimeout(100));
+			stepCounter.CountSteps(100, convertStepsToTimeOut(100));
 			runMotor();
 			Task.Delay(80).Wait();
-			var pos = motorLocator.Position;
-			stepCounter.CountToPosition(pos, convertPositionToTimeout(pos));
+			stepCounter.CountSteps(0, convertStepsToTimeOut(0));
 			while (isCounting)
 			{
 				Task.Delay(10).Wait();
 			}
-			Assert.AreEqual(pos, positionOnTargetReached, $"Overlapping count step did not reset target count properly. Expected {pos} and reached target {positionOnTargetReached}.");
-			Assert.AreEqual(pos, positionOnExtraSteps, $"Extra steps position {positionOnExtraSteps} did not equal expected position of {pos}.");
+			var firstStepsReceived = stepsReceived;
+			Assert.IsTrue(stepsReceived < 100 && stepsReceived > 0, $"Overlapping count step did not reset target count properly. Counted {stepsReceived} steps which was not between 0 and 100.");
 			checkForErrors();
 		}
 
 		private MockMotor mockMotor;
-		private IMotorLocator motorLocator;
 		private StepCounter stepCounter;
 
-		private int positionOnTargetReached;
-		private int positionOnExtraSteps;
+		private int stepsReceived;
+		private int extraStepsReceived;
 		private bool isTimeoutExpected;
 		private bool timeoutOccurred;
 
@@ -149,47 +142,50 @@ namespace WizardsChessTest.Mocks.Movement
 
 		private Queue<string> errorMessages = new Queue<string>();
 
-		private void finishedCounting(object sender, PositionChangedEventArgs e)
+		private void finishedCounting(object sender, StepEventArgs e)
 		{
-			var pos = motorLocator.Position;
-			assert(pos == e.Position, $"Expected {pos} at finished counting, received {e.Position}.");
-			positionOnTargetReached = e.Position;
+			var pos = mockMotor.Position;
+			assert(pos == e.NumSteps, $"Expected {pos} at finished counting, received {e.NumSteps}.");
+			stepsReceived = e.NumSteps;
 			stopMotor();
 		}
 
-		private void additionalStepsCounted(object sender, PositionChangedEventArgs e)
+		private void additionalStepsCounted(object sender, StepEventArgs e)
 		{
-			var pos = motorLocator.Position;
-			assert(pos == e.Position, $"Expected {pos} after additional counting, received {e.Position}.");
-			positionOnExtraSteps = e.Position;
+			var pos = mockMotor.Position;
+			extraStepsReceived = e.NumSteps;
+			assert(pos == (stepsReceived + extraStepsReceived), $"Expected {pos} steps after additional counting, counted {stepsReceived + extraStepsReceived}.");
 			isCounting = false;
 		}
 
-		private void timeout(object sender, PositionChangedEventArgs e)
+		private void timeout(object sender, StepEventArgs e)
 		{
 			assert(isTimeoutExpected, "Timeout occurred when not expected.");
 			timeoutOccurred = true;
 			isCounting = false;
 		}
 
-		private TimeSpan convertPositionToTimeout(int position)
+		private TimeSpan convertStepsToTimeOut(int steps)
 		{
-			return TimeSpan.FromMilliseconds((position - motorLocator.Position) * 100);
+			return TimeSpan.FromMilliseconds(steps * 100);
 		}
 
 		private void stopMotor()
 		{
-			mockMotor.Direction = MoveDirection.Stopped;
+			mockMotor.SetState(MotorState.Stopped);
 		}
 
 		private void runMotor()
 		{
-			mockMotor.Direction = MoveDirection.Forward;
+			mockMotor.SetState(MotorState.Forward);
 		}
 
 		private void resetTestVariables()
 		{
+			stepsReceived = 0;
+			extraStepsReceived = 0;
 			isTimeoutExpected = false;
+			mockMotor.Position = 0;
 			isPassing = true;
 			timeoutOccurred = false;
 		}

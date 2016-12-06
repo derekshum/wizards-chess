@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WizardsChess.Movement;
 using WizardsChess.Movement.Drv;
 using WizardsChess.Movement.Drv.Events;
-using WizardsChess.Movement.Events;
 
 namespace WizardsChessTest.Mocks.Movement.Drv
 {
@@ -14,7 +12,7 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 	{
 		public int GridPosition { get; }
 
-		public MockPhotoInterrupter(int gridPosition, int lowerMotorStepPosition, int upperMotorStepPosition, IMotorLocator mtrLocator, MockMotor mtr) : base()
+		public MockPhotoInterrupter(int gridPosition, int lowerMotorStepPosition, int upperMotorStepPosition, MockMotor mtr) : base()
 		{
 			GridPosition = gridPosition;
 			upperStepPosition = upperMotorStepPosition;
@@ -22,36 +20,34 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 
 			value = GpioValue.High;
 
-			locator = mtrLocator;
 			motor = mtr;
-			locator.PositionChanged += positionChanged;
+			motor.ValueChanged += motorTicked;
 		}
 
 		private int upperStepPosition;
 		private int lowerStepPosition;
-		private IMotorLocator locator;
 		private MockMotor motor;
 		
-		private void positionChanged(object sender, PositionChangedEventArgs e)
+		private void motorTicked(object sender, GpioValueChangedEventArgs e)
 		{
-			if (locator.Position == lowerStepPosition)
+			if (motor.Position == lowerStepPosition)
 			{
-				if (motor.Direction == MoveDirection.Forward)
+				if (motor.State == MotorState.Forward)
 				{
 					value = GpioValue.Low;
 				}
-				else if (motor.Direction == MoveDirection.Backward)
+				else if (motor.State == MotorState.Backward)
 				{
 					value = GpioValue.High;
 				}
 			}
-			else if (locator.Position == upperStepPosition)
+			else if (motor.Position == upperStepPosition)
 			{
-				if (motor.Direction == MoveDirection.Forward)
+				if (motor.State == MotorState.Forward)
 				{
 					value = GpioValue.High;
 				}
-				else if (motor.Direction == MoveDirection.Backward)
+				else if (motor.State == MotorState.Backward)
 				{
 					value = GpioValue.Low;
 				}

@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 namespace WizardsChess.Movement.Drv
 {
+	public enum MotorState
+	{
+		Stopped,
+		Forward,
+		Backward
+	}
+
 	public interface IMotorDrv
 	{
-		MoveDirection Direction { get; set; }
-		MoveDirection PreviousDirection { get; }
+		void SetState(MotorState state);
 
-		/// <summary>
-		/// Returns the most-recent move that was not Stopped.
-		/// </summary>
-		/// <returns></returns>
-		MoveDirection GetLatestActiveMoveDirection();
+		MotorState State { get; }
 	}
+
 }

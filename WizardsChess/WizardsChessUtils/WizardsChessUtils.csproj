@@ -57,8 +57,7 @@
     <Compile Include="Movement\Axis.cs" />
     <Compile Include="Movement\CalibratedMotorMover.cs" />
     <Compile Include="Movement\Drv\Events\GpioValueChangedEventArgs.cs" />
-    <Compile Include="Movement\Events\PositionChangedEventArgs.cs" />
-    <Compile Include="Movement\Events\StepEventArgs.cs" />
+    <Compile Include="Movement\Drv\Events\StepEventArgs.cs" />
     <Compile Include="Movement\Drv\IGpioPin.cs" />
     <Compile Include="Movement\Drv\IMagnetDrv.cs" />
     <Compile Include="Movement\Drv\IMotorDrv.cs" />
@@ -66,13 +65,9 @@
     <Compile Include="Movement\Drv\IStepCounter.cs" />
     <Compile Include="Movement\Drv\StepCounter.cs" />
     <Compile Include="Movement\Exceptions\CalibrationException.cs" />
-    <Compile Include="Movement\IMotorLocator.cs" />
     <Compile Include="Movement\IMoveManager.cs" />
     <Compile Include="Movement\IMovePlanner.cs" />
     <Compile Include="Movement\IMovePerformer.cs" />
-    <Compile Include="Movement\MotorCalibrator.cs" />
-    <Compile Include="Movement\MotorLocator.cs" />
-    <Compile Include="Movement\MoveDirection.cs" />
     <Compile Include="Movement\MoveManager.cs" />
     <Compile Include="Movement\MovePerformer.cs" />
     <Compile Include="VoiceControl\Commands\Command.cs" />

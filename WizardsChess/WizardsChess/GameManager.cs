@@ -42,13 +42,11 @@ namespace WizardsChess
 			var motorDriverX = new MotorDrv(20, 21);
 			var motorDriverY = new MotorDrv(24, 23);
 			var stepCountPinX = new GpioPinWrapper(5, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
-			var motorLocatorX = new MotorLocator(stepCountPinX, motorDriverX);
 			var stepCountPinY = new GpioPinWrapper(6, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
-			var motorLocatorY = new MotorLocator(stepCountPinY, motorDriverY);
 			var stepClearPinX = new GpioPinWrapper(13, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
 			var stepClearPinY = new GpioPinWrapper(19, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
-			var stepCounterX = new StepCounter(motorLocatorX, stepClearPinX);
-			var stepCounterY = new StepCounter(motorLocatorY, stepClearPinY);
+			var stepCounterX = new StepCounter(stepCountPinX, stepClearPinX);
+			var stepCounterY = new StepCounter(stepCountPinY, stepClearPinY);
 			var topInterrupterX = new PhotoInterrupter(17, 1);
 			var bottomInterrupterX = new PhotoInterrupter(27, -1);
 			var topInterrupterY = new PhotoInterrupter(25, 1);

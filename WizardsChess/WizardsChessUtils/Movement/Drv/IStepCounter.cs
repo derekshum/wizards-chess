@@ -11,11 +11,11 @@ namespace WizardsChess.Movement.Drv
 	{
 		int Position { get; }
 
-		void CountToPosition(int numSteps, TimeSpan timeout);
+		void CountSteps(int numSteps, TimeSpan timeout);
 
-		event PositionChangedEventHandler FinishedCounting;
-		event PositionChangedEventHandler AdditionalStepsCounted;
-		event PositionChangedEventHandler MoveTimedOut;
+		event StepEventHandler FinishedCounting;
+		event StepEventHandler AdditionalStepsCounted;
+		event StepEventHandler MoveTimedOut;
 	}
 
 	public delegate void StepEventHandler(Object sender, StepEventArgs e);
