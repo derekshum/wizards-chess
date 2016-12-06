@@ -15,7 +15,7 @@ namespace WizardsChess.Movement
             board = b;
         }
 
-        public List<IList<Point2D>> PlanMove(Point2D start, Point2D end, Point2D? captured=null)
+        public List<IList<Point2D>> PlanMove(Point2D start, Point2D end, Point2D? captured=null)	//inputs (0-7, 0-7)
         {
             List<IList<Point2D>> paths = new List<IList<Point2D>>();
             
@@ -32,6 +32,24 @@ namespace WizardsChess.Movement
 			return paths;
         }
 
+		//castles, moving the king over two squares, and moving the rook around it
+		public List<IList<Point2D>> PlanCastle(Point2D rookStart, int kingCol)	//rookPoint is the point in (0-7,0-7) form
+		{
+			List<IList<Point2D>> castlePaths = new List<IList<Point2D>>();
+
+			int rookDir = Math.Sign(rookStart.X - kingCol);	//direction from King to Rook
+
+			//get King Movement
+			Point2D kingStartPoint = pointConversion(new Point2D(kingCol, rookStart.Y));
+			Point2D kingEndPoint = kingStartPoint + new Vector2D(2 * spacing * rookDir, 0);	//the king moves 2 squares towards the rook
+			castlePaths.Add(getStraightMovePath(kingStartPoint, kingEndPoint));
+
+			castlePaths.Add(getCastlingRookPath(pointConversion(rookStart), rookDir, xConversion(kingCol)));  //get Rook Movement- must convert rookStart and kingCol, but rookDir is just a direction and constant
+
+			return castlePaths;
+		}
+
+		//Point Conversions from (0-7,0-7) to (-11 to 11, -8 to 8) done here
         private List<Point2D> getMovePath(Point2D start, Point2D end)
         {
             Point2D startPoint = pointConversion(start);
@@ -46,7 +64,7 @@ namespace WizardsChess.Movement
 			{
 				return getDiagonalMovePath(startPoint, endPoint);
 			}
-			else // piece moving is a non knight piece
+			else //piece moving is a non knight piece
 			{
 				return getStraightMovePath(startPoint, endPoint);
 			}
@@ -82,26 +100,24 @@ namespace WizardsChess.Movement
 		{
 			List<Point2D> path = new List<Point2D>();
 			int Dist = Math.Abs(endPoint.X - startPoint.X);	//number of points moving in each direction
-			int xDir = (endPoint.X - startPoint.X) / Dist;	//x-direction moving in the x direction
-			int yDir = (endPoint.Y - startPoint.Y) / Dist;	//y-direction of movement
+			int xDir = Math.Sign(endPoint.X - startPoint.X);	//x-direction moving in the x direction
+			int yDir = Math.Sign(endPoint.Y - startPoint.Y);	//y-direction of movement
 
 			path.Add(startPoint);
 			path.Add(new Point2D(startPoint.X + xDir, startPoint.Y));
-			if (Dist > spacing)
+			if (Dist > spacing)	//if moving more than 1 square diagonally, 4 part moves required
 			{
 				path.Add(new Point2D(path[path.Count - 1].X, endPoint.Y - yDir));
 				path.Add(new Point2D(endPoint.X, path[path.Count - 1].Y));
 			}
-			else // Dist == spacing
+			else // Dist == spacing, only 3 part moves required
 			{
 				path.Add(new Point2D(path[path.Count - 1].X, endPoint.Y));
 			}
-
 			path.Add(endPoint);
 
 			return path;
 		}
-
 
 		//gets the direct path of movement for non-knight piece moves (but not that of captured pieces)
 		private List<Point2D> getStraightMovePath(Point2D startPoint, Point2D endPoint)
@@ -152,20 +168,36 @@ namespace WizardsChess.Movement
             return path;
         }
 
-        //converts from an (0-7,0-7) point to a (0-22, 0-16) point
+        private List<Point2D> getCastlingRookPath(Point2D rookStartPoint, int rookDir, int kingColIndex)	//expects converted (to large index) inputs 
+		{
+			List<Point2D> rookPath = new List<Point2D>();
+			Point2D rookEndPoint = new Point2D(kingColIndex + spacing * rookDir, rookStartPoint.Y);	//the rook's final position is 1 square in its direction from the king's column
+			rookPath.Add(rookStartPoint + new Vector2D(0, Math.Sign(rookStartPoint.Y) * castlingStepDir));  //assumes converted points use 0,0 as the centre of the board
+			rookPath.Add(new Point2D(rookEndPoint.X, rookPath[rookPath.Count - 1].Y));
+			rookPath.Add(rookEndPoint);
+			return rookPath;
+		}
+		
+		//converts from a (0-7,0-7) point to large coordinates (-11 to 11, -8 to 8) point
         private Point2D pointConversion(Point2D point)
         {
-            return new Point2D(xOffset + spacing * point.X, yOffset + spacing * point.Y);
+            return new Point2D(xConversion(point.X), yConversion(point.Y));
         }
+
+		private int xConversion(int x)
+		{
+			return xOffset + spacing * x;
+		}
+
+		private int yConversion(int y)
+		{
+			return yOffset + spacing * y;
+		}
 
         private IChessBoard board; 
 
-		//constants pointConversion needs
-		const int spacing = 2;    //number of points per square in one dimension
-        const int xOffset = -7;    //x-index of the centre of the left most playing board column
-        const int yOffset = -7;    //y-index of the centre of the bottom row
-        //constants getCapturedPath needs
-        const int whiteEmptyCol = 9;     //index of the centre of the empty column in between the board and white captured pieces
+		//constants getCapturedPath needs (in large coordinates)
+		const int whiteEmptyCol = 9;     //index of the centre of the empty column in between the board and white captured pieces
         const int blackEmptyCol = -9;      //index of the centre of the empty column in between the board and black captured pieces
         const int whiteCapturedCol = 11;     //x-index of the centre of the column where white captured pieces are stored
         const int blackCapturedCol = -11;      //x-index of the centre of the column where black captured pieces are stored
@@ -175,5 +207,13 @@ namespace WizardsChess.Movement
         const int blackRemovalDir = 1;    //y-direction the black pieces are pulled a half square in before being captured off the board
         const int whiteCapturedAddDir = 1;   //y-direction white pieces are added to the white captured trough
         const int blackCapturedAddDir = -1;  //y-direction black pieces are added to the black captured trough
+
+		//constants getCastlingRookPath needs
+		const int castlingStepDir = 1;	//1 means away from the centre of the board, -1 means towards the centre of the board
+
+		//constants pointConversion needs
+		const int spacing = 2;    //number of points per square in one dimension
+		const int xOffset = -7;    //x-index of the centre of the left most playing board column
+		const int yOffset = -7;    //y-index of the centre of the bottom row
 	}
 }
