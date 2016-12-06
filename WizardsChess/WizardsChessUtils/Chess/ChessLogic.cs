@@ -24,7 +24,7 @@ namespace WizardsChess.Chess
 
 			foreach (var location in pieceLocationList)
 			{
-				if (IsMoveValid(new Position(location), destination))   //TODO: it requires "isMoveValid"
+				if (IsMoveValid(new Position(location), destination))
 				{
 					potentialPiecePositions.Add(new Position(location));
 				}
@@ -60,6 +60,7 @@ namespace WizardsChess.Chess
 				board.UndoMove();
 			}
 		}
+
 		/// <summary>
 		/// Checks if the move from startPosition to endPosition is valid.
 		/// Assumes that startPosition and endPosition are valid parameters.
@@ -179,7 +180,7 @@ namespace WizardsChess.Chess
 			board.Castle(rookPos);
 		}
 
-		public List<Point2D> validRookLocationsForCastling()	//TODO: this method could be made into castling or return more helpful things
+		public List<Point2D> validRookLocationsForCastling()
 		{
 			List<Point2D> validRookLocations = new List<Point2D>();
 			var kingLocations = board.PieceLocationsByType[PieceType.King];
@@ -242,7 +243,7 @@ namespace WizardsChess.Chess
 			return validRookLocations;
 		}
 
-		//TODO: en passant
+		//TODO: en passant (this might be implemented through other methods)
 
 		// Checks if the player to move's king is in check
 		public bool inCheck()

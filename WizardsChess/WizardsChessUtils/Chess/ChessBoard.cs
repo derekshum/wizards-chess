@@ -91,6 +91,7 @@ namespace WizardsChess.Chess
 		public void MovePiece(Position startPosition, Position endPosition)
 		{
 			MoveSpecification move = new MoveSpecification(startPosition, endPosition);
+			
 			// Kill the piece at the destination, if there is one
 			var endPiece = internalPieceAt(endPosition);
 			if (endPiece != null)
@@ -100,48 +101,59 @@ namespace WizardsChess.Chess
 				
 				// Remove a killed piece from our valid pieceLocationsByType list
 				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
-				listOfEndPieceType.Remove(endPosition);
+				listOfEndPieceType.Remove(new Point2D(endPosition));
 			} //TODO: else if en passant
+
 			var movingPiece = internalPieceAt(startPosition);
-			if (!movingPiece.HasMoved)
+			//Move the moving piece in boardMatrix
+			SetPieceAt(endPosition, movingPiece);
+			SetPieceAtToNull(startPosition);
+
+			if (!movingPiece.HasMoved)  //note changes if this is a piece's first move in it and in pastMoves
 			{
 				movingPiece.HasMoved = true;
 				move.HasMovedChange = true;
 			}
-			SetPieceAt(endPosition, movingPiece);
-			SetPieceAtToNull(startPosition);
-
 			// Replace the old position for this piece with the new position in the pieceLocationsByType list
-			var listOfStartPieceTypes = pieceLocationsByType[movingPiece.Type];
-			listOfStartPieceTypes.Remove(startPosition);
-			listOfStartPieceTypes.Add(endPosition);
+			var listOfMovingPieceType = pieceLocationsByType[movingPiece.Type];
+			listOfMovingPieceType.Remove(new Point2D(startPosition));
+			listOfMovingPieceType.Add(new Point2D(endPosition));
+
 			pastMoves.Add(move);
 			changeTurn();
 		}
 
-		public void Castle(Point2D rookPos)
+		public void Castle(Point2D initialRookPoint)
 		{
-			MoveSpecification move = new MoveSpecification(new Position(rookPos), new Position(1,1), null, true);
-			
-			boardMatrix[rookPos.Y, KingCol].HasMoved = true;    //update HasMoved in ChessPiece
-			pastMoves.Add(move);    
+			int rookDir = Math.Sign(initialRookPoint.X - KingCol);	//calculates the direction of the rook from the king initially
 
-			int rookDir = Math.Sign(rookPos.X - KingCol);
-			SetPieceAt(new Point2D(KingCol + 2 * rookDir, rookPos.Y), PieceAt(KingCol, rookPos.Y));
-			SetPieceAtToNull(new Point2D(KingCol, rookPos.Y));
+			//Move the King in boardMatrix
+			Position initialKingPos = new Position(KingCol, initialRookPoint.Y);
+			var king = internalPieceAt(initialKingPos);
+			Position finalKingPos = new Position(KingCol + 2 * rookDir, initialRookPoint.Y);
+			SetPieceAt(finalKingPos, king);
+			SetPieceAtToNull(initialKingPos);
 
-			var listOfStartPieceTypes = pieceLocationsByType[PieceType.King];
-			listOfStartPieceTypes.Remove(new Position(KingCol, rookPos.Y));
-			listOfStartPieceTypes.Add(new Position(KingCol + 2 * rookDir, rookPos.Y));
+			king.HasMoved = true;    //update King's HasMoved
+			//Replace the old position for the King with the new position in the pieceLocationsByType list
+			var listOfPieceType = pieceLocationsByType[PieceType.King];
+			listOfPieceType.Remove(new Point2D(initialKingPos));
+			listOfPieceType.Add(new Point2D(finalKingPos));
 
-			boardMatrix[rookPos.Y, rookPos.X].HasMoved = true;
-			SetPieceAt(new Point2D(KingCol + rookDir, rookPos.Y), internalPieceAt(rookPos));
-			SetPieceAtToNull(rookPos);
+			//Move this Rook in boardMatrix
+			var rook = internalPieceAt(initialRookPoint);
+			Position finalRookPos = new Position(KingCol + rookDir, initialRookPoint.Y);
+			SetPieceAt(finalRookPos, rook);
+			SetPieceAtToNull(initialRookPoint);
 
-			listOfStartPieceTypes = pieceLocationsByType[PieceType.Rook];
-			listOfStartPieceTypes.Remove(rookPos);
-			listOfStartPieceTypes.Add(new Position(KingCol + rookDir, rookPos.Y));
+			rook.HasMoved = true;  //update Rook's HasMoved
+			//Replace the old position for this Rook with the new position in the pieceLocationsByType list
+			listOfPieceType = pieceLocationsByType[PieceType.Rook];
+			listOfPieceType.Remove(initialRookPoint);
+			listOfPieceType.Add(new Point2D(finalRookPos));	//TODO: figure out if this creation is unnecessary and casting is done automatically.
 
+			MoveSpecification move = new MoveSpecification(new Position(initialRookPoint), finalRookPos, null, true);
+			pastMoves.Add(move);
 			changeTurn();
 		}
 		public void changeTurn()
@@ -162,31 +174,57 @@ namespace WizardsChess.Chess
 			MoveSpecification lastMove = pastMoves[pastMoves.Count - 1];
 			if (lastMove.Castle)
 			{
-				//TODO: write castling undos
+				int rookSideDir = Math.Sign(lastMove.Start.Column - KingCol);    //calculates the direction of the rook from the king initially
+				
+				//Move King back in BoardMatrix
+				Position movedKingPos = new Position(KingCol, lastMove.Start.Column);
+				var king = internalPieceAt(movedKingPos);
+				Position unmovedKingPos = new Position(KingCol, lastMove.Start.Row);
+				SetPieceAt(unmovedKingPos, king);
+				SetPieceAtToNull(movedKingPos);
+
+				king.HasMoved = false;  //set King HasMoved to false
+				//Update King Location in pieceLocationsByType
+				var listOfPieceType = pieceLocationsByType[PieceType.King];
+				listOfPieceType.Remove(movedKingPos);
+				listOfPieceType.Add(unmovedKingPos);
+
+				//Move Rook back
+				var rook = internalPieceAt(lastMove.End);
+				SetPieceAt(new Point2D(lastMove.End), king);
+				SetPieceAtToNull(new Point2D(lastMove.Start));
+
+				rook.HasMoved = false;  //set Rook HasMoved to false
+				//Update Rook Location in pieceLocationsByType
+				listOfPieceType = pieceLocationsByType[PieceType.Rook];
+				listOfPieceType.Remove(new Point2D(lastMove.End));
+				listOfPieceType.Add(new Point2D(lastMove.Start));
 			}
-			else
+			else //not a castle
 			{
-				var movingPiece = internalPieceAt(lastMove.End);
-				if (lastMove.HasMovedChange)
+				var movingPiece = internalPieceAt(lastMove.End);	//get the move that is being undone
+				if (lastMove.HasMovedChange)	//set a piece to unmoved if this was a move that changed that status
 				{
 					movingPiece.HasMoved = false;
 				}
+
+				//Perform reverse move upon boardMatrix
 				SetPieceAt(lastMove.Start, internalPieceAt(lastMove.End));
 				SetPieceAtToNull(lastMove.End);
 
-				// Replace the old position for this piece with the new position in the pieceLocationsByType list
-				var listOfStartPieceTypes = pieceLocationsByType[internalPieceAt(lastMove.Start).Type];
-				listOfStartPieceTypes.Remove(lastMove.End);
-				listOfStartPieceTypes.Add(lastMove.Start);
+				//Replace the old position for this piece with the new position in the pieceLocationsByType list
+				var listOfMovingPieceType = pieceLocationsByType[internalPieceAt(lastMove.Start).Type];
+				listOfMovingPieceType.Remove(lastMove.End);
+				listOfMovingPieceType.Add(lastMove.Start);
 				
-				if (lastMove.Capture != null)
+				if (lastMove.Capture != null)	//if move being undone has a capture location, restore the most recently taken other team's piece to that location
 				{
-					SetPieceAt((Position)lastMove.Capture, capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]);
-					capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam.Count - 1);
+					SetPieceAt((Position)lastMove.Capture, capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]);	//restores captured piece to boardMatrix
+					capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam.Count - 1);	//removes restored captured piece from the list of capturedPiecesByTeam for WhoseTurn, which hasn't been changed yet
 
 					// Add a captured piece to our valid pieceLocationsByType list
-					var listOfEndPieceType = pieceLocationsByType[internalPieceAt((Position)lastMove.Capture).Type];
-					listOfEndPieceType.Add((Position)lastMove.Capture);
+					var listOfCapturedPieceType = pieceLocationsByType[internalPieceAt((Position)lastMove.Capture).Type];
+					listOfCapturedPieceType.Add((Position)lastMove.Capture);
 				}
 			}
 			pastMoves.RemoveAt(pastMoves.Count - 1);
