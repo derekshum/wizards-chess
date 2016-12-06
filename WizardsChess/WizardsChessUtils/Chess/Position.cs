@@ -40,6 +40,12 @@ namespace WizardsChess.Chess
 			ColumnLetter = pos.ColumnLetter;
 		}
 
+		public Position(int column, int row)
+		{
+			Row = row;
+			ColumnLetter = (ColumnLetter)column;
+		}
+
 		public ColumnLetter ColumnLetter { get; /*set;*/ }
 		public int Row { get; /*set;*/ }
 		public int Column

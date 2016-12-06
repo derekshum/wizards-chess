@@ -8,11 +8,13 @@ namespace WizardsChess.Chess
 {
 	public class MoveSpecification
 	{
-		public MoveSpecification (Position s, Position e, Position? c = null)
+		public MoveSpecification (Position s, Position e, Position? cap = null, bool hasMovedChange = false, bool cast = false)
 		{
 			Start = s;
 			End = e;
-			Capture = c;
+			Capture = cap;
+			HasMovedChange = hasMovedChange;
+			Castle = cast;
 		}
 		/*
 		public MoveSpecification Get()
@@ -34,6 +36,8 @@ namespace WizardsChess.Chess
 		*/
 		public Position Start;	//end position of the move
 		public Position End;	//end position of the move
-		public Position? Capture;	//true if this move involved capturing a piece
+		public Position? Capture;   //true if this move involved capturing a piece
+		public bool HasMovedChange;	//whether or not this move was that piece moving for the first time. Not updated on castling, but accounted for in castling undo
+		public bool Castle;		//whether or not the move was a castle
 	}
 }

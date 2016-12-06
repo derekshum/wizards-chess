@@ -24,6 +24,15 @@ namespace WizardsChess.Chess.Pieces
 			}
 		}
 
+		public override ChessPiece DeepCopy()
+		{
+			Bishop piece = new Bishop(this.Team);
+			piece.HasMoved = this.HasMoved;
+			piece.HasMoved = this.HasMoved;
+			piece.CanJump = this.CanJump;
+			return piece;
+		}
+
 		private static List<Vector2D> allowedMotionVectors = new List<Vector2D>();
 
 		public override IReadOnlyList<Vector2D> GetAllowedMotionVectors()

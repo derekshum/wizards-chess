@@ -14,6 +14,15 @@ namespace WizardsChess.Chess.Pieces
 			Type = PieceType.Pawn;
 		}
 
+		public override ChessPiece DeepCopy()
+		{
+			Pawn piece = new Pawn(this.Team);
+			piece.HasMoved = this.HasMoved;
+			piece.HasMoved = this.HasMoved;
+			piece.CanJump = this.CanJump;
+			return piece;
+		}
+
 		// contains motions of allowed chess piece
 		private static IReadOnlyList<Vector2D> allowedMotionVectors = new List<Vector2D>()
 		{
