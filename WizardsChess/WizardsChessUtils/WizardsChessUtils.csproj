@@ -67,6 +67,7 @@
     <Compile Include="Movement\IMovePerformer.cs" />
     <Compile Include="Movement\MoveManager.cs" />
     <Compile Include="Movement\MovePerformer.cs" />
+    <Compile Include="Movement\MovePerformerVisualizer.cs" />
     <Compile Include="VoiceControl\Commands\Command.cs" />
     <Compile Include="VoiceControl\Commands\CommandFamily.cs" />
     <Compile Include="VoiceControl\Commands\CommandType.cs" />
