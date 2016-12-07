@@ -16,7 +16,8 @@ namespace WizardsChess.VoiceControl.Commands
 		ConfirmPiece,
 		Cancel,
 		MotorMove,
-		Magnet
+		Magnet,
+		Castle
 	}
 
 	public static class CommandTypeMethods
@@ -37,6 +38,7 @@ namespace WizardsChess.VoiceControl.Commands
 				case CommandType.MotorMove:
 				case CommandType.Magnet:
 					return CommandFamily.Debug;
+				case CommandType.Castle:
 				default:
 					return CommandFamily.Other;
 			}
@@ -76,6 +78,8 @@ namespace WizardsChess.VoiceControl.Commands
 					return CommandType.MotorMove;
 				case "magnet":
 					return CommandType.Magnet;
+				case "castle":
+					return CommandType.Castle;
 				default:
 					throw new ArgumentException($"Cannot convert string \"{actionStr}\" to an Action enum.");
 			}

@@ -345,7 +345,7 @@ namespace WizardsChess.Chess
 				return null;
 			}
 		}
-
+		
         //access the number of captured pieces on a team
         public int NumCapturedPieces(ChessTeam team)
         {
@@ -395,5 +395,53 @@ namespace WizardsChess.Chess
 		public const int RightBishopCol = 5;
 		public const int RightKnightCol = 6;
 		public const int RightRookCol = 7;
+		public int GetWhiteBackRow()
+		{
+			return WhiteBackRow;
+		}
+		public int GetWhiteFrontRow()
+		{
+			return WhiteFrontRow;
+		}
+		public int GetBlackBackRow()
+		{
+			return BlackBackRow;
+		}
+		public int GetBlackFrontRow()
+		{
+			return BlackFrontRow;
+		}
+		public int GetLeftRookCol()
+		{
+			return LeftRookCol;
+		}
+		public int GetLeftKnightCol()
+		{
+			return LeftKnightCol;
+		}
+		public int GetLeftBishopCol()
+		{
+			return LeftBishopCol;
+		}
+		public int GetKingCol()
+		{
+			return KingCol;
+		}
+		public int GetQueenCol()
+		{
+			return QueenCol;
+		}
+		public int GetRightBishopCol()
+		{
+			return RightBishopCol;
+		}
+		public int GetRightKnightCol()
+		{
+			return RightKnightCol;
+		}
+		public int GetRightRookCol()
+		{
+			return RightRookCol;
+		}
 	}
 }

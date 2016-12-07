@@ -21,5 +21,6 @@ namespace WizardsChess.Movement
 		/// Point2Ds are in movement logical units (between ChessBoard units and motor step units).
 		/// </returns>
 		List<IList<Point2D>> PlanMove(Point2D start, Point2D end, Point2D? captured=null);
+		List<IList<Point2D>> PlanCastle(Point2D rookStart, int kingCol);
 	}
 }
