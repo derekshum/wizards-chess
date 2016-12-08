@@ -187,8 +187,8 @@ namespace WizardsChess
 			}
 			else if (validRookLocations.Count == 1)
 			{
-				chessLogic.Castle(validRookLocations[0]);
 				await moveManager.CastleAsync(validRookLocations[0], chessLogic.Board.GetKingCol());
+				chessLogic.Castle(validRookLocations[0]);
 			}
 			else	// validRookLocations.Count == 2
 			{

@@ -106,7 +106,7 @@ namespace WizardsChessTest
 			
 		}*/
 		[TestMethod]
-		public async Task VisualizerTest()
+		public async Task VisualizerTest1()
 		{
 			ChessLogic logic = new ChessLogic();
 			MovePlanner planner = new MovePlanner(logic.Board);
@@ -115,7 +115,91 @@ namespace WizardsChessTest
 
 			visualizer.ResetBoardRep();
 			visualizer.PrintBoardRep();
-			await manager.MoveAsync(new Position("B","1"), new Position("C","3"));
+
+			List<Position[]> moves = new List<Position[]>();
+
+			Position[] move = new Position[2];	//can't reuse move like that, apparently
+			move[0] = new Position("E", "2");
+			move[1] = new Position("E", "4");
+			moves.Add(move);
+			foreach (var movement in moves)
+			{
+				logic.IsMoveValid(movement[0], movement[1]);
+				await manager.MoveAsync(movement[0], movement[1]);
+				logic.MovePiece(movement[0], movement[1]);
+			}
 		}
+
+		[TestMethod]
+		public async Task VisualizerTest2()
+		{
+			ChessLogic logic = new ChessLogic();
+			MovePlanner planner = new MovePlanner(logic.Board);
+			MovePerformerVisualizer visualizer = new MovePerformerVisualizer();
+			MoveManager manager = new MoveManager(planner, visualizer);
+
+			visualizer.ResetBoardRep();
+			visualizer.PrintBoardRep();
+
+			List<Position[]> moves = new List<Position[]>();
+
+			Position[] move1 = new Position[2];
+			move1[0] = new Position("E", "2");
+			move1[1] = new Position("E", "4");
+			moves.Add(move1);
+			Position[] move2 = new Position[2];
+			move2[0] = new Position("D", "7");
+			move2[1] = new Position("D", "6");
+			moves.Add(move2);
+			Position[] move3 = new Position[2];
+			move3[0] = new Position("G", "1");
+			move3[1] = new Position("F", "3");
+			moves.Add(move3);
+			Position[] move4 = new Position[2];
+			move4[0] = new Position("C", "8");
+			move4[1] = new Position("E", "6");
+			moves.Add(move4);
+			Position[] move5 = new Position[2];
+			move5[0] = new Position("F", "1");
+			move5[1] = new Position("D", "3");
+			moves.Add(move5);
+			Position[] move6 = new Position[2];
+			move6[0] = new Position("B", "8");
+			move6[1] = new Position("C", "6");
+			moves.Add(move6);
+			Position[] move7 = new Position[2];
+			move7[0] = new Position("E", "1");
+			move7[1] = new Position("E", "2");
+			moves.Add(move7);
+
+			for (int i = 0; i < moves.Count; i++)
+			{
+				System.Diagnostics.Debug.WriteLine(moves[i][0].ToString() + "\t" + moves[i][1].ToString());
+			}
+
+			foreach (var movement in moves)
+			{
+				System.Diagnostics.Debug.WriteLine(logic.Board.ToString());
+				System.Diagnostics.Debug.WriteLine(movement[0].ToString() + "\t" + movement[1].ToString());
+				Assert.AreEqual(logic.IsMoveValid(movement[0], movement[1]),true);
+				await manager.MoveAsync(movement[0], movement[1]);
+				logic.MovePiece(movement[0], movement[1]);
+			}
+
+			System.Diagnostics.Debug.WriteLine(logic.Board.ToString());
+			var rookLocationForBlackCastle = logic.validRookLocationsForCastling();
+			Assert.AreEqual(rookLocationForBlackCastle.Count, 1);
+			await manager.CastleAsync(rookLocationForBlackCastle[0], logic.Board.GetKingCol());
+			logic.Castle(rookLocationForBlackCastle[0]);
+
+			System.Diagnostics.Debug.WriteLine(logic.Board.ToString());
+			var rookLocationForWhiteCastle = logic.validRookLocationsForCastling();
+			Assert.AreEqual(rookLocationForWhiteCastle.Count, 1);
+			await manager.CastleAsync(rookLocationForWhiteCastle[0], logic.Board.GetKingCol());
+			logic.Castle(rookLocationForWhiteCastle[0]);
+
+			System.Diagnostics.Debug.WriteLine(logic.Board.ToString());
+		}
+
 	}
 }
