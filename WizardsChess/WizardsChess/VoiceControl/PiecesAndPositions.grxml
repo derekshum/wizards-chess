@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<grammar version="1.0" xml:lang="en-ca" root="piece" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
+	
+	<rule id="piece" scope="public">
+		<one-of>
+			<item> pawn <tag> out = "pawn"; </tag> </item>
+			<item> rook <tag> out = "rook"; </tag> </item>
+			<item> castle <tag> out = "rook"; </tag> </item>
+			<item> bishop <tag> out = "bishop"; </tag> </item>
+			<item> knight <tag> out = "knight"; </tag> </item>
+			<item> queen <tag> out = "queen"; </tag> </item>
+			<item> king <tag> out = "king"; </tag> </item>
+		</one-of>
+	</rule>
+	
+	<rule id="position" scope="public">
+		<ruleref uri="#letter"/>
+		<ruleref uri="#number"/>
+		<tag> out.letter = rules.letter.letter; </tag>
+		<tag> out.usedNato = rules.letter.usedNato; </tag>
+		<tag> out.number = rules.number; </tag>
+	</rule>
+	
+	<rule id="letter" scope="public">
+		<one-of>
+			<item> A <tag> out.letter = "A"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> alpha <tag> out.letter = "A"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> B <tag> out.letter = "B"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> bravo <tag> out.letter = "B"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> C <tag> out.letter = "C"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> charlie <tag> out.letter = "C"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> D <tag> out.letter = "D"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> delta <tag> out.letter = "D"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> E <tag> out.letter = "E"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> echo <tag> out.letter = "E"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> F <tag> out.letter = "F"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> foxtrot <tag> out.letter = "F"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> G <tag> out.letter = "G"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> golf <tag> out.letter = "G"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+			<item> H <tag> out.letter = "H"; </tag> <tag> out.usedNato = "false"; </tag> </item>
+			<item> hotel <tag> out.letter = "H"; </tag> <tag> out.usedNato = "true"; </tag> </item>
+		</one-of>
+	</rule>
+	
+	<rule id="number" scope="public">
+		<one-of>
+			<item> one <tag> out = "1"; </tag> </item>
+			<item> two <tag> out = "2"; </tag> </item>
+			<item> three <tag> out = "3"; </tag> </item>
+			<item> four <tag> out = "4"; </tag> </item>
+			<item> five <tag> out = "5"; </tag> </item>
+			<item> six <tag> out = "6"; </tag> </item>
+			<item> seven <tag> out = "7"; </tag> </item>
+			<item> eight <tag> out = "8"; </tag> </item>
+		</one-of>
+	</rule>
+	
+</grammar>
+
