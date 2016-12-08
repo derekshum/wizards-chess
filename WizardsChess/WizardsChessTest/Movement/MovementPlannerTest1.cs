@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WizardsChess.Chess;
 using WizardsChess.Chess.Pieces;
 using WizardsChess.Movement;
+using System.Threading.Tasks;
 
 namespace WizardsChessTest
 {
@@ -105,10 +106,16 @@ namespace WizardsChessTest
 			
 		}*/
 		[TestMethod]
-		public void CapturingMovementTestFromLab() //tests move taking by enacting an impossible pawn zoom
+		public async Task VisualizerTest()
 		{
 			ChessLogic logic = new ChessLogic();
 			MovePlanner planner = new MovePlanner(logic.Board);
+			MovePerformerVisualizer visualizer = new MovePerformerVisualizer();
+			MoveManager manager = new MoveManager(planner, visualizer);
+
+			visualizer.ResetBoardRep();
+			visualizer.PrintBoardRep();
+			await manager.MoveAsync(new Position("B","1"), new Position("C","3"));
 		}
 	}
 }

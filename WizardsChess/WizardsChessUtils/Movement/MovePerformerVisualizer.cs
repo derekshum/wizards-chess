@@ -8,17 +8,36 @@ using WizardsChess.Movement.Drv.Events;
 
 namespace WizardsChess.Movement
 {
-	class MovePerformerVisualizer : IMovePerformer
+	public class MovePerformerVisualizer : IMovePerformer
 	{
 
 		public MovePerformerVisualizer()
 		{
-			int i;
-			int j;
+			BoardRep = new char[ySize, xSize];
+		}
 
-			for (j = 0; j < ySize; j++)
+		public async Task MovePieceAsync(IList<Point2D> steps)
+		{
+			Point2D convertedPoint;
+			int i = 1;
+
+			ResetBoardRep();
+
+			foreach (var point in steps)
 			{
-				for (i = 0; i < xSize; i++)
+				convertedPoint = ConvertPoint(point);
+				BoardRep[convertedPoint.Y, convertedPoint.X] = i.ToString()[0];
+				i++;
+			}
+
+			PrintBoardRep();
+		}
+
+		public void ResetBoardRep()
+		{
+			for (int j = 0; j < ySize; j++)
+			{
+				for (int i = 0; i < xSize; i++)
 				{
 					if ((j > 0 && j < ySize - 1) && (i == 0 || i == xSize - 1))
 						BoardRep[j, i] = 'o';
@@ -36,11 +55,32 @@ namespace WizardsChess.Movement
 			}
 		}
 
-		public async Task MovePieceAsync(IList<Point2D> steps)
+		public void PrintBoardRep()
 		{
-			var start = steps[0];
-			steps.RemoveAt(0);
-			//Console.Writeline()
+			for (int j = 0; j < ySize; j++)
+			{
+				for (int i = 0; i < xSize; i++)
+				{
+					System.Diagnostics.Debug.Write(BoardRep[ySize - 1 - j, i]);
+				}
+				System.Diagnostics.Debug.WriteLine("");
+			}
+		}
+
+		//converts input Points to Matrix indicies;
+		public Point2D ConvertPoint(Point2D point)
+		{
+			return new Point2D(ConvertX(point.X), ConvertY(point.Y));
+		}
+		//converts (-11_11 to 0_23)
+		public int ConvertX(int x)
+		{
+			return x + xOffset;
+		}
+		//convert (-8_8 to 0_16)
+		public int ConvertY(int y)
+		{
+			return y + yOffset;
 		}
 
 		public async Task GoHomeAsync()
@@ -57,6 +97,8 @@ namespace WizardsChess.Movement
 		const int ySize = 17;
 		int emptyCol1 = 2;
 		int emptyCol2 = 20;
+		const int xOffset = (xSize - 1)/2;	//number added to input Point2D's to get boardMatrix index (-11_11 to 0_23)
+		const int yOffset = (ySize - 1)/2;	//(-8_8 to 0_16)
 
 	}
 }
