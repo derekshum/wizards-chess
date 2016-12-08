@@ -21,7 +21,7 @@ namespace WizardsChess.Chess
 		int GetWhiteFrontRow();
 		int GetBlackBackRow();
 		int GetBlackFrontRow();
-		int GetGetLeftRookCol();
+		int GetLeftRookCol();
 		int GetLeftKnightCol();
 		int GetLeftBishopCol();
 		int GetKingCol();
