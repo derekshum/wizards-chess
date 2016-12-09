@@ -16,7 +16,7 @@ namespace WizardsChessTest.Mocks.Movement
 			constructMotorMover();
 
 			int targetPos = 12;
-			int finalPos = motorMover.GoToPositionAsync(targetPos, convertToTimeout(targetPos)).Result;
+			int finalPos = motorMover.GoToPositionAsync(targetPos).Result;
 			Assert.AreEqual(motorLocator.Position, finalPos, $"Motor mover result {finalPos} does not match motorLocator position {motorLocator.Position}");
 			Assert.IsTrue(finalPos > targetPos, $"Motor final position {finalPos} did not make sense with target {targetPos}.");
 		}
@@ -27,12 +27,12 @@ namespace WizardsChessTest.Mocks.Movement
 			constructMotorMover();
 
 			int targetPos = 12;
-			int finalPos = motorMover.GoToPositionAsync(targetPos, convertToTimeout(targetPos)).Result;
+			int finalPos = motorMover.GoToPositionAsync(targetPos).Result;
 			Assert.AreEqual(motorLocator.Position, finalPos, $"Motor mover result {finalPos} does not match motorLocator position {motorLocator.Position}");
 			Assert.IsTrue(finalPos > targetPos, $"Motor final position {finalPos} did not make sense with target {targetPos}.");
 
 			targetPos = -12;
-			finalPos = motorMover.GoToPositionAsync(targetPos, convertToTimeout(targetPos)).Result;
+			finalPos = motorMover.GoToPositionAsync(targetPos).Result;
 			Assert.AreEqual(motorLocator.Position, finalPos, $"Motor mover result {finalPos} does not match motorLocator position {motorLocator.Position}");
 			Assert.IsTrue(finalPos < targetPos, $"Motor final position {finalPos} did not make sense with target {targetPos}.");
 		}
@@ -43,7 +43,7 @@ namespace WizardsChessTest.Mocks.Movement
 			constructMotorMover();
 
 			int targetPos = 300;
-			var moveTask = motorMover.GoToPositionAsync(targetPos, convertToTimeout(targetPos));
+			var moveTask = motorMover.GoToPositionAsync(targetPos);
 			Task.Delay(30).Wait();
 			motorMover.CancelMove();
 			while(mockMotor.Information.Direction != MoveDirection.Stopped)
@@ -63,7 +63,7 @@ namespace WizardsChessTest.Mocks.Movement
 			constructMotorMover();
 
 			int targetPos = 300;
-			var moveTask = motorMover.GoToPositionAsync(targetPos, convertToTimeout(targetPos));
+			var moveTask = motorMover.GoToPositionAsync(targetPos);
 			Task.Delay(60).Wait();
 			mockMotor.Direction = MoveDirection.Stopped;
 			while (mockMotor.Information.Direction != MoveDirection.Stopped)

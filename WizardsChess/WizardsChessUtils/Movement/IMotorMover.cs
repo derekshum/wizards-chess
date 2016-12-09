@@ -13,9 +13,8 @@ namespace WizardsChess.Movement
 		/// Does not return until the motor is completely stopped.
 		/// </summary>
 		/// <param name="position">The target position to drive the motor to. Not necessarily where the motor stops.</param>
-		/// <param name="timeout">The max timeout for the move when the motors are stopped if the position is not reached.</param>
 		/// <returns>The position when the motor stops.</returns>
-		Task<int> GoToPositionAsync(int position, TimeSpan timeout);
+		Task<int> GoToPositionAsync(int position);
 
 		/// <summary>
 		/// Cancel an in-progress move.

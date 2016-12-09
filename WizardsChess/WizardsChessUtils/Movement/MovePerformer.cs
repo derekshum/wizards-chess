@@ -24,16 +24,16 @@ namespace WizardsChess.Movement
 			steps.RemoveAt(0);
 
 			System.Diagnostics.Debug.WriteLine($"MovePerformer sending move {start}");
-			await xMover.GoToPositionAsync(start.X, TimeSpan.FromMilliseconds(3 * start.X));
-			await yMover.GoToPositionAsync(start.Y, TimeSpan.FromMilliseconds(3 * start.Y));
+			await xMover.GoToPositionAsync(start.X);
+			await yMover.GoToPositionAsync(start.Y);
 
 			magnet.TurnOn();
 
 			foreach(var point in steps)
 			{
 				System.Diagnostics.Debug.WriteLine($"MovePerformer sending move {point}");
-				await xMover.GoToPositionAsync(point.X, TimeSpan.FromMilliseconds(3 * point.X));
-				await yMover.GoToPositionAsync(point.Y, TimeSpan.FromMilliseconds(3 * point.Y));
+				await xMover.GoToPositionAsync(point.X);
+				await yMover.GoToPositionAsync(point.Y);
 			}
 
 			magnet.TurnOff();
@@ -57,8 +57,8 @@ namespace WizardsChess.Movement
 
 		public async Task GoHomeAsync()
 		{
-			await xMover.GoToPositionAsync(0, TimeSpan.FromMilliseconds(0));
-			await yMover.GoToPositionAsync(0, TimeSpan.FromMilliseconds(0));
+			await xMover.GoToPositionAsync(0);
+			await yMover.GoToPositionAsync(0);
 		}
 
 		public async Task CalibrateAsync()

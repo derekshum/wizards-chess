@@ -17,8 +17,7 @@ namespace WizardsChess.Movement.Drv
 
 	public class PositionSignaler : IDisposable, IPositionSignaler
 	{
-		public event PositionChangedEventHandler FinishedCounting;
-		public event PositionChangedEventHandler MoveTimedOut;
+		public event PositionChangedEventHandler ReachedPosition;
 
 		/// <summary>
 		/// Signal specified position updates and extra steps.
@@ -31,13 +30,11 @@ namespace WizardsChess.Movement.Drv
 
 			motorLocator = locator;
 			motorLocator.PositionChanged += positionChanged;
-
-			timeoutCancellationSource = new CancellationTokenSource();
 		}
 
 		public int Position { get; private set; }
 
-		public void CountToPosition(int position, TimeSpan timeout)
+		public void SignalOnPosition(int position)
 		{
 			lock (lockObject)
 			{
@@ -48,30 +45,6 @@ namespace WizardsChess.Movement.Drv
 					return;
 				}
 
-				timeoutCancellationSource.Cancel();
-				timeoutCancellationSource = new CancellationTokenSource();
-				var token = timeoutCancellationSource.Token;
-
-				var startTime = DateTime.Now;
-
-				Task.Run(async () => {
-					var updatedTimeout = timeout - (DateTime.Now - startTime);
-					if (updatedTimeout < TimeSpan.Zero)
-					{
-						if (!token.IsCancellationRequested)
-						{
-							onMoveTimeOut();
-						}
-					}
-					await Task.Delay(updatedTimeout, token)
-						.ContinueWith((prev) => {
-							if (!token.IsCancellationRequested)
-							{
-								onMoveTimeOut();
-							}
-						}, token);
-				}, token);
-
 				state = CounterState.Counting;
 			}
 		}
@@ -80,7 +53,6 @@ namespace WizardsChess.Movement.Drv
 		{
 			lock (lockObject)
 			{
-				timeoutCancellationSource.Cancel();
 				state = CounterState.Ready;
 			}
 		}
@@ -104,25 +76,13 @@ namespace WizardsChess.Movement.Drv
 		private void onTargetReached()
 		{
 			state = CounterState.Ready;
-			FinishedCounting?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position, motorLocator.LastMoveDirection));
-		}
-
-		private void onMoveTimeOut()
-		{
-			if (state != CounterState.Counting)
-			{
-				return;
-			}
-
-			state = CounterState.Ready;
-			MoveTimedOut?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position, motorLocator.LastMoveDirection));
+			ReachedPosition?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position, motorLocator.LastMoveDirection));
 		}
 
 		private volatile CounterState state;
 		private IMotorLocator motorLocator;
 		private int targetPosition;
 		private object lockObject = new object();
-		private CancellationTokenSource timeoutCancellationSource;
 
 		#region IDisposable Support
 		private bool disposedValue = false; // To detect redundant calls

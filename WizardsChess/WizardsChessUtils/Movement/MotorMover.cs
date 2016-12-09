@@ -24,15 +24,14 @@ namespace WizardsChess.Movement
 			locator = motorLocator;
 			motor = motorDrv;
 
-			signaler.FinishedCounting += finishedCounting;
+			signaler.ReachedPosition += finishedCounting;
 			motorDrv.Information.DirectionChanged += directionChanged;
-			signaler.MoveTimedOut += moveTimedOut;
 
 			isMoving = false;
 			state = MoverState.Ready;
 		}
 
-		public async Task<int> GoToPositionAsync(int targetPosition, TimeSpan timeout)
+		public async Task<int> GoToPositionAsync(int targetPosition)
 		{
 			lock (lockObject)
 			{
@@ -43,7 +42,7 @@ namespace WizardsChess.Movement
 				}
 				state = MoverState.PerformingMove;
 			}
-			await goToPositionAsync(targetPosition, timeout);
+			await goToPositionAsync(targetPosition);
 			lock (lockObject)
 			{
 				state = MoverState.Ready;
@@ -75,7 +74,7 @@ namespace WizardsChess.Movement
 			signaler.CancelSignal();
 		}
 
-		private async Task goToPositionAsync(int position, TimeSpan timeout)
+		private async Task goToPositionAsync(int position)
 		{
 			if (isAtPosition(position))
 			{
@@ -94,7 +93,7 @@ namespace WizardsChess.Movement
 			{
 				isMoving = true;
 			}
-			signaler.CountToPosition(position, timeout);
+			signaler.SignalOnPosition(position);
 			if (offset < 0)
 			{
 				motor.Direction = MoveDirection.Backward;
