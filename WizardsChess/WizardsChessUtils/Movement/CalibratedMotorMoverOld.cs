@@ -20,9 +20,9 @@ namespace WizardsChess.Movement
 		Calibrating
 	}
 	
-	public class CalibratedMotorMover
+	public class CalibratedMotorMoverOld
 	{
-		public CalibratedMotorMover(Axis axis, int gridMax, int gridMin, int msPerStep, IMotorDrv mtrDrv, IStepCounter stepCntr,
+		public CalibratedMotorMoverOld(Axis axis, int gridMax, int gridMin, int msPerStep, IMotorDrv mtrDrv, IStepCounter stepCntr,
 			IPhotoInterrupter topPhotoInterrupt, IPhotoInterrupter bottomPhotoInterrupt)
 		{
 			stepPosition = 0;

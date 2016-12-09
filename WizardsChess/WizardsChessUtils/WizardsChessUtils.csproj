@@ -55,7 +55,7 @@
     <Compile Include="Chess\PieceType.cs" />
     <Compile Include="Chess\Position.cs" />
     <Compile Include="Movement\Axis.cs" />
-    <Compile Include="Movement\CalibratedMotorMover.cs" />
+    <Compile Include="Movement\CalibratedMotorMoverOld.cs" />
     <Compile Include="Movement\Drv\Events\GpioValueChangedEventArgs.cs" />
     <Compile Include="Movement\Events\PositionChangedEventArgs.cs" />
     <Compile Include="Movement\Events\StepEventArgs.cs" />

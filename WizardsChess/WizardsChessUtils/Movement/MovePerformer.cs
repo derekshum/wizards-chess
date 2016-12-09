@@ -10,7 +10,7 @@ namespace WizardsChess.Movement
 {
 	public class MovePerformer : IMovePerformer
 	{
-		public MovePerformer(CalibratedMotorMover calXMover, CalibratedMotorMover calYMover, IMagnetDrv magnetDrv)
+		public MovePerformer(CalibratedMotorMoverOld calXMover, CalibratedMotorMoverOld calYMover, IMagnetDrv magnetDrv)
 		{
 			xMover = calXMover;
 			yMover = calYMover;
@@ -89,8 +89,8 @@ namespace WizardsChess.Movement
 			return new Vector2D(xDiff, yDiff);
 		}
 
-		private CalibratedMotorMover xMover;
-		private CalibratedMotorMover yMover;
+		private CalibratedMotorMoverOld xMover;
+		private CalibratedMotorMoverOld yMover;
 		private IMagnetDrv magnet;
 	}
 }
