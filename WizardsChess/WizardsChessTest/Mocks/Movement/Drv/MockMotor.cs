@@ -49,7 +49,7 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 					previousDirection = direction;
 					direction = value;
 				}
-				handleMotorDirectionChanged();
+				HandleMotorDirectionChanged(direction);
 			}
 		}
 
@@ -94,11 +94,11 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 			}
 		}
 
-		private void handleMotorDirectionChanged()
+		public void HandleMotorDirectionChanged(MoveDirection dir)
 		{
-			if (direction != MoveDirection.Stopped)
+			if (dir != MoveDirection.Stopped)
 			{
-				information.SetDirection(direction);
+				information.SetDirection(dir);
 				runTheMotor();
 			}
 			else

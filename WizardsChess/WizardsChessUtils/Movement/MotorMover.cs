@@ -135,21 +135,11 @@ namespace WizardsChess.Movement
 			System.Diagnostics.Debug.WriteLine($"{motor.Information.Axis} motor finished counting.");
 		}
 
-		private void moveTimedOut(object sender, PositionChangedEventArgs e)
-		{
-			motor.Direction = MoveDirection.Stopped;
-
-			lock (lockObject)
-			{
-				isMoving = false;
-			}
-			System.Diagnostics.Debug.WriteLine($"{motor.Information.Axis} motor move timed out");
-		}
-
 		private void directionChanged(object sender, MotorDirectionChangedEventArgs e)
 		{
 			if (e.Direction == MoveDirection.Stopped)
 			{
+				motor.Direction = MoveDirection.Stopped;
 				isMoving = false;
 				System.Diagnostics.Debug.WriteLine($"{motor.Information.Axis} motor has stopped.");
 			}

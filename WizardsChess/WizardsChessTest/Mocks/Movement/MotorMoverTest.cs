@@ -65,16 +65,16 @@ namespace WizardsChessTest.Mocks.Movement
 			int targetPos = 300;
 			var moveTask = motorMover.GoToPositionAsync(targetPos);
 			Task.Delay(60).Wait();
-			mockMotor.Direction = MoveDirection.Stopped;
+			mockMotor.HandleMotorDirectionChanged(MoveDirection.Stopped);
 			while (mockMotor.Information.Direction != MoveDirection.Stopped)
 			{
 				Task.Delay(30).Wait();
 			}
 			Task.Delay(30).Wait();
-			Assert.IsTrue(moveTask.IsCompleted, "Move task did not end after cancellation.");
 			int finalPos = moveTask.Result;
 			Assert.IsTrue(finalPos != targetPos, "Counted all the way to the target position instead of stalling.");
 			Assert.AreEqual(motorLocator.Position, finalPos, "MotorLocator position did not match finalPos");
+			Assert.AreEqual(MoveDirection.Stopped, mockMotor.Direction, "Motor was not stopped after move stalled.");
 		}
 
 		private IMotorMover motorMover;
