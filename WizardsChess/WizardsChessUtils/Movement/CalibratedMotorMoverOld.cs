@@ -22,7 +22,7 @@ namespace WizardsChess.Movement
 	
 	public class CalibratedMotorMoverOld
 	{
-		public CalibratedMotorMoverOld(Axis axis, int gridMax, int gridMin, int msPerStep, IMotorDrv mtrDrv, IStepCounter stepCntr,
+		public CalibratedMotorMoverOld(Axis axis, int gridMax, int gridMin, int msPerStep, IMotorDrv mtrDrv, IPositionSignaler stepCntr,
 			IPhotoInterrupter topPhotoInterrupt, IPhotoInterrupter bottomPhotoInterrupt)
 		{
 			stepPosition = 0;
@@ -486,7 +486,7 @@ namespace WizardsChess.Movement
 		private volatile MoveState state;
 
 		private IMotorDrv motorDrv;
-		private IStepCounter stepCounter;
+		private IPositionSignaler stepCounter;
 
 		private IPhotoInterrupter topInterrupt;
 		private IPhotoInterrupter bottomInterrupt;

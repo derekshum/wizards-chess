@@ -7,11 +7,12 @@ using WizardsChess.Movement.Drv.Events;
 
 namespace WizardsChess.Movement.Drv
 {
-	public interface IStepCounter
+	public interface IPositionSignaler
 	{
 		int Position { get; }
 
 		void CountToPosition(int numSteps, TimeSpan timeout);
+		void CancelSignal();
 
 		event PositionChangedEventHandler FinishedCounting;
 		event PositionChangedEventHandler AdditionalStepsCounted;

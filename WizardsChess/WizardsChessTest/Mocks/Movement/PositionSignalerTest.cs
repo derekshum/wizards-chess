@@ -12,39 +12,39 @@ using WizardsChess.Movement.Events;
 namespace WizardsChessTest.Mocks.Movement
 {
 	[TestClass]
-	public class StepCounterTest
+	public class PositionSignalerTest
 	{
-		public StepCounterTest()
+		public PositionSignalerTest()
 		{
 			mockMotor = new MockMotor();
 		}
 
-		[TestCategory("Step Counter")]
+		[TestCategory(nameof(PositionSignaler))]
 		[TestMethod]
-		public void TestStepCounterConstruction()
+		public void TestPositionSignalerConstruction()
 		{
 			motorLocator = new MotorLocator(mockMotor, mockMotor);
-			stepCounter = new StepCounter(motorLocator, new MockGpio());
+			positionSignaler = new PositionSignaler(motorLocator, new MockGpio());
 
-			stepCounter.FinishedCounting += finishedCounting;
-			stepCounter.AdditionalStepsCounted += additionalStepsCounted;
-			stepCounter.MoveTimedOut += timeout;
+			positionSignaler.FinishedCounting += finishedCounting;
+			positionSignaler.AdditionalStepsCounted += additionalStepsCounted;
+			positionSignaler.MoveTimedOut += timeout;
 		}
 
-		[TestCategory("Step Counter")]
+		[TestCategory(nameof(PositionSignaler))]
 		[TestMethod]
-		public void TestStepCounterBasic()
+		public void TestPositionSignalerBasic()
 		{
-			if (stepCounter == null)
+			if (positionSignaler == null)
 			{
-				TestStepCounterConstruction();
+				TestPositionSignalerConstruction();
 			}
 
 			resetTestVariables();
 
 			isCounting = true;
 			var expectedPosition = 20;
-			stepCounter.CountToPosition(expectedPosition, convertPositionToTimeout(expectedPosition));
+			positionSignaler.CountToPosition(expectedPosition, convertPositionToTimeout(expectedPosition));
 			runMotor();
 			while (isCounting)
 			{
@@ -55,20 +55,20 @@ namespace WizardsChessTest.Mocks.Movement
 			checkForErrors();
 		}
 
-		[TestCategory("Step Counter")]
+		[TestCategory(nameof(PositionSignaler))]
 		[TestMethod]
-		public void TestStepCounterStall()
+		public void TestPositionSignalerStall()
 		{
-			if (stepCounter == null)
+			if (positionSignaler == null)
 			{
-				TestStepCounterConstruction();
+				TestPositionSignalerConstruction();
 			}
 
 			resetTestVariables();
 			isTimeoutExpected = true;
 
 			isCounting = true;
-			stepCounter.CountToPosition(80, convertPositionToTimeout(80));
+			positionSignaler.CountToPosition(80, convertPositionToTimeout(80));
 			runMotor();
 			Task.Delay(20).Wait();
 			stopMotor();
@@ -80,23 +80,23 @@ namespace WizardsChessTest.Mocks.Movement
 			checkForErrors();
 		}
 
-		[TestCategory("Step Counter")]
+		[TestCategory(nameof(PositionSignaler))]
 		[TestMethod]
-		public void TestStepCounterOverlappingCounts()
+		public void TestPositionSignalerOverlappingCounts()
 		{
-			if (stepCounter == null)
+			if (positionSignaler == null)
 			{
-				TestStepCounterConstruction();
+				TestPositionSignalerConstruction();
 			}
 
 			resetTestVariables();
 
 			isCounting = true;
-			stepCounter.CountToPosition(100, convertPositionToTimeout(100));
+			positionSignaler.CountToPosition(100, convertPositionToTimeout(100));
 			runMotor();
 			Task.Delay(20).Wait();
 			var shorterTarget = motorLocator.Position + 10;
-			stepCounter.CountToPosition(shorterTarget, convertPositionToTimeout(shorterTarget));
+			positionSignaler.CountToPosition(shorterTarget, convertPositionToTimeout(shorterTarget));
 			while(isCounting)
 			{
 				Task.Delay(10).Wait();
@@ -109,23 +109,23 @@ namespace WizardsChessTest.Mocks.Movement
 			checkForErrors();
 		}
 
-		[TestCategory("Step Counter")]
+		[TestCategory(nameof(PositionSignaler))]
 		[TestMethod]
-		public void TestStepCounterStopMidCount()
+		public void TestPositionSignalerStopMidCount()
 		{
-			if (stepCounter == null)
+			if (positionSignaler == null)
 			{
-				TestStepCounterConstruction();
+				TestPositionSignalerConstruction();
 			}
 
 			resetTestVariables();
 
 			isCounting = true;
-			stepCounter.CountToPosition(100, convertPositionToTimeout(100));
+			positionSignaler.CountToPosition(100, convertPositionToTimeout(100));
 			runMotor();
 			Task.Delay(80).Wait();
 			var pos = motorLocator.Position;
-			stepCounter.CountToPosition(pos, convertPositionToTimeout(pos));
+			positionSignaler.CountToPosition(pos, convertPositionToTimeout(pos));
 			while (isCounting)
 			{
 				Task.Delay(10).Wait();
@@ -135,9 +135,37 @@ namespace WizardsChessTest.Mocks.Movement
 			checkForErrors();
 		}
 
+		[TestCategory(nameof(PositionSignaler))]
+		[TestMethod]
+		public void TestPositionSignalerStepAfterStopping()
+		{
+			if (positionSignaler == null)
+			{
+				TestPositionSignalerConstruction();
+			}
+
+			resetTestVariables();
+
+			isCounting = true;
+			positionSignaler.CountToPosition(10, convertPositionToTimeout(10));
+			runMotor();
+			var start = DateTime.Now;
+			while (isCounting)
+			{
+				Task.Delay(15).Wait();
+			}
+			var end = DateTime.Now;
+
+			runMotor(MoveDirection.Backward);
+			Task.Delay((end - start).Milliseconds + 30).Wait();
+			stopMotor();
+
+			checkForErrors();
+		}
+
 		private MockMotor mockMotor;
 		private IMotorLocator motorLocator;
-		private StepCounter stepCounter;
+		private PositionSignaler positionSignaler;
 
 		private int positionOnTargetReached;
 		private int positionOnExtraSteps;
@@ -153,6 +181,7 @@ namespace WizardsChessTest.Mocks.Movement
 		{
 			var pos = motorLocator.Position;
 			assert(pos == e.Position, $"Expected {pos} at finished counting, received {e.Position}.");
+			assert(isCounting, "Finished counting when not in counting state.");
 			positionOnTargetReached = e.Position;
 			stopMotor();
 		}
@@ -161,6 +190,7 @@ namespace WizardsChessTest.Mocks.Movement
 		{
 			var pos = motorLocator.Position;
 			assert(pos == e.Position, $"Expected {pos} after additional counting, received {e.Position}.");
+			assert(isCounting, "Counted additional steps when not in counting state.");
 			positionOnExtraSteps = e.Position;
 			isCounting = false;
 		}
@@ -182,9 +212,9 @@ namespace WizardsChessTest.Mocks.Movement
 			mockMotor.Direction = MoveDirection.Stopped;
 		}
 
-		private void runMotor()
+		private void runMotor(MoveDirection direction = MoveDirection.Forward)
 		{
-			mockMotor.Direction = MoveDirection.Forward;
+			mockMotor.Direction = direction;
 		}
 
 		private void resetTestVariables()
