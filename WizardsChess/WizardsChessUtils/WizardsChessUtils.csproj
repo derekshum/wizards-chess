@@ -57,7 +57,10 @@
     <Compile Include="Movement\Axis.cs" />
     <Compile Include="Movement\CalibratedMotorMoverOld.cs" />
     <Compile Include="Movement\Drv\Events\GpioValueChangedEventArgs.cs" />
-    <Compile Include="Movement\Drv\MotorMover.cs" />
+    <Compile Include="Movement\Drv\Events\MotorDirectionChangedEventArgs.cs" />
+    <Compile Include="Movement\Drv\IMotorInformation.cs" />
+    <Compile Include="Movement\Drv\MotorInformation.cs" />
+    <Compile Include="Movement\MotorMover.cs" />
     <Compile Include="Movement\Events\PositionChangedEventArgs.cs" />
     <Compile Include="Movement\Events\StepEventArgs.cs" />
     <Compile Include="Movement\Drv\IGpioPin.cs" />

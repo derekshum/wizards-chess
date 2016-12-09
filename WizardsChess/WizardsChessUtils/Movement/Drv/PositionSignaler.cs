@@ -12,14 +12,12 @@ namespace WizardsChess.Movement.Drv
 	enum CounterState
 	{
 		Ready,
-		Counting,
-		WaitingForExtraSteps
+		Counting
 	}
 
 	public class PositionSignaler : IDisposable, IPositionSignaler
 	{
 		public event PositionChangedEventHandler FinishedCounting;
-		public event PositionChangedEventHandler AdditionalStepsCounted;
 		public event PositionChangedEventHandler MoveTimedOut;
 
 		/// <summary>
@@ -27,16 +25,13 @@ namespace WizardsChess.Movement.Drv
 		/// </summary>
 		/// <param name="locator">The IMotorLocator maintaining motor position.</param>
 		/// <param name="clearCounterPin">The pin used to clear the counter.</param>
-		public PositionSignaler(IMotorLocator locator, IGpioPin clearCounterPin)
+		public PositionSignaler(IMotorLocator locator)
 		{
-			motorLocator = locator;
-			clearPin = clearCounterPin;
-
 			state = CounterState.Ready;
 
+			motorLocator = locator;
 			motorLocator.PositionChanged += positionChanged;
 
-			additionalStepsCancellationSource = new CancellationTokenSource();
 			timeoutCancellationSource = new CancellationTokenSource();
 		}
 
@@ -47,20 +42,10 @@ namespace WizardsChess.Movement.Drv
 			lock (lockObject)
 			{
 				targetPosition = position;
-				switch (state)
+				if (targetPosition == motorLocator.Position)
 				{
-					case CounterState.WaitingForExtraSteps:
-						additionalStepsCancellationSource.Cancel();
-						break;
-					case CounterState.Counting:
-					case CounterState.Ready:
-						if (targetPosition == motorLocator.Position)
-						{
-							onTargetReached();
-							onAdditionalStepsCounted();
-							return;
-						}
-						break;
+					onTargetReached();
+					return;
 				}
 
 				timeoutCancellationSource.Cancel();
@@ -95,7 +80,6 @@ namespace WizardsChess.Movement.Drv
 		{
 			lock (lockObject)
 			{
-				additionalStepsCancellationSource.Cancel();
 				timeoutCancellationSource.Cancel();
 				state = CounterState.Ready;
 			}
@@ -111,60 +95,16 @@ namespace WizardsChess.Movement.Drv
 						|| (args.Direction == MoveDirection.Forward && args.Position > targetPosition)
 						|| (args.Direction == MoveDirection.Backward && args.Position < targetPosition))
 					{
-
-						state = CounterState.WaitingForExtraSteps;
 						onTargetReached();
-						// Prepare to send extra steps here so it is guaranteed to send even if the motor stalls
-						sendAdditionalSteps();
 					}
-				}
-				else if (state == CounterState.WaitingForExtraSteps)
-				{
-					sendAdditionalSteps();
 				}
 			}
 		}
 
-		/// <summary>
-		/// This function prepares a callback in 60ms, which will only run if no additional steps were counted in that time.
-		/// When the callback runs, it fires the AdditionalStepsCounted event.
-		/// </summary>
-		private void sendAdditionalSteps()
-		{
-			additionalStepsCancellationSource.Cancel();
-			additionalStepsCancellationSource = new CancellationTokenSource();
-			var token = additionalStepsCancellationSource.Token;
-
-			var startTime = DateTime.Now;
-
-			Task.Run(async () => {
-				var updatedTime = TimeSpan.FromMilliseconds(60) - (DateTime.Now - startTime);
-				if (updatedTime < TimeSpan.Zero)
-				{
-					if (!token.IsCancellationRequested)
-					{
-						onAdditionalStepsCounted();
-					}
-				}
-				await Task.Delay(60, token)
-					.ContinueWith((prev) => {
-						if (!token.IsCancellationRequested)
-						{
-							onAdditionalStepsCounted();
-						}
-					}, token);
-			}, token);
-		}
-
 		private void onTargetReached()
 		{
-			FinishedCounting?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position, motorLocator.LastMoveDirection));
-		}
-
-		private void onAdditionalStepsCounted()
-		{
-			AdditionalStepsCounted?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position, motorLocator.LastMoveDirection));
 			state = CounterState.Ready;
+			FinishedCounting?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position, motorLocator.LastMoveDirection));
 		}
 
 		private void onMoveTimeOut()
@@ -174,15 +114,14 @@ namespace WizardsChess.Movement.Drv
 				return;
 			}
 
+			state = CounterState.Ready;
 			MoveTimedOut?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position, motorLocator.LastMoveDirection));
 		}
 
 		private volatile CounterState state;
 		private IMotorLocator motorLocator;
-		private IGpioPin clearPin;
 		private int targetPosition;
 		private object lockObject = new object();
-		private CancellationTokenSource additionalStepsCancellationSource;
 		private CancellationTokenSource timeoutCancellationSource;
 
 		#region IDisposable Support

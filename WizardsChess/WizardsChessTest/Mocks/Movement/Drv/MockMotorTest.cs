@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using WizardsChess.Movement;
+using WizardsChess.Movement.Drv;
 
 namespace WizardsChessTest.Mocks.Movement.Drv
 {
@@ -11,7 +12,8 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 		[TestMethod]
 		public void TestMockMotor()
 		{
-			var motor = new MockMotor();
+			var motor = MockMotor.Create();
+
 			var pos = 0;
 			motor.Direction = MoveDirection.Forward;
 			Task.Delay(200).Wait();
@@ -20,6 +22,7 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 			motor.Direction = MoveDirection.Stopped;
 			Task.Delay(300).Wait();
 			Assert.IsTrue(motor.NumTicks > pos, "Motor did no extra ticks after stopping");
+			Assert.AreEqual(MoveDirection.Stopped, motor.Information.Direction, "MotorInformation seems wrong.");
 			pos = 0;
 			motor.Direction = MoveDirection.Backward;
 			Task.Delay(200).Wait();
@@ -28,6 +31,7 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 			motor.Direction = MoveDirection.Stopped;
 			Task.Delay(300).Wait();
 			Assert.IsTrue(motor.NumTicks > pos, "Motor did no extra ticks after stopping");
+			Assert.AreEqual(MoveDirection.Stopped, motor.Information.Direction, "MotorInformation seems wrong.");
 		}
 	}
 }

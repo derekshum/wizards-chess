@@ -10,7 +10,7 @@ namespace WizardsChess.Movement.Drv
 {
 	class MotorDrv : IMotorDrv
 	{
-		public MotorDrv(int forwardGpio, int backwardGpio)
+		public MotorDrv(int forwardGpio, int backwardGpio, MotorInformation info)
 		{
 			var gpio = GpioController.GetDefault();
 			forwardPin = gpio.OpenPin(forwardGpio);
@@ -22,6 +22,8 @@ namespace WizardsChess.Movement.Drv
 
 			direction = MoveDirection.Stopped;
 			previousDirection = direction;
+
+			information = info;
 		}
 
 		public MoveDirection Direction
@@ -60,6 +62,11 @@ namespace WizardsChess.Movement.Drv
 			}
 		}
 
+		public IMotorInformation Information
+		{
+			get { return information; }
+		}
+
 		public MoveDirection GetLatestActiveMoveDirection()
 		{
 			lock(lockObject)
@@ -80,24 +87,27 @@ namespace WizardsChess.Movement.Drv
 		private MoveDirection previousDirection;
 		private GpioPin forwardPin;
 		private GpioPin backwardPin;
+		private MotorInformation information;
 
 		private void updatePins()
 		{
 			switch (direction)
 			{
 				case MoveDirection.Forward:
-					System.Diagnostics.Debug.WriteLine("Moving the motor forwards");
+					System.Diagnostics.Debug.WriteLine($"Moving the {information.Axis} motor forwards");
+					information.SetDirection(direction);
 					backwardPin.Write(GpioPinValue.Low);
 					forwardPin.Write(GpioPinValue.High);
 					break;
 				case MoveDirection.Backward:
-					System.Diagnostics.Debug.WriteLine("Moving the motor backwards");
+					System.Diagnostics.Debug.WriteLine($"Moving the {information.Axis} motor backwards");
+					information.SetDirection(direction);
 					forwardPin.Write(GpioPinValue.Low);
 					backwardPin.Write(GpioPinValue.High);
 					break;
 				case MoveDirection.Stopped:
 				default:
-					System.Diagnostics.Debug.WriteLine("Stopping the motor");
+					System.Diagnostics.Debug.WriteLine($"Stopping the {information.Axis} motor");
 					forwardPin.Write(GpioPinValue.Low);
 					backwardPin.Write(GpioPinValue.Low);
 					break;

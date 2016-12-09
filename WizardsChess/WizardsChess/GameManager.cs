@@ -39,40 +39,46 @@ namespace WizardsChess
 
 			ChessLogic logic = new ChessLogic();
 
-			var motorDriverX = new MotorDrv(20, 21);
-			var motorDriverY = new MotorDrv(24, 23);
 			var stepCountPinX = new GpioPinWrapper(5, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
-			var motorLocatorX = new MotorLocator(stepCountPinX, motorDriverX);
-			var stepCountPinY = new GpioPinWrapper(6, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
-			var motorLocatorY = new MotorLocator(stepCountPinY, motorDriverY);
 			var stepClearPinX = new GpioPinWrapper(13, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
+			var motorInformationX = new MotorInformation(Axis.X, stepCountPinX);
+			var motorDriverX = new MotorDrv(20, 21, motorInformationX);
+			var motorLocatorX = new MotorLocator(stepCountPinX, stepClearPinX, motorDriverX);
+			var positionSignalerX = new PositionSignaler(motorLocatorX);
+
+
+			var stepCountPinY = new GpioPinWrapper(6, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
 			var stepClearPinY = new GpioPinWrapper(19, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
-			var stepCounterX = new PositionSignaler(motorLocatorX, stepClearPinX);
-			var stepCounterY = new PositionSignaler(motorLocatorY, stepClearPinY);
+			var motorInformationY = new MotorInformation(Axis.Y, stepCountPinY);
+			var motorDriverY = new MotorDrv(24, 23, motorInformationY);
+			var motorLocatorY = new MotorLocator(stepCountPinY, stepClearPinY, motorDriverY);
+			var positionSignalerY = new PositionSignaler(motorLocatorY);
+
 			var topInterrupterX = new PhotoInterrupter(17, 1);
 			var bottomInterrupterX = new PhotoInterrupter(27, -1);
 			var topInterrupterY = new PhotoInterrupter(25, 1);
 			var bottomInterrupterY = new PhotoInterrupter(22, -1);
 
-			var calXMover = new CalibratedMotorMoverOld(Axis.X, 23, -23, 3, motorDriverX, stepCounterX, topInterrupterX, bottomInterrupterX);
-			var calYMover = new CalibratedMotorMoverOld(Axis.Y, 17, -17, 3, motorDriverY, stepCounterY, topInterrupterY, bottomInterrupterY);
+			//			var calXMover = new CalibratedMotorMoverOld(Axis.X, 23, -23, 3, motorDriverX, positionSignalerX, topInterrupterX, bottomInterrupterX);
+			//			var calYMover = new CalibratedMotorMoverOld(Axis.Y, 17, -17, 3, motorDriverY, positionSignalerY, topInterrupterY, bottomInterrupterY);
 
-			var magnetDriver = new MagnetDrv(26);
+			//			var magnetDriver = new MagnetDrv(26);
 
-			var movePerformer = new MovePerformer(calXMover, calYMover, magnetDriver);
-			var motorCalibrationTask = movePerformer.CalibrateAsync();
+			//			var movePerformer = new MovePerformer(calXMover, calYMover, magnetDriver);
+			//			var motorCalibrationTask = movePerformer.CalibrateAsync();
 
-			var movePlanner = new MovePlanner(logic.Board);
+			//			var movePlanner = new MovePlanner(logic.Board);
 
-			var moveManager = new MoveManager(movePlanner, movePerformer);
+			//			var moveManager = new MoveManager(movePlanner, movePerformer);
 
-			GameManager manager = new GameManager(await commandInterpreterConstructor, logic, moveManager);
+			//			GameManager manager = new GameManager(await commandInterpreterConstructor, logic, moveManager);
 
-			await motorCalibrationTask;
-#if DEBUG
-			manager.DebugMovePerformer = movePerformer;
-#endif
-			return manager;
+			//			await motorCalibrationTask;
+			//#if DEBUG
+			//			manager.DebugMovePerformer = movePerformer;
+			//#endif
+			//			return manager
+			return null;
 		}
 
 		public async Task<GameState> PlayGameAsync()

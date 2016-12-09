@@ -11,9 +11,10 @@ namespace WizardsChess.Movement
 {
 	public class MotorLocator : IMotorLocator
 	{
-		public MotorLocator(IGpioPin counter, IMotorDrv motor)
+		public MotorLocator(IGpioPin counter, IGpioPin clearCounter, IMotorDrv motor)
 		{
 			stepCounter = counter;
+			clearCounterPin = clearCounter;
 			motorDrv = motor;
 			position = 0;
 			lastMoveDirection = MoveDirection.Stopped;
@@ -38,6 +39,7 @@ namespace WizardsChess.Movement
 		private volatile int position;
 		private volatile MoveDirection lastMoveDirection;
 		private IGpioPin stepCounter;
+		private IGpioPin clearCounterPin;
 		private IMotorDrv motorDrv;
 		private object lockObject = new object();
 

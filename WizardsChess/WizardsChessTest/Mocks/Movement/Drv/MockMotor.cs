@@ -12,12 +12,20 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 {
 	class MockMotor : MockGpio, IMotorDrv
 	{
-		public MockMotor() : base()
+		private MockMotor() : base()
 		{
 			direction = MoveDirection.Stopped;
 			previousDirection = MoveDirection.Stopped;
 			NumTicks = 0;
 			timer = new Timer(motorTick, null, Timeout.Infinite, Timeout.Infinite);
+		}
+
+		public static MockMotor Create()
+		{
+			var motor = new MockMotor();
+			var info = new MotorInformation(Axis.X, motor);
+			motor.Information = info;
+			return motor;
 		}
 
 		public MoveDirection Direction
@@ -61,6 +69,16 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 			get; set;
 		}
 
+		public IMotorInformation Information
+		{
+			get { return information; }
+			set
+			{
+				information = value as MotorInformation;
+			}
+		}
+
+
 		public MoveDirection GetLatestActiveMoveDirection()
 		{
 			lock(lockObject)
@@ -80,11 +98,12 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 		{
 			if (direction != MoveDirection.Stopped)
 			{
+				information.SetDirection(direction);
 				runTheMotor();
 			}
 			else
 			{
-				Task.Delay(200).ContinueWith((prev) => {
+				Task.Delay(150).ContinueWith((prev) => {
 					timer.Change(Timeout.Infinite, Timeout.Infinite);
 				});
 			}
@@ -92,6 +111,7 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 
 		private MoveDirection direction;
 		private MoveDirection previousDirection;
+		private MotorInformation information;
 		private Timer timer;
 		private object lockObject = new object();
 

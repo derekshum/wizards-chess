@@ -10,7 +10,7 @@ namespace WizardsChess.Movement
 {
 	public class MovePerformer : IMovePerformer
 	{
-		public MovePerformer(CalibratedMotorMoverOld calXMover, CalibratedMotorMoverOld calYMover, IMagnetDrv magnetDrv)
+		public MovePerformer(IMotorMover calXMover, IMotorMover calYMover, IMagnetDrv magnetDrv)
 		{
 			xMover = calXMover;
 			yMover = calYMover;
@@ -23,19 +23,17 @@ namespace WizardsChess.Movement
 			var start = steps[0];
 			steps.RemoveAt(0);
 
-			var startVector = convertAbsoluteToRelative(start);
-			System.Diagnostics.Debug.WriteLine($"MovePerformer sending relative move {startVector}");
-			await xMover.MoveAsync(startVector.X);
-			await yMover.MoveAsync(startVector.Y);
+			System.Diagnostics.Debug.WriteLine($"MovePerformer sending move {start}");
+			await xMover.GoToPositionAsync(start.X, TimeSpan.FromMilliseconds(3 * start.X));
+			await yMover.GoToPositionAsync(start.Y, TimeSpan.FromMilliseconds(3 * start.Y));
 
 			magnet.TurnOn();
 
 			foreach(var point in steps)
 			{
-				var moveVector = convertAbsoluteToRelative(point);
-				System.Diagnostics.Debug.WriteLine($"MovePerformer sending relative move {moveVector}");
-				await xMover.MoveAsync(moveVector.X);
-				await yMover.MoveAsync(moveVector.Y);
+				System.Diagnostics.Debug.WriteLine($"MovePerformer sending move {point}");
+				await xMover.GoToPositionAsync(point.X, TimeSpan.FromMilliseconds(3 * point.X));
+				await yMover.GoToPositionAsync(point.Y, TimeSpan.FromMilliseconds(3 * point.Y));
 			}
 
 			magnet.TurnOff();
@@ -45,12 +43,12 @@ namespace WizardsChess.Movement
 		{
 			switch (axis)
 			{
-				case Axis.X:
-					await xMover.MoveAsync(gridUnits);
-					break;
-				case Axis.Y:
-					await yMover.MoveAsync(gridUnits);
-					break;
+				//case Axis.X:
+				//	await xMover.MoveAsync(gridUnits);
+				//	break;
+				//case Axis.Y:
+				//	await yMover.MoveAsync(gridUnits);
+				//	break;
 				default:
 					System.Diagnostics.Debug.WriteLine("MovePerformer.MoveMotor() received an invalid axis.");
 					break;
@@ -59,14 +57,14 @@ namespace WizardsChess.Movement
 
 		public async Task GoHomeAsync()
 		{
-			await xMover.MoveAsync(-xMover.GridPosition);
-			await yMover.MoveAsync(-yMover.GridPosition);
+			await xMover.GoToPositionAsync(0, TimeSpan.FromMilliseconds(0));
+			await yMover.GoToPositionAsync(0, TimeSpan.FromMilliseconds(0));
 		}
 
 		public async Task CalibrateAsync()
 		{
-			await xMover.CalibrateAsync();
-			await yMover.CalibrateAsync();
+			//await xMover.CalibrateAsync();
+			//await yMover.CalibrateAsync();
 			await GoHomeAsync();
 		}
 
@@ -82,15 +80,8 @@ namespace WizardsChess.Movement
 			}
 		}
 
-		private Vector2D convertAbsoluteToRelative(Point2D absoluteEnd)
-		{
-			int xDiff = absoluteEnd.X - xMover.GridPosition;
-			int yDiff = absoluteEnd.Y - yMover.GridPosition;
-			return new Vector2D(xDiff, yDiff);
-		}
-
-		private CalibratedMotorMoverOld xMover;
-		private CalibratedMotorMoverOld yMover;
+		private IMotorMover xMover;
+		private IMotorMover yMover;
 		private IMagnetDrv magnet;
 	}
 }

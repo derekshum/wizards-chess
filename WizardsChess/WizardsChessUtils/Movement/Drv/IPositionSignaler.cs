@@ -15,7 +15,6 @@ namespace WizardsChess.Movement.Drv
 		void CancelSignal();
 
 		event PositionChangedEventHandler FinishedCounting;
-		event PositionChangedEventHandler AdditionalStepsCounted;
 		event PositionChangedEventHandler MoveTimedOut;
 	}
 
