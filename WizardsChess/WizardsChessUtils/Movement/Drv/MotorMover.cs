@@ -31,35 +31,31 @@ namespace WizardsChess.Movement.Drv
 			state = MoverState.Ready;
 		}
 
-		public async Task GoToPositionAsync(int position)
+		public async Task<int> GoToPositionAsync(int targetPosition)
 		{
 			lock (lockObject)
 			{
+				if (state != MoverState.Ready)
+				{
+					resetState();
+				}
 				state = MoverState.PerformingMove;
 			}
-			await goToPositionAsync(position);
-			lock (lockObject)
-			{
-				if (isMoveCanceled())
-				{
-					return;
-				}
-				state = MoverState.Adjusting;
-			}
-			await adjustIfNecessary(position);
+			await goToPositionAsync(targetPosition);
 			lock (lockObject)
 			{
 				state = MoverState.Ready;
 			}
+			return locator.Position;
 		}
 
 		public void CancelMove()
 		{
+			motor.Direction = MoveDirection.Stopped;
+
 			lock (lockObject)
 			{
-				signaler.CancelSignal();
-				isMoving = false;
-				state = MoverState.Ready;
+				resetState();
 			}
 		}
 
@@ -71,6 +67,13 @@ namespace WizardsChess.Movement.Drv
 		private IMotorLocator locator;
 		private IMotorDrv motor;
 
+		private void resetState()
+		{
+			signaler.CancelSignal();
+			isMoving = false;
+			state = MoverState.Ready;
+		}
+
 		private async Task goToPositionAsync(int position)
 		{
 			if (isAtPosition(position))
@@ -78,19 +81,23 @@ namespace WizardsChess.Movement.Drv
 				return;
 			}
 
-			// TODO: MOVE
-
-			await waitForMoveToFinishAsync();
-		}
-
-		private async Task adjustIfNecessary(int position)
-		{
-			if (isAtPosition(position))
+			var offset = position - locator.Position;
+			if (offset == 0)
 			{
+				// We are now somehow at the desired position. 
+				// Shouldn't happen, but we can return if it does.
 				return;
 			}
 
-			// TODO: MOVE
+			signaler.CountToPosition(position, TimeSpan.FromMilliseconds(position * 4));
+			if (offset < 0)
+			{
+				motor.Direction = MoveDirection.Backward;
+			}
+			else
+			{
+				motor.Direction = MoveDirection.Forward;
+			}
 
 			await waitForMoveToFinishAsync();
 		}
@@ -124,13 +131,16 @@ namespace WizardsChess.Movement.Drv
 
 		private void finishedCounting(object sender, PositionChangedEventArgs e)
 		{
+			motor.Direction = MoveDirection.Stopped;
+
 			lock (lockObject)
 			{
 				if (isMoveCanceled())
+				{
 					return;
-
-				System.Diagnostics.Debug.WriteLine("Finished counting");
+				}
 			}
+			System.Diagnostics.Debug.WriteLine("Finished counting.");
 		}
 
 		private void additionalStepsCounted(object sender, PositionChangedEventArgs e)
@@ -138,21 +148,29 @@ namespace WizardsChess.Movement.Drv
 			lock (lockObject)
 			{
 				if (isMoveCanceled())
+				{
 					return;
+				}
 
-				System.Diagnostics.Debug.WriteLine("Additional steps");
+				isMoving = false;
 			}
+			System.Diagnostics.Debug.WriteLine("Additional steps counted.");
 		}
 
 		private void moveTimedOut(object sender, PositionChangedEventArgs e)
 		{
+			motor.Direction = MoveDirection.Stopped;
+
 			lock (lockObject)
 			{
 				if (isMoveCanceled())
+				{
 					return;
+				}
 
-				System.Diagnostics.Debug.WriteLine("Move timed out");
+				isMoving = false;
 			}
+			System.Diagnostics.Debug.WriteLine("Move timed out");
 		}
 	}
 }

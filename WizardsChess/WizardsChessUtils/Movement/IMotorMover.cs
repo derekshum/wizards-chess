@@ -8,6 +8,12 @@ namespace WizardsChess.Movement
 {
 	public interface IMotorMover
 	{
-		Task GoToPositionAsync(int position);
+		/// <summary>
+		/// Drive the motor up to the given position, then stop. 
+		/// Does not return until the motor is completely stopped.
+		/// </summary>
+		/// <param name="position">The target position to drive the motor to. Not necessarily where the motor stops.</param>
+		/// <returns>The position when the motor stops.</returns>
+		Task<int> GoToPositionAsync(int position);
 	}
 }
