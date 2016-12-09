@@ -51,8 +51,8 @@ namespace WizardsChess.Movement.Drv
 				case CounterState.Ready:
 					if (targetPosition == motorLocator.Position)
 					{
-						onTargetReached();
-						onAdditionalStepsCounted();
+						onTargetReached(motorLocator.Position, motorLocator.LastMoveDirection);
+						onAdditionalStepsCounted(motorLocator.Position, motorLocator.LastMoveDirection);
 						return;
 					}
 					break;
@@ -69,14 +69,17 @@ namespace WizardsChess.Movement.Drv
 
 		protected virtual void positionChanged(object locator, PositionChangedEventArgs args)
 		{
-			if (state == CounterState.Counting && args.Position == targetPosition)
+			if (state == CounterState.Counting)
 			{
-				state = CounterState.WaitingForExtraSteps;
-				onTargetReached();
-			}
-			else if (state == CounterState.WaitingForExtraSteps)
-			{
-				sendAdditionalSteps();
+				if (args.Position == targetPosition
+					|| (args.Direction == MoveDirection.Forward && args.Position > targetPosition)
+					|| (args.Direction == MoveDirection.Backward && args.Position < targetPosition))
+				{
+					state = CounterState.WaitingForExtraSteps;
+					onTargetReached(args.Position, args.Direction);
+					// Prepare to send extra steps here so it is guaranteed to send even if the motor stalls
+					sendAdditionalSteps();
+				}
 			}
 		}
 
@@ -86,24 +89,24 @@ namespace WizardsChess.Movement.Drv
 			{
 				additionalStepsCallback = Task.Delay(800);
 				additionalStepsCallback.ContinueWith((prev) => {
-					onAdditionalStepsCounted();
+					onAdditionalStepsCounted(motorLocator.Position, motorLocator.LastMoveDirection);
 				});
 			}
 		}
 
-		private void onTargetReached()
+		private void onTargetReached(int position, MoveDirection direction)
 		{
-			FinishedCounting?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position));
+			FinishedCounting?.Invoke(this, new PositionChangedEventArgs(position, direction));
 		}
 
-		private void onAdditionalStepsCounted()
+		private void onAdditionalStepsCounted(int position, MoveDirection direction)
 		{
 			if (isAdditionalStepsCanceled)
 			{
 				isAdditionalStepsCanceled = false;
 				return;
 			}
-			AdditionalStepsCounted?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position));
+			AdditionalStepsCounted?.Invoke(this, new PositionChangedEventArgs(position, direction));
 		}
 
 		private void onMoveTimeOut()
@@ -113,7 +116,7 @@ namespace WizardsChess.Movement.Drv
 				return;
 			}
 
-			MoveTimedOut?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position));
+			MoveTimedOut?.Invoke(this, new PositionChangedEventArgs(motorLocator.Position, motorLocator.LastMoveDirection));
 		}
 
 		private volatile CounterState state;

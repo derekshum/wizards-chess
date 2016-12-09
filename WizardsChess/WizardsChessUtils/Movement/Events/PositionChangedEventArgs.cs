@@ -9,10 +9,12 @@ namespace WizardsChess.Movement.Events
 	public class PositionChangedEventArgs : EventArgs
 	{
 		public int Position { get; }
+		public MoveDirection Direction { get; }
 
-		public PositionChangedEventArgs(int pos)
+		public PositionChangedEventArgs(int pos, MoveDirection direction)
 		{
 			Position = pos;
+			Direction = direction;
 		}
 	}
 }

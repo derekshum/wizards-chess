@@ -16,11 +16,13 @@ namespace WizardsChess.Movement
 			stepCounter = counter;
 			motorDrv = motor;
 			position = 0;
+			lastMoveDirection = MoveDirection.Stopped;
 
 			stepCounter.ValueChanged += pinValueChanged;
 		}
 
 		public int Position { get { return position; } }
+		public MoveDirection LastMoveDirection { get { return lastMoveDirection; } }
 
 		public event PositionChangedEventHandler PositionChanged;
 
@@ -28,11 +30,13 @@ namespace WizardsChess.Movement
 		{
 			lock (lockObject)
 			{
+				// Doesn't affect lastMoveDirection because this is a calibration, not a real motor move.
 				position += shift;
 			}
 		}
 
 		private volatile int position;
+		private volatile MoveDirection lastMoveDirection;
 		private IGpioPin stepCounter;
 		private IMotorDrv motorDrv;
 		private object lockObject = new object();
@@ -43,18 +47,20 @@ namespace WizardsChess.Movement
 			{
 				// If motor hasn't move and latestActiveMoveDirection is still Stopped, this will not impact anything because the Stopped value is 0.
 				var pos = 0;
+				var direction = motorDrv.GetLatestActiveMoveDirection();
 				lock (lockObject)
 				{
-					position += (int)motorDrv.GetLatestActiveMoveDirection();
+					lastMoveDirection = direction;
+					position += (int)direction;
 					pos = position;
 				}
-				onStepCounted(pos);
+				onStepCounted(pos, direction);
 			}
 		}
 
-		private void onStepCounted(int pos)
+		private void onStepCounted(int pos, MoveDirection direction)
 		{
-			PositionChanged?.Invoke(this, new PositionChangedEventArgs(pos));
+			PositionChanged?.Invoke(this, new PositionChangedEventArgs(pos, direction));
 		}
 	}
 }

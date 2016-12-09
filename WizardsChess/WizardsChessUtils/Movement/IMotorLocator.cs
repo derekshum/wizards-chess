@@ -10,6 +10,7 @@ namespace WizardsChess.Movement
 	public interface IMotorLocator
 	{
 		int Position { get; }
+		MoveDirection LastMoveDirection { get; }
 
 		void ShiftPosition(int shift);
 
