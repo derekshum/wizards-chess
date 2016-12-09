@@ -57,6 +57,26 @@ namespace WizardsChessTest.Mocks.Movement
 			Assert.IsTrue(finalPos < targetPos, $"Motor final position {finalPos} did not make sense with target {targetPos}.");
 		}
 
+		[TestMethod]
+		public void TestMotorStall()
+		{
+			constructMotorMover();
+
+			int targetPos = 300;
+			var moveTask = motorMover.GoToPositionAsync(targetPos, convertToTimeout(targetPos));
+			Task.Delay(60).Wait();
+			mockMotor.Direction = MoveDirection.Stopped;
+			while (mockMotor.Information.Direction != MoveDirection.Stopped)
+			{
+				Task.Delay(30).Wait();
+			}
+			Task.Delay(30).Wait();
+			Assert.IsTrue(moveTask.IsCompleted, "Move task did not end after cancellation.");
+			int finalPos = moveTask.Result;
+			Assert.IsTrue(finalPos != targetPos, "Counted all the way to the target position instead of stalling.");
+			Assert.AreEqual(motorLocator.Position, finalPos, "MotorLocator position did not match finalPos");
+		}
+
 		private IMotorMover motorMover;
 		private IMotorLocator motorLocator;
 		private IPositionSignaler positionSignaler;
