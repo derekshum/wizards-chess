@@ -54,6 +54,9 @@
     <Compile Include="Chess\Pieces\Rook.cs" />
     <Compile Include="Chess\PieceType.cs" />
     <Compile Include="Chess\Position.cs" />
+    <Compile Include="Movement\GridMotorMover.cs" />
+    <Compile Include="Movement\IGridMotorMover.cs" />
+    <Compile Include="Movement\IPreciseMotorMover.cs" />
     <Compile Include="Movement\Axis.cs" />
     <Compile Include="Movement\CalibratedMotorMoverOld.cs" />
     <Compile Include="Movement\Drv\Events\GpioValueChangedEventArgs.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="Movement\MoveDirection.cs" />
     <Compile Include="Movement\MoveManager.cs" />
     <Compile Include="Movement\MovePerformer.cs" />
+    <Compile Include="Movement\PreciseMotorMover.cs" />
     <Compile Include="VoiceControl\Commands\Command.cs" />
     <Compile Include="VoiceControl\Commands\CommandFamily.cs" />
     <Compile Include="VoiceControl\Commands\CommandType.cs" />

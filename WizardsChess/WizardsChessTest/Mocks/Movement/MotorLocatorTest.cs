@@ -14,7 +14,7 @@ namespace WizardsChessTest.Mocks.Movement
 		public void TestMotorLocatorForwardMove()
 		{
 			var mockMotor = MockMotor.Create();
-			var locator = new MotorLocator(mockMotor, new MockGpio(), mockMotor);
+			var locator = new MotorLocator(new MockGpio(), mockMotor.Information);
 
 			mockMotor.Direction = MoveDirection.Forward;
 
@@ -31,7 +31,7 @@ namespace WizardsChessTest.Mocks.Movement
 		public void TestMotorLocatorBackwardMove()
 		{
 			var mockMotor = MockMotor.Create();
-			var locator = new MotorLocator(mockMotor, new MockGpio(), mockMotor);
+			var locator = new MotorLocator(new MockGpio(), mockMotor.Information);
 
 			mockMotor.Direction = MoveDirection.Backward;
 
@@ -48,7 +48,7 @@ namespace WizardsChessTest.Mocks.Movement
 		public void TestMotorLocatorForwardShiftBackwardMove()
 		{
 			var mockMotor = MockMotor.Create();
-			var locator = new MotorLocator(mockMotor, new MockGpio(), mockMotor);
+			var locator = new MotorLocator(new MockGpio(), mockMotor.Information);
 
 			mockMotor.Direction = MoveDirection.Forward;
 

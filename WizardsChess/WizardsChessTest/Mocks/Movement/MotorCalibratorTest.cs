@@ -87,12 +87,12 @@ namespace WizardsChessTest.Mocks.Movement
 		private void setup()
 		{
 			mockMotor = MockMotor.Create();
-			locator = new MotorLocator(mockMotor, new MockGpio(), mockMotor);
+			locator = new MotorLocator(new MockGpio(), mockMotor.Information);
 			signaler = new PositionSignaler(locator);
-			mover = new MotorMover(signaler, locator, mockMotor);
+			mover = new MotorMover(3, signaler, locator, mockMotor);
 			topInterrupt = new MockPhotoInterrupter(1, lowerTopIntPos, upperTopIntPos, locator, mockMotor);
 			bottomInterrupt = new MockPhotoInterrupter(-1, lowerBottomIntPos, upperBottomIntPos, locator, mockMotor);
-			calibrator = new MotorCalibrator(-5, 5, mover, locator, mockMotor.Information, topInterrupt, bottomInterrupt);
+			calibrator = new MotorCalibrator(-5, 5, mover, mockMotor.Information, topInterrupt, bottomInterrupt);
 		}
 
 		private void checkResults()

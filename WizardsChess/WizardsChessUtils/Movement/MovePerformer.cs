@@ -5,16 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Movement.Drv;
 using WizardsChess.Movement.Drv.Events;
+using WizardsChess.Movement.Exceptions;
 
 namespace WizardsChess.Movement
 {
 	public class MovePerformer : IMovePerformer
 	{
-		public MovePerformer(IMotorMover calXMover, IMotorMover calYMover, IMagnetDrv magnetDrv)
+		public MovePerformer(IGridMotorMover xMtrMover, IGridMotorMover yMtrMover, IMagnetDrv magnetDrv)
 		{
-			xMover = calXMover;
-			yMover = calYMover;
-
+			xMover = xMtrMover;
+			yMover = yMtrMover;
 			magnet = magnetDrv;
 		}
 
@@ -24,47 +24,37 @@ namespace WizardsChess.Movement
 			steps.RemoveAt(0);
 
 			System.Diagnostics.Debug.WriteLine($"MovePerformer sending move {start}");
-			await xMover.GoToPositionAsync(start.X);
-			await yMover.GoToPositionAsync(start.Y);
+			await tryToMoveAsync(xMover, start.X);
+			await tryToMoveAsync(yMover, start.Y);
 
 			magnet.TurnOn();
 
 			foreach(var point in steps)
 			{
 				System.Diagnostics.Debug.WriteLine($"MovePerformer sending move {point}");
-				await xMover.GoToPositionAsync(point.X);
-				await yMover.GoToPositionAsync(point.Y);
+				await tryToMoveAsync(xMover, point.X);
+				await tryToMoveAsync(yMover, point.Y);
 			}
 
 			magnet.TurnOff();
 		}
 
-		public async Task MoveMotorAsync(Axis axis, int gridUnits)
+		public Task MoveMotorAsync(Axis axis, int gridUnits)
 		{
-			switch (axis)
-			{
-				//case Axis.X:
-				//	await xMover.MoveAsync(gridUnits);
-				//	break;
-				//case Axis.Y:
-				//	await yMover.MoveAsync(gridUnits);
-				//	break;
-				default:
-					System.Diagnostics.Debug.WriteLine("MovePerformer.MoveMotor() received an invalid axis.");
-					break;
-			}
+			System.Diagnostics.Debug.WriteLine("MovePerformer can't perform direct grid moves.");
+			return Task.FromResult(0);
 		}
 
 		public async Task GoHomeAsync()
 		{
-			await xMover.GoToPositionAsync(0);
-			await yMover.GoToPositionAsync(0);
+			await tryToMoveAsync(xMover, 0);
+			await tryToMoveAsync(yMover, 0);
 		}
 
 		public async Task CalibrateAsync()
 		{
-			//await xMover.CalibrateAsync();
-			//await yMover.CalibrateAsync();
+			await xMover.CalibrateAsync();
+			await yMover.CalibrateAsync();
 			await GoHomeAsync();
 		}
 
@@ -80,8 +70,51 @@ namespace WizardsChess.Movement
 			}
 		}
 
-		private IMotorMover xMover;
-		private IMotorMover yMover;
+		private IGridMotorMover xMover;
+		private IGridMotorMover yMover;
 		private IMagnetDrv magnet;
+
+		private async Task tryToMoveAsync(IGridMotorMover mover, int desiredGridPosition)
+		{
+			var previousPosition = mover.GridPosition;
+			try
+			{
+				await mover.GoToPositionAsync(desiredGridPosition);
+			}
+			catch (CalibrationException)
+			{
+				await calibrateAndRetry(mover, previousPosition, desiredGridPosition);
+			}
+		}
+
+		private async Task calibrateAndRetry(IGridMotorMover mover, int previousPos, int desiredGridPos)
+		{
+			if (magnet.IsOn)
+			{
+				magnet.TurnOff();
+			}
+			await mover.CalibrateAsync();
+			try
+			{
+				await mover.GoToPositionAsync(previousPos);
+			}
+			catch (CalibrationException)
+			{
+				System.Diagnostics.Debug.WriteLine("Threw another CalibrationException on move despite recalibrating.");
+			}
+
+			if (magnet.IsOn)
+			{
+				magnet.TurnOn();
+			}
+			try
+			{
+				await mover.GoToPositionAsync(desiredGridPos);
+			}
+			catch(CalibrationException)
+			{
+				System.Diagnostics.Debug.WriteLine("Threw another CalibrationException on move despite recalibrating.");
+			}
+		}
 	}
 }

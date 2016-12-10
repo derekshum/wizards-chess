@@ -19,7 +19,7 @@ namespace WizardsChessTest.Mocks.Movement
 		public void TestPositionSignalerConstruction()
 		{
 			mockMotor = MockMotor.Create();
-			motorLocator = new MotorLocator(mockMotor, new MockGpio(), mockMotor);
+			motorLocator = new MotorLocator(new MockGpio(), mockMotor.Information);
 			positionSignaler = new PositionSignaler(motorLocator);
 
 			positionSignaler.ReachedPosition += finishedCounting;
