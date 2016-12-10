@@ -9,7 +9,7 @@ using WizardsChess.Movement.Events;
 
 namespace WizardsChess.Movement
 {
-	public class MotorLocator : IMotorLocator
+	public class MotorLocator : IMotorLocator, IDisposable
 	{
 		public MotorLocator(IGpioPin counter, IGpioPin clearCounter, IMotorDrv motor)
 		{
@@ -64,5 +64,29 @@ namespace WizardsChess.Movement
 		{
 			PositionChanged?.Invoke(this, new PositionChangedEventArgs(pos, direction));
 		}
+
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					stepCounter.ValueChanged -= pinValueChanged;
+				}
+
+				disposedValue = true;
+			}
+		}
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+		}
+		#endregion
 	}
 }

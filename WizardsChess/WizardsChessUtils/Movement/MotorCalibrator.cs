@@ -8,7 +8,7 @@ using WizardsChess.Movement.Drv.Events;
 
 namespace WizardsChess.Movement
 {
-	public class MotorCalibrator : IMotorCalibrator
+	public class MotorCalibrator : IMotorCalibrator, IDisposable
 	{
 		public MotorCalibrator(int gridMinValue, int gridMaxValue
 			, IMotorMover motorMover, IMotorLocator motorLocator, IMotorInformation motorInformation
@@ -23,8 +23,8 @@ namespace WizardsChess.Movement
 			top = topInterupter;
 			bottom = bottomInterrupter;
 
-			top.ValueChanged += onTopInterrupt;
-			bottom.ValueChanged += onBottomInterrupt;
+			top.ValueChanged += topInterruptDetected;
+			bottom.ValueChanged += bottomInterruptDetected;
 
 			// Estimate the steps per grid unit
 			StepsPerGridUnit = (float)(top.StepPosition - bottom.StepPosition) / (top.GridPosition - bottom.GridPosition);
@@ -143,7 +143,7 @@ namespace WizardsChess.Movement
 			updateStepsPerGridUnit();
 		}
 
-		private void onTopInterrupt(object sender, GpioValueChangedEventArgs e)
+		private void topInterruptDetected(object sender, GpioValueChangedEventArgs e)
 		{
 			var pos = locator.Position;
 			switch (State)
@@ -205,7 +205,7 @@ namespace WizardsChess.Movement
 			}
 		}
 
-		private void onBottomInterrupt(object sender, GpioValueChangedEventArgs e)
+		private void bottomInterruptDetected(object sender, GpioValueChangedEventArgs e)
 		{
 			var pos = locator.Position;
 			switch (State)
@@ -266,5 +266,30 @@ namespace WizardsChess.Movement
 					break;
 			}
 		}
+
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					top.ValueChanged -= topInterruptDetected;
+					bottom.ValueChanged -= bottomInterruptDetected;
+				}
+
+				disposedValue = true;
+			}
+		}
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+		}
+		#endregion
 	}
 }

@@ -16,7 +16,7 @@ namespace WizardsChess.Movement
 		PerformingMove
 	}
 
-	public class MotorMover : IMotorMover
+	public class MotorMover : IMotorMover, IDisposable
 	{
 		public MotorMover(IPositionSignaler posSignaler, IMotorLocator motorLocator, IMotorDrv motorDrv)
 		{
@@ -25,7 +25,7 @@ namespace WizardsChess.Movement
 			motor = motorDrv;
 
 			signaler.ReachedPosition += finishedCounting;
-			motorDrv.Information.DirectionChanged += directionChanged;
+			motor.Information.DirectionChanged += directionChanged;
 
 			isMoving = false;
 			state = MoverState.Ready;
@@ -166,5 +166,30 @@ namespace WizardsChess.Movement
 				System.Diagnostics.Debug.WriteLine($"{motor.Information.Axis} motor has stopped.");
 			}
 		}
+
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					signaler.ReachedPosition -= finishedCounting;
+					motor.Information.DirectionChanged -= directionChanged;
+				}
+
+				disposedValue = true;
+			}
+		}
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+		}
+		#endregion
 	}
 }
