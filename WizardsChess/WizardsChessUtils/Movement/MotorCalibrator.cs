@@ -7,14 +7,7 @@ using WizardsChess.Movement.Drv;
 
 namespace WizardsChess.Movement
 {
-	public enum CalibrationState
-	{
-		Ready,
-		NeedsCalibrating,
-		Calibrating
-	}
-
-	public class MotorCalibrator
+	public class MotorCalibrator : IMotorCalibrator
 	{
 		public MotorCalibrator(int gridMinValue, int gridMaxValue
 			, IMotorMover motorMover, IMotorLocator motorLocator

@@ -60,6 +60,7 @@
     <Compile Include="Movement\Drv\Events\MotorDirectionChangedEventArgs.cs" />
     <Compile Include="Movement\Drv\IMotorInformation.cs" />
     <Compile Include="Movement\Drv\MotorInformation.cs" />
+    <Compile Include="Movement\IMotorCalibrator.cs" />
     <Compile Include="Movement\MotorMover.cs" />
     <Compile Include="Movement\Events\PositionChangedEventArgs.cs" />
     <Compile Include="Movement\Events\StepEventArgs.cs" />
