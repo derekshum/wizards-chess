@@ -68,8 +68,8 @@
     <Compile Include="Movement\Drv\IMagnetDrv.cs" />
     <Compile Include="Movement\Drv\IMotorDrv.cs" />
     <Compile Include="Movement\Drv\IPhotoInterrupter.cs" />
-    <Compile Include="Movement\Drv\IPositionSignaler.cs" />
-    <Compile Include="Movement\Drv\PositionSignaler.cs" />
+    <Compile Include="Movement\IPositionSignaler.cs" />
+    <Compile Include="Movement\PositionSignaler.cs" />
     <Compile Include="Movement\Exceptions\CalibrationException.cs" />
     <Compile Include="Movement\IMotorLocator.cs" />
     <Compile Include="Movement\IMotorMover.cs" />

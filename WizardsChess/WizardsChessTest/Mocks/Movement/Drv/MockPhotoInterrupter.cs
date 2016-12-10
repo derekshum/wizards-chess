@@ -20,8 +20,8 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 		{
 			GridPosition = gridPosition;
 			StepPosition = (upperMotorStepPosition + lowerMotorStepPosition) / 2;
-			upperStepPosition = upperMotorStepPosition;
-			lowerStepPosition = lowerMotorStepPosition;
+			UpperStepPosition = upperMotorStepPosition;
+			LowerStepPosition = lowerMotorStepPosition;
 
 			value = GpioValue.High;
 
@@ -30,14 +30,14 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 			locator.PositionChanged += positionChanged;
 		}
 
-		private int upperStepPosition;
-		private int lowerStepPosition;
+		public int UpperStepPosition;
+		public int LowerStepPosition;
 		private IMotorLocator locator;
 		private MockMotor motor;
 		
 		private void positionChanged(object sender, PositionChangedEventArgs e)
 		{
-			if (locator.Position == lowerStepPosition)
+			if (locator.Position == LowerStepPosition)
 			{
 				if (motor.Direction == MoveDirection.Forward)
 				{
@@ -48,7 +48,7 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 					value = GpioValue.High;
 				}
 			}
-			else if (locator.Position == upperStepPosition)
+			else if (locator.Position == UpperStepPosition)
 			{
 				if (motor.Direction == MoveDirection.Forward)
 				{

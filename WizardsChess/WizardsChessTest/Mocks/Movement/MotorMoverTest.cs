@@ -54,7 +54,7 @@ namespace WizardsChessTest.Mocks.Movement
 			{
 				Task.Delay(30).Wait();
 			}
-			Task.Delay(30).Wait();
+			Task.Delay(45).Wait();
 			Assert.IsTrue(moveTask.IsCompleted, "Move task did not end after cancellation.");
 			int finalPos = moveTask.Result;
 			Assert.AreEqual(motorLocator.Position, finalPos, $"Motor mover result {finalPos} does not match motorLocator position {motorLocator.Position}");

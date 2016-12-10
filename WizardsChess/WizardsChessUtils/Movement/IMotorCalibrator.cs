@@ -10,6 +10,7 @@ namespace WizardsChess.Movement
 	{
 		Ready,
 		NeedsCalibrating,
+		PreparingToCalibrate,
 		Calibrating
 	}
 

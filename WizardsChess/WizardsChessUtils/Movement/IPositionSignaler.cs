@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Movement.Drv.Events;
 
-namespace WizardsChess.Movement.Drv
+namespace WizardsChess.Movement
 {
 	public interface IPositionSignaler
 	{

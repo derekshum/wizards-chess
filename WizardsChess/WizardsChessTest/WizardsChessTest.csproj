@@ -66,6 +66,7 @@
     <Compile Include="Mocks\Movement\Drv\MockMotorTest.cs" />
     <Compile Include="Mocks\Movement\Drv\MockPhotoInterrupter.cs" />
     <Compile Include="Mocks\Movement\Drv\MockMotor.cs" />
+    <Compile Include="Mocks\Movement\MotorCalibratorTest.cs" />
     <Compile Include="Mocks\Movement\MotorLocatorTest.cs" />
     <Compile Include="Mocks\Movement\MotorMoverTest.cs" />
     <Compile Include="Mocks\Movement\PositionSignalerTest.cs" />

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using WizardsChess.Movement.Drv.Events;
 using WizardsChess.Movement.Events;
 
-namespace WizardsChess.Movement.Drv
+namespace WizardsChess.Movement
 {
 	enum CounterState
 	{
