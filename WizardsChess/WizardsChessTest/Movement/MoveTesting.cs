@@ -22,12 +22,31 @@ namespace WizardsChessTest.Movement
 		public void TestMoveComponentCompilation()
 		{
 			ChessLogic logic = new ChessLogic();
-			var movePlanner = new MovePlanner(logic.Board);
-			var xMover = constructMover();
-			var yMover = constructMover();
+			movePlanner = new MovePlanner(logic.Board);
+			xGridMover = constructMover();
+			yGridMover = constructMover();
 			var magnet = new MockMagnet();
-			var moveManager = new MoveManager(movePlanner, new MovePerformer(xMover, yMover, magnet));
+			movePerformer = new MovePerformer(xGridMover, yGridMover, magnet);
+			moveManager = new MoveManager(movePlanner, movePerformer);
 		}
+
+		[TestMethod]
+		public void TestMoveManagerMove()
+		{
+			TestMoveComponentCompilation();
+
+			moveManager.MoveAsync(new Point2D(-1, -1), new Point2D(2, 1));
+			Assert.AreEqual(xGridMover.GridPosition, 0, "The xMotor didn't return to position zero after a move.");
+			Assert.AreEqual(yGridMover.GridPosition, 0, "The yMotor didn't return to position zero after a move.");
+		}
+
+		private IPreciseMotorMover xMover;
+		private IPreciseMotorMover yMover;
+		private IGridMotorMover xGridMover;
+		private IGridMotorMover yGridMover;
+		private IMovePerformer movePerformer;
+		private IMovePlanner movePlanner;
+		private IMoveManager moveManager;
 
 		private IGridMotorMover constructMover()
 		{
