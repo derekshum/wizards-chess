@@ -120,8 +120,6 @@ namespace WizardsChessTest.Mocks.Movement
 		private PositionSignaler positionSignaler;
 
 		private int positionOnTargetReached;
-		private bool isTimeoutExpected;
-		private bool timeoutOccurred;
 
 		private bool isCounting;
 		private bool isPassing;
@@ -155,9 +153,7 @@ namespace WizardsChessTest.Mocks.Movement
 
 		private void resetTestVariables()
 		{
-			isTimeoutExpected = false;
 			isPassing = true;
-			timeoutOccurred = false;
 		}
 
 		private void assert(bool pass, string message)
