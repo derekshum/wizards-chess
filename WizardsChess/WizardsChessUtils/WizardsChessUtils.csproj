@@ -56,35 +56,35 @@
     <Compile Include="Chess\Position.cs" />
     <Compile Include="Movement\GridMotorMover.cs" />
     <Compile Include="Movement\IGridMotorMover.cs" />
-    <Compile Include="Movement\IPreciseMotorMover.cs" />
-    <Compile Include="Movement\Axis.cs" />
+    <Compile Include="Movement\Motors\IPreciseMotorMover.cs" />
+    <Compile Include="Movement\Motors\Axis.cs" />
     <Compile Include="Movement\CalibratedMotorMoverOld.cs" />
     <Compile Include="Movement\Drv\Events\GpioValueChangedEventArgs.cs" />
     <Compile Include="Movement\Drv\Events\MotorDirectionChangedEventArgs.cs" />
     <Compile Include="Movement\Drv\IMotorInformation.cs" />
     <Compile Include="Movement\Drv\MotorInformation.cs" />
-    <Compile Include="Movement\IMotorCalibrator.cs" />
-    <Compile Include="Movement\MotorMover.cs" />
+    <Compile Include="Movement\Motors\IMotorCalibrator.cs" />
+    <Compile Include="Movement\Motors\MotorMover.cs" />
     <Compile Include="Movement\Events\PositionChangedEventArgs.cs" />
     <Compile Include="Movement\Events\StepEventArgs.cs" />
     <Compile Include="Movement\Drv\IGpioPin.cs" />
     <Compile Include="Movement\Drv\IMagnetDrv.cs" />
     <Compile Include="Movement\Drv\IMotorDrv.cs" />
     <Compile Include="Movement\Drv\IPhotoInterrupter.cs" />
-    <Compile Include="Movement\IPositionSignaler.cs" />
-    <Compile Include="Movement\PositionSignaler.cs" />
+    <Compile Include="Movement\Motors\IPositionSignaler.cs" />
+    <Compile Include="Movement\Motors\PositionSignaler.cs" />
     <Compile Include="Movement\Exceptions\CalibrationException.cs" />
-    <Compile Include="Movement\IMotorLocator.cs" />
-    <Compile Include="Movement\IMotorMover.cs" />
+    <Compile Include="Movement\Motors\IMotorLocator.cs" />
+    <Compile Include="Movement\Motors\IMotorMover.cs" />
     <Compile Include="Movement\IMoveManager.cs" />
     <Compile Include="Movement\IMovePlanner.cs" />
     <Compile Include="Movement\IMovePerformer.cs" />
-    <Compile Include="Movement\MotorCalibrator.cs" />
-    <Compile Include="Movement\MotorLocator.cs" />
-    <Compile Include="Movement\MoveDirection.cs" />
+    <Compile Include="Movement\Motors\MotorCalibrator.cs" />
+    <Compile Include="Movement\Motors\MotorLocator.cs" />
+    <Compile Include="Movement\Motors\MoveDirection.cs" />
     <Compile Include="Movement\MoveManager.cs" />
     <Compile Include="Movement\MovePerformer.cs" />
-    <Compile Include="Movement\PreciseMotorMover.cs" />
+    <Compile Include="Movement\Motors\PreciseMotorMover.cs" />
     <Compile Include="VoiceControl\Commands\Command.cs" />
     <Compile Include="VoiceControl\Commands\CommandFamily.cs" />
     <Compile Include="VoiceControl\Commands\CommandType.cs" />
@@ -108,6 +108,7 @@
       <HintPath>C:\Program Files (x86)\Windows Kits\10\References\Windows.Devices.DevicesLowLevelContract\2.0.0.0\Windows.Devices.DevicesLowLevelContract.winmd</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
