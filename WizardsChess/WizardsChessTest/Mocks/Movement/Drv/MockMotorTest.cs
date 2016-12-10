@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using WizardsChess.Movement;
+using WizardsChess.Movement.Drv;
 
 namespace WizardsChessTest.Mocks.Movement.Drv
 {
@@ -8,25 +10,28 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 	public class MockMotorTest
 	{
 		[TestMethod]
-		public void TestMotor()
+		public void TestMockMotor()
 		{
-			var motor = new MockMotor();
+			var motor = MockMotor.Create();
+
 			var pos = 0;
-			motor.SetState(WizardsChess.Movement.Drv.MotorState.Forward);
+			motor.Direction = MoveDirection.Forward;
 			Task.Delay(200).Wait();
-			pos = motor.Position;
-			Assert.IsTrue(pos > 0, "Motor did not increase Position when going forwards");
-			motor.SetState(WizardsChess.Movement.Drv.MotorState.Stopped);
-			Task.Delay(500).Wait();
-			Assert.IsTrue(motor.Position > pos, "Motor went backwards after stopping");
-			pos = motor.Position;
-			motor.SetState(WizardsChess.Movement.Drv.MotorState.Backward);
+			pos = motor.NumTicks;
+			Assert.IsTrue(pos > 0, "Motor did not increase NumTicks when going forwards");
+			motor.Direction = MoveDirection.Stopped;
+			Task.Delay(300).Wait();
+			Assert.IsTrue(motor.NumTicks > pos, "Motor did no extra ticks after stopping");
+			Assert.AreEqual(MoveDirection.Stopped, motor.Information.Direction, "MotorInformation seems wrong.");
+			pos = 0;
+			motor.Direction = MoveDirection.Backward;
 			Task.Delay(200).Wait();
-			Assert.IsTrue(motor.Position < pos, "Motor did not decrease Position when going backwards");
-			pos = motor.Position;
-			motor.SetState(WizardsChess.Movement.Drv.MotorState.Stopped);
-			Task.Delay(500).Wait();
-			Assert.IsTrue(motor.Position < pos, "Motor went forwards after stopping");
+			Assert.IsTrue(motor.NumTicks > pos, "Motor did not increase NumTicks when going backwards");
+			pos = motor.NumTicks;
+			motor.Direction = MoveDirection.Stopped;
+			Task.Delay(300).Wait();
+			Assert.IsTrue(motor.NumTicks > pos, "Motor did no extra ticks after stopping");
+			Assert.AreEqual(MoveDirection.Stopped, motor.Information.Direction, "MotorInformation seems wrong.");
 		}
 	}
 }

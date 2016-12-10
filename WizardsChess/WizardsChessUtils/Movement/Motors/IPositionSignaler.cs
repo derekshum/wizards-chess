@@ -5,17 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardsChess.Movement.Drv.Events;
 
-namespace WizardsChess.Movement.Drv
+namespace WizardsChess.Movement
 {
-	public interface IStepCounter
+	public interface IPositionSignaler
 	{
 		int Position { get; }
 
-		void CountSteps(int numSteps, TimeSpan timeout);
+		void SignalOnPosition(int numSteps);
+		void CancelSignal();
 
-		event StepEventHandler FinishedCounting;
-		event StepEventHandler AdditionalStepsCounted;
-		event StepEventHandler MoveTimedOut;
+		event PositionChangedEventHandler ReachedPosition;
 	}
 
 	public delegate void StepEventHandler(Object sender, StepEventArgs e);

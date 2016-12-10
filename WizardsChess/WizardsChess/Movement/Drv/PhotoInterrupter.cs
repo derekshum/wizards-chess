@@ -12,9 +12,12 @@ namespace WizardsChess.Movement.Drv
 	{
 		public int GridPosition { get; }
 
-		public PhotoInterrupter(int pinNum, int gridPosition) : base(pinNum, GpioPinDriveMode.InputPullUp)
+		public int StepPosition { get; set; }
+
+		public PhotoInterrupter(int pinNum, int gridPosition, int estStepPosition) : base(pinNum, GpioPinDriveMode.InputPullUp)
 		{
 			GridPosition = gridPosition;
+			StepPosition = estStepPosition;
 		}
 	}
 }

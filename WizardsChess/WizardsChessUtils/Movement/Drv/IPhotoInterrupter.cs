@@ -9,6 +9,14 @@ namespace WizardsChess.Movement.Drv
 {
 	public interface IPhotoInterrupter : IGpioPin
 	{
+		/// <summary>
+		/// The grid position this interrupter is located, as defined by the physical setup.
+		/// </summary>
 		int GridPosition { get; }
+
+		/// <summary>
+		/// The step position we should expect to find the interrupter, as defined by calibration.
+		/// </summary>
+		int StepPosition { get; set; }
 	}
 }

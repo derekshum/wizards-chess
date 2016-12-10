@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WizardsChess.Movement;
 using WizardsChess.Movement.Drv;
 using WizardsChess.Movement.Drv.Events;
 
@@ -11,23 +12,56 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 {
 	class MockMotor : MockGpio, IMotorDrv
 	{
-		public MockMotor() : base()
+		private MockMotor() : base()
 		{
-			State = MotorState.Stopped;
-			Position = 0;
+			direction = MoveDirection.Stopped;
+			previousDirection = MoveDirection.Stopped;
 			NumTicks = 0;
 			timer = new Timer(motorTick, null, Timeout.Infinite, Timeout.Infinite);
 		}
 
-		public MotorState State
+		public static MockMotor Create()
 		{
-			get; private set;
+			var motor = new MockMotor();
+			var info = new MotorInformation(Axis.X, motor);
+			motor.Information = info;
+			return motor;
 		}
 
-		public int Position
+		public MoveDirection Direction
 		{
-			get;
-			set;
+			get
+			{
+				lock(lockObject)
+				{
+					return direction;
+				}
+			}
+			set
+			{
+				if (direction == value)
+				{
+					return;
+				}
+				System.Diagnostics.Debug.WriteLine($"Setting the mock motor to {direction}.");
+				lock (lockObject)
+				{
+					previousDirection = direction;
+					direction = value;
+				}
+				HandleMotorDirectionChanged(direction);
+			}
+		}
+
+		public MoveDirection PreviousDirection
+		{
+			get
+			{
+				lock(lockObject)
+				{
+					return previousDirection;
+				}
+			}
 		}
 
 		public int NumTicks
@@ -35,32 +69,55 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 			get; set;
 		}
 
-		public void SetState(MotorState state)
+		public IMotorInformation Information
 		{
-			if (State == state)
-				return;
-
-			System.Diagnostics.Debug.WriteLine($"Setting the mock motor to {state}.");
-
-			State = state;
-			if (state != MotorState.Stopped)
+			get { return information; }
+			set
 			{
-				lastMoveState = state;
+				information = value as MotorInformation;
+			}
+		}
+
+
+		public MoveDirection GetLatestActiveMoveDirection()
+		{
+			lock(lockObject)
+			{
+				if (direction != MoveDirection.Stopped)
+				{
+					return direction;
+				}
+				else
+				{
+					return previousDirection;
+				}
+			}
+		}
+
+		public void HandleMotorDirectionChanged(MoveDirection dir)
+		{
+			if (dir != MoveDirection.Stopped)
+			{
+				information.SetDirection(dir);
 				runTheMotor();
 			}
 			else
 			{
-				Task.Delay(200).ContinueWith((prev) => {
+				Task.Delay(150).ContinueWith((prev) => {
 					timer.Change(Timeout.Infinite, Timeout.Infinite);
 				});
 			}
 		}
 
-		private MotorState lastMoveState;
+		private MoveDirection direction;
+		private MoveDirection previousDirection;
+		private MotorInformation information;
 		private Timer timer;
+		private object lockObject = new object();
 
 		private void runTheMotor()
 		{
+			NumTicks = 0;
 			timer.Change(0, 1);
 		}
 
@@ -72,14 +129,6 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 			}
 			else
 			{
-				if (lastMoveState == MotorState.Forward)
-				{
-					Position++;
-				}
-				else if (lastMoveState == MotorState.Backward)
-				{
-					Position--;
-				}
 				NumTicks++;
 				edge = GpioEdge.FallingEdge;
 			}
