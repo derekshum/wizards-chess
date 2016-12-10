@@ -21,7 +21,7 @@ namespace WizardsChess.Movement
 		public MotorMover(IPositionSignaler posSignaler, IMotorLocator motorLocator, IMotorDrv motorDrv)
 		{
 			signaler = posSignaler;
-			locator = motorLocator;
+			Locator = motorLocator;
 			motor = motorDrv;
 
 			signaler.ReachedPosition += finishedCounting;
@@ -32,6 +32,7 @@ namespace WizardsChess.Movement
 		}
 
 		public int EstimatedOvershoot { get; private set; }
+		public IMotorLocator Locator { get; }
 
 		public async Task<int> GoToPositionAsync(int position)
 		{
@@ -55,7 +56,7 @@ namespace WizardsChess.Movement
 					updateEstimatedOvershoot(targetPosition);
 				}
 			}
-			return locator.Position;
+			return Locator.Position;
 		}
 
 		public void CancelMove()
@@ -76,7 +77,6 @@ namespace WizardsChess.Movement
 		private object lockObject = new object();
 
 		private IPositionSignaler signaler;
-		private IMotorLocator locator;
 		private IMotorDrv motor;
 
 		private void resetState()
@@ -87,7 +87,7 @@ namespace WizardsChess.Movement
 
 		private void updateEstimatedOvershoot(int targetPosition)
 		{
-			EstimatedOvershoot += Math.Abs(targetPosition - locator.Position);
+			EstimatedOvershoot += Math.Abs(targetPosition - Locator.Position);
 			EstimatedOvershoot /= 2;
 		}
 
@@ -98,7 +98,7 @@ namespace WizardsChess.Movement
 				return;
 			}
 
-			var offset = position - locator.Position;
+			var offset = position - Locator.Position;
 			if (offset == 0)
 			{
 				// We are now somehow at the desired position. 
@@ -142,7 +142,7 @@ namespace WizardsChess.Movement
 
 		private bool isAtPosition(int position)
 		{
-			return Math.Abs(position - locator.Position) < 5;
+			return Math.Abs(position - Locator.Position) < 5;
 		}
 
 		private void finishedCounting(object sender, PositionChangedEventArgs e)

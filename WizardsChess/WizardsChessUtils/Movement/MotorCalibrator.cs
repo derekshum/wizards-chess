@@ -11,16 +11,16 @@ namespace WizardsChess.Movement
 	public class MotorCalibrator : IMotorCalibrator, IDisposable
 	{
 		public MotorCalibrator(int gridMinValue, int gridMaxValue
-			, IMotorMover motorMover, IMotorLocator motorLocator, IMotorInformation motorInformation
-			, IPhotoInterrupter topInterupter, IPhotoInterrupter bottomInterrupter)
+			, IMotorMover motorMover, IMotorInformation motorInformation
+			, IPhotoInterrupter topInterrupter, IPhotoInterrupter bottomInterrupter)
 		{
 			gridMin = gridMinValue;
 			gridMax = gridMaxValue;
 
-			locator = motorLocator;
+			locator = motorMover.Locator;
 			mover = motorMover;
 			motorInfo = motorInformation;
-			top = topInterupter;
+			top = topInterrupter;
 			bottom = bottomInterrupter;
 
 			top.ValueChanged += topInterruptDetected;

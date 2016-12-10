@@ -11,11 +11,11 @@ namespace WizardsChess.Movement
 {
 	public class MotorLocator : IMotorLocator, IDisposable
 	{
-		public MotorLocator(IGpioPin counter, IGpioPin clearCounter, IMotorDrv motor)
+		public MotorLocator(IGpioPin clearCounter, IMotorInformation motorInformation)
 		{
-			stepCounter = counter;
+			stepCounter = motorInformation.SteppingPin;
 			clearCounterPin = clearCounter;
-			motorDrv = motor;
+			motorInfo = motorInformation;
 			position = 0;
 			lastMoveDirection = MoveDirection.Stopped;
 
@@ -40,7 +40,7 @@ namespace WizardsChess.Movement
 		private volatile MoveDirection lastMoveDirection;
 		private IGpioPin stepCounter;
 		private IGpioPin clearCounterPin;
-		private IMotorDrv motorDrv;
+		private IMotorInformation motorInfo;
 		private object lockObject = new object();
 
 		private void pinValueChanged(object sender, GpioValueChangedEventArgs e)
@@ -49,7 +49,7 @@ namespace WizardsChess.Movement
 			{
 				// If motor hasn't move and latestActiveMoveDirection is still Stopped, this will not impact anything because the Stopped value is 0.
 				var pos = 0;
-				var direction = motorDrv.GetLatestActiveMoveDirection();
+				var direction = motorInfo.Direction;
 				lock (lockObject)
 				{
 					lastMoveDirection = direction;

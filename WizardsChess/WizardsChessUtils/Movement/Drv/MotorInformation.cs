@@ -12,8 +12,8 @@ namespace WizardsChess.Movement.Drv
 	{
 		public MotorInformation(Axis axis, IGpioPin motorStepPin)
 		{
-			steppingPin = motorStepPin;
-			steppingPin.ValueChanged += pinValueChanged;
+			SteppingPin = motorStepPin;
+			SteppingPin.ValueChanged += pinValueChanged;
 			Axis = axis;
 			Direction = MoveDirection.Stopped;
 
@@ -34,6 +34,7 @@ namespace WizardsChess.Movement.Drv
 				}
 			}
 		}
+		public IGpioPin SteppingPin { get; }
 
 		public event MotorDirectionChangedEventHandler DirectionChanged;
 
@@ -47,7 +48,6 @@ namespace WizardsChess.Movement.Drv
 			}
 		}
 
-		private IGpioPin steppingPin;
 		private Timer stepTimer;
 		private volatile MoveDirection direction;
 		private volatile int ticksSinceLastStep;
@@ -89,7 +89,7 @@ namespace WizardsChess.Movement.Drv
 				if (disposing)
 				{
 					stepTimer.Dispose();
-					steppingPin.ValueChanged -= pinValueChanged;
+					SteppingPin.ValueChanged -= pinValueChanged;
 				}
 
 				disposedValue = true;

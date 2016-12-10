@@ -9,6 +9,7 @@ namespace WizardsChess.Movement.Drv
 {
 	public interface IMotorInformation
 	{
+		IGpioPin SteppingPin { get; }
 		MoveDirection Direction { get; }
 		Axis Axis { get; }
 		event MotorDirectionChangedEventHandler DirectionChanged;

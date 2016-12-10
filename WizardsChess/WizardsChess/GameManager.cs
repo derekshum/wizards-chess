@@ -43,26 +43,27 @@ namespace WizardsChess
 			var stepClearPinX = new GpioPinWrapper(13, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
 			var motorInformationX = new MotorInformation(Axis.X, stepCountPinX);
 			var motorDriverX = new MotorDrv(20, 21, motorInformationX);
-			var motorLocatorX = new MotorLocator(stepCountPinX, stepClearPinX, motorDriverX);
+			var motorLocatorX = new MotorLocator(stepClearPinX, motorDriverX.Information);
 			var positionSignalerX = new PositionSignaler(motorLocatorX);
-
+			var motorMoverX = new MotorMover(positionSignalerX, motorLocatorX, motorDriverX);
 
 			var stepCountPinY = new GpioPinWrapper(6, Windows.Devices.Gpio.GpioPinDriveMode.InputPullUp);
 			var stepClearPinY = new GpioPinWrapper(19, Windows.Devices.Gpio.GpioPinDriveMode.Output, Windows.Devices.Gpio.GpioPinValue.Low);
 			var motorInformationY = new MotorInformation(Axis.Y, stepCountPinY);
 			var motorDriverY = new MotorDrv(24, 23, motorInformationY);
-			var motorLocatorY = new MotorLocator(stepCountPinY, stepClearPinY, motorDriverY);
+			var motorLocatorY = new MotorLocator(stepClearPinY, motorDriverY.Information);
 			var positionSignalerY = new PositionSignaler(motorLocatorY);
+			var motorMoverY = new MotorMover(positionSignalerY, motorLocatorY, motorDriverY);
 
 			var topInterrupterX = new PhotoInterrupter(17, 1, 150);
 			var bottomInterrupterX = new PhotoInterrupter(27, -1, -150);
+			var motorCalibratorX = new MotorCalibrator(-23, 23, motorMoverX, motorInformationX, topInterrupterX, bottomInterrupterX);
+
 			var topInterrupterY = new PhotoInterrupter(25, 1, 150);
 			var bottomInterrupterY = new PhotoInterrupter(22, -1, -150);
+			var motorCalibratorY = new MotorCalibrator(-17, 17, motorMoverY, motorInformationY, topInterrupterY, bottomInterrupterY);
 
-			//			var calXMover = new CalibratedMotorMoverOld(Axis.X, 23, -23, 3, motorDriverX, positionSignalerX, topInterrupterX, bottomInterrupterX);
-			//			var calYMover = new CalibratedMotorMoverOld(Axis.Y, 17, -17, 3, motorDriverY, positionSignalerY, topInterrupterY, bottomInterrupterY);
-
-			//			var magnetDriver = new MagnetDrv(26);
+			var magnetDriver = new MagnetDrv(26);
 
 			//			var movePerformer = new MovePerformer(calXMover, calYMover, magnetDriver);
 			//			var motorCalibrationTask = movePerformer.CalibrateAsync();

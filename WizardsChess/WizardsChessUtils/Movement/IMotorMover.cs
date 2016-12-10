@@ -8,7 +8,15 @@ namespace WizardsChess.Movement
 {
 	public interface IMotorMover
 	{
+		/// <summary>
+		/// How many steps the motor tends to keep moving for after being told to stop.
+		/// </summary>
 		int EstimatedOvershoot { get; }
+
+		/// <summary>
+		/// The IMotorLocator for this motor.
+		/// </summary>
+		IMotorLocator Locator { get; }
 
 		/// <summary>
 		/// Drive the motor up to the given position, then stop. 
