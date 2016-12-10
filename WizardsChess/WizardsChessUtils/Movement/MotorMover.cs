@@ -18,8 +18,10 @@ namespace WizardsChess.Movement
 
 	public class MotorMover : IMotorMover, IDisposable
 	{
-		public MotorMover(IPositionSignaler posSignaler, IMotorLocator motorLocator, IMotorDrv motorDrv)
+		public MotorMover(int estimatedOvershoot, IPositionSignaler posSignaler, IMotorLocator motorLocator, IMotorDrv motorDrv)
 		{
+			EstimatedOvershoot = estimatedOvershoot;
+
 			signaler = posSignaler;
 			Locator = motorLocator;
 			motor = motorDrv;
@@ -29,6 +31,7 @@ namespace WizardsChess.Movement
 
 			isMoving = false;
 			state = MoverState.Ready;
+			lockObject = new object();
 		}
 
 		public int EstimatedOvershoot { get; private set; }
@@ -74,7 +77,7 @@ namespace WizardsChess.Movement
 		private volatile bool isMoving;
 		private volatile bool shouldUpdateOvershoot;
 		private volatile MoverState state;
-		private object lockObject = new object();
+		private object lockObject;
 
 		private IPositionSignaler signaler;
 		private IMotorDrv motor;
@@ -142,7 +145,7 @@ namespace WizardsChess.Movement
 
 		private bool isAtPosition(int position)
 		{
-			return Math.Abs(position - Locator.Position) < 5;
+			return position - Locator.Position == 0;
 		}
 
 		private void finishedCounting(object sender, PositionChangedEventArgs e)
@@ -159,10 +162,16 @@ namespace WizardsChess.Movement
 				{
 					// This is a stall!
 					motor.Direction = MoveDirection.Stopped;
-					shouldUpdateOvershoot = false;
+					lock (lockObject)
+					{
+						shouldUpdateOvershoot = false;
+					}
 					System.Diagnostics.Debug.WriteLine($"{motor.Information.Axis} motor stalled!");
 				}
-				isMoving = false;
+				lock (lockObject)
+				{
+					isMoving = false;
+				}
 				System.Diagnostics.Debug.WriteLine($"{motor.Information.Axis} motor has stopped.");
 			}
 		}
