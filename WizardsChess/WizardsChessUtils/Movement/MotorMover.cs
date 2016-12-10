@@ -31,6 +31,8 @@ namespace WizardsChess.Movement
 			state = MoverState.Ready;
 		}
 
+		public int EstimatedOvershoot { get; private set; }
+
 		public async Task<int> GoToPositionAsync(int targetPosition)
 		{
 			lock (lockObject)
@@ -41,11 +43,16 @@ namespace WizardsChess.Movement
 					resetState();
 				}
 				state = MoverState.PerformingMove;
+				shouldUpdateOvershoot = true;
 			}
 			await goToPositionAsync(targetPosition);
 			lock (lockObject)
 			{
 				state = MoverState.Ready;
+				if (shouldUpdateOvershoot)
+				{
+					updateEstimatedOvershoot(targetPosition);
+				}
 			}
 			return locator.Position;
 		}
@@ -57,10 +64,12 @@ namespace WizardsChess.Movement
 			lock (lockObject)
 			{
 				resetState();
+				shouldUpdateOvershoot = false;
 			}
 		}
 
 		private volatile bool isMoving;
+		private volatile bool shouldUpdateOvershoot;
 		private volatile MoverState state;
 		private object lockObject = new object();
 
@@ -72,6 +81,12 @@ namespace WizardsChess.Movement
 		{
 			state = MoverState.Ready;
 			signaler.CancelSignal();
+		}
+
+		private void updateEstimatedOvershoot(int targetPosition)
+		{
+			EstimatedOvershoot += Math.Abs(targetPosition - locator.Position);
+			EstimatedOvershoot /= 2;
 		}
 
 		private async Task goToPositionAsync(int position)
@@ -131,7 +146,6 @@ namespace WizardsChess.Movement
 		private void finishedCounting(object sender, PositionChangedEventArgs e)
 		{
 			motor.Direction = MoveDirection.Stopped;
-
 			System.Diagnostics.Debug.WriteLine($"{motor.Information.Axis} motor finished counting.");
 		}
 
@@ -139,7 +153,13 @@ namespace WizardsChess.Movement
 		{
 			if (e.Direction == MoveDirection.Stopped)
 			{
-				motor.Direction = MoveDirection.Stopped;
+				if (motor.Direction != MoveDirection.Stopped)
+				{
+					// This is a stall!
+					motor.Direction = MoveDirection.Stopped;
+					shouldUpdateOvershoot = false;
+					System.Diagnostics.Debug.WriteLine($"{motor.Information.Axis} motor stalled!");
+				}
 				isMoving = false;
 				System.Diagnostics.Debug.WriteLine($"{motor.Information.Axis} motor has stopped.");
 			}

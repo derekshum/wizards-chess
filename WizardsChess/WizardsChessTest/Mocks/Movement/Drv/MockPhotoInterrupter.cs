@@ -14,9 +14,12 @@ namespace WizardsChessTest.Mocks.Movement.Drv
 	{
 		public int GridPosition { get; }
 
+		public int StepPosition { get; set; }
+
 		public MockPhotoInterrupter(int gridPosition, int lowerMotorStepPosition, int upperMotorStepPosition, IMotorLocator mtrLocator, MockMotor mtr) : base()
 		{
 			GridPosition = gridPosition;
+			StepPosition = (upperMotorStepPosition + lowerMotorStepPosition) / 2;
 			upperStepPosition = upperMotorStepPosition;
 			lowerStepPosition = lowerMotorStepPosition;
 

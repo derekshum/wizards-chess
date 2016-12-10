@@ -8,6 +8,8 @@ namespace WizardsChess.Movement
 {
 	public interface IMotorMover
 	{
+		int EstimatedOvershoot { get; }
+
 		/// <summary>
 		/// Drive the motor up to the given position, then stop. 
 		/// Does not return until the motor is completely stopped.

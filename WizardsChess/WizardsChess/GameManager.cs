@@ -54,10 +54,10 @@ namespace WizardsChess
 			var motorLocatorY = new MotorLocator(stepCountPinY, stepClearPinY, motorDriverY);
 			var positionSignalerY = new PositionSignaler(motorLocatorY);
 
-			var topInterrupterX = new PhotoInterrupter(17, 1);
-			var bottomInterrupterX = new PhotoInterrupter(27, -1);
-			var topInterrupterY = new PhotoInterrupter(25, 1);
-			var bottomInterrupterY = new PhotoInterrupter(22, -1);
+			var topInterrupterX = new PhotoInterrupter(17, 1, 150);
+			var bottomInterrupterX = new PhotoInterrupter(27, -1, -150);
+			var topInterrupterY = new PhotoInterrupter(25, 1, 150);
+			var bottomInterrupterY = new PhotoInterrupter(22, -1, -150);
 
 			//			var calXMover = new CalibratedMotorMoverOld(Axis.X, 23, -23, 3, motorDriverX, positionSignalerX, topInterrupterX, bottomInterrupterX);
 			//			var calYMover = new CalibratedMotorMoverOld(Axis.Y, 17, -17, 3, motorDriverY, positionSignalerY, topInterrupterY, bottomInterrupterY);
