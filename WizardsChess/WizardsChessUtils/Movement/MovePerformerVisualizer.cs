@@ -16,7 +16,7 @@ namespace WizardsChess.Movement
 			BoardRep = new char[ySize, xSize];
 		}
 
-		public async Task MovePieceAsync(IList<Point2D> steps)
+		public Task MovePieceAsync(IList<Point2D> steps)
 		{
 			Point2D convertedPoint;
 			int i = 1;
@@ -31,6 +31,8 @@ namespace WizardsChess.Movement
 			}
 
 			PrintBoardRep();
+
+			return Task.FromResult(0);
 		}
 
 		public void ResetBoardRep()
@@ -83,14 +85,19 @@ namespace WizardsChess.Movement
 			return y + yOffset;
 		}
 
-		public async Task GoHomeAsync()
+		public Task GoHomeAsync()
 		{
+			return Task.FromResult(0);
+		}
 
+		public Task CalibrateAsync()
+		{
+			return Task.FromResult(0);
 		}
 
 		public void EnableMagnet(bool enable) {	}	//unneeded
 
-		public async Task MoveMotorAsync(Axis axis, int gridUnits)	{ }	//unneeded
+		public Task MoveMotorAsync(Axis axis, int gridUnits)	{ return Task.FromResult(0); }	//unneeded
 
 		public char[,] BoardRep;
 		const int xSize = 23;
