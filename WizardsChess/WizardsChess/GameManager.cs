@@ -106,10 +106,10 @@ namespace WizardsChess
 					var moveCmd = args.Command as MoveCommand;
 					currentMoveCommand = moveCmd;
 					await performMoveIfValidAsync(moveCmd);
-				break;
-				/*case CommandType.Castle	//need to add this
-				*	await performCastleIfValid();
-				*/
+					break;
+				case CommandType.Castle:
+					await performCastleIfValid();
+					break;
 				case CommandType.ConfirmPiece:
 					var pieceConfirmation = args.Command as ConfirmPieceCommand;
 					if (currentMoveCommand == null)
@@ -118,11 +118,11 @@ namespace WizardsChess
 					}
 					currentMoveCommand.Position = pieceConfirmation.Position;
 					await performMoveIfValidAsync(currentMoveCommand);
-				break;
+					break;
 				case CommandType.Undo:
 					//no output when undo not possible, basically ignore it
 					await performUndoIfPossible();
-				break;
+					break;
 				//case yes
 				//case no
 				//case cancel?
@@ -130,7 +130,7 @@ namespace WizardsChess
 				//case Magnet?
 				default:
 					//debug writing done above
-				break;
+					break;
 			}
 			
 
@@ -145,7 +145,7 @@ namespace WizardsChess
 
 		private async Task performMoveIfValidAsync(MoveCommand moveCmd)
 		{
-			if (!moveCmd.Position.HasValue)
+			if (!moveCmd.Position.HasValue)	//checks command format
 			{
 				var possibleStartPositions = chessLogic.FindPotentialPiecesForMove(moveCmd.Piece.Value, moveCmd.Destination);
 				if (possibleStartPositions.Count == 0)
@@ -195,11 +195,12 @@ namespace WizardsChess
 			}
 			else if (validRookLocations.Count == 1)
 			{
+				await moveManager.CastleAsync(validRookLocations[0], chessLogic.Board.GetKingCol());
 				chessLogic.Castle(validRookLocations[0]);
 			}
 			else	// validRookLocations.Count == 2
 			{
-				//await cmdInterpreter.ConfirmPieceSelectionAsync(moveCmd.Piece.Value, numValidCastles.ToList());
+				//await cmdInterpreter.ConfirmPieceSelectionAsync(moveCmd.Piece.Value, validRookLocations);
 				//TODO: figure out how to make this similar
 				return;
 

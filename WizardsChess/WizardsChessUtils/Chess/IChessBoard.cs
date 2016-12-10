@@ -17,5 +17,17 @@ namespace WizardsChess.Chess
 		Dictionary<PieceType, IList<Point2D>> PieceLocationsByType { get; }
 		IDictionary<ChessTeam, IList<ChessPiece>> CapturedPiecesByTeam { get; }
 		IList<MoveSpecification> PastMoves { get; }
+		int GetWhiteBackRow();
+		int GetWhiteFrontRow();
+		int GetBlackBackRow();
+		int GetBlackFrontRow();
+		int GetLeftRookCol();
+		int GetLeftKnightCol();
+		int GetLeftBishopCol();
+		int GetKingCol();
+		int GetQueenCol();
+		int GetRightBishopCol();
+		int GetRightKnightCol();
+		int GetRightRookCol();
 	}
 }

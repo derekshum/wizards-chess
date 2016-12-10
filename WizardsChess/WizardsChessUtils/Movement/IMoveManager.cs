@@ -15,7 +15,7 @@ namespace WizardsChess.Movement
 		/// <param name="end">The destination for the chess piece.</param>
 		/// <param name="captured">The location of the piece being captured, if different from 'end'.</param>
 		Task MoveAsync(Point2D start, Point2D end, Point2D? captured=null);
-
+		Task CastleAsync(Point2D rookSpot, int kingCol);
 		Task UndoMoveAsync();
 	}
 }

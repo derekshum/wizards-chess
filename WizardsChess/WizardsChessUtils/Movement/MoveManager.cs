@@ -27,7 +27,18 @@ namespace WizardsChess.Movement
 			}
 			previousMoves.Add(moveSteps);
 			await performer.GoHomeAsync();
-			
+		}
+
+		public async Task CastleAsync(Point2D rookSpot, int kingCol)
+		{
+			var castleSteps = planner.PlanCastle(rookSpot, kingCol);
+			foreach (var setOfSteps in castleSteps)
+			{
+				await performer.MovePieceAsync(setOfSteps);
+				//TODO: remove: previousMoves[previousMoves.Count - 1].Add(setOfSteps);
+			}
+			previousMoves.Add(castleSteps);
+			await performer.GoHomeAsync();
 		}
 
 		public async Task UndoMoveAsync()
