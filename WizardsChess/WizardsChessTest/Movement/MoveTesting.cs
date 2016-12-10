@@ -44,6 +44,31 @@ namespace WizardsChessTest.Movement
 			Assert.AreEqual(targetY, yGridMover.GridPosition, "The yMotor didn't end where expected.");
 			Assert.AreEqual(targetX, (int)Math.Round((float)xPreciseMover.Position / xPreciseMover.StepsPerGridUnit), "xPreciseMover was not where expected.");
 			Assert.AreEqual(targetY, (int)Math.Round((float)yPreciseMover.Position / yPreciseMover.StepsPerGridUnit), "yPreciseMover was not where expected.");
+
+		}
+
+		[TestMethod]
+		public void TestMovePerformerOneMoveInList()
+		{
+			TestMoveComponentCompilation();
+
+			movePerformer.MovePieceAsync(new List<Point2D>() { new Point2D(1, 1) }).Wait();
+			Assert.AreEqual(0, xGridMover.GridPosition, "The xMotor didn't end where expected.");
+			Assert.AreEqual(0, yGridMover.GridPosition, "The yMotor didn't end where expected.");
+			Assert.AreEqual(0, (int)Math.Round((float)xPreciseMover.Position / xPreciseMover.StepsPerGridUnit), "xPreciseMover was not where expected.");
+			Assert.AreEqual(0, (int)Math.Round((float)yPreciseMover.Position / yPreciseMover.StepsPerGridUnit), "yPreciseMover was not where expected.");
+		}
+
+		[TestMethod]
+		public void TestMovePerformerEmptyList()
+		{
+			TestMoveComponentCompilation();
+
+			movePerformer.MovePieceAsync(new List<Point2D>() { new Point2D(1, 1) }).Wait();
+			Assert.AreEqual(0, xGridMover.GridPosition, "The xMotor didn't end where expected.");
+			Assert.AreEqual(0, yGridMover.GridPosition, "The yMotor didn't end where expected.");
+			Assert.AreEqual(0, (int)Math.Round((float)xPreciseMover.Position / xPreciseMover.StepsPerGridUnit), "xPreciseMover was not where expected.");
+			Assert.AreEqual(0, (int)Math.Round((float)yPreciseMover.Position / yPreciseMover.StepsPerGridUnit), "yPreciseMover was not where expected.");
 		}
 
 		private IMotorMover xMover;

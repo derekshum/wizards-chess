@@ -20,6 +20,12 @@ namespace WizardsChess.Movement
 
 		public async Task MovePieceAsync(IList<Point2D> steps)
 		{
+			if (steps.Count <= 1)
+			{
+				System.Diagnostics.Debug.WriteLine($"MovePerformer received a piece move list with only {steps.Count} move(s).");
+				return;
+			}
+
 			var start = steps[0];
 			steps.RemoveAt(0);
 
