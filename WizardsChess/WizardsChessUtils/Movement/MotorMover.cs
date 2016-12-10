@@ -33,7 +33,7 @@ namespace WizardsChess.Movement
 
 		public int EstimatedOvershoot { get; private set; }
 
-		public async Task<int> GoToPositionAsync(int targetPosition)
+		public async Task<int> GoToPositionAsync(int position)
 		{
 			lock (lockObject)
 			{
@@ -43,9 +43,10 @@ namespace WizardsChess.Movement
 					resetState();
 				}
 				state = MoverState.PerformingMove;
+				targetPosition = position;
 				shouldUpdateOvershoot = true;
 			}
-			await goToPositionAsync(targetPosition);
+			await goToPositionAsync(position);
 			lock (lockObject)
 			{
 				state = MoverState.Ready;
@@ -68,6 +69,7 @@ namespace WizardsChess.Movement
 			}
 		}
 
+		private int targetPosition;
 		private volatile bool isMoving;
 		private volatile bool shouldUpdateOvershoot;
 		private volatile MoverState state;

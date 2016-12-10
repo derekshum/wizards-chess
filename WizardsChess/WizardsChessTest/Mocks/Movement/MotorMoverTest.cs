@@ -19,6 +19,7 @@ namespace WizardsChessTest.Mocks.Movement
 			int finalPos = motorMover.GoToPositionAsync(targetPos).Result;
 			Assert.AreEqual(motorLocator.Position, finalPos, $"Motor mover result {finalPos} does not match motorLocator position {motorLocator.Position}");
 			Assert.IsTrue(finalPos > targetPos, $"Motor final position {finalPos} did not make sense with target {targetPos}.");
+			Assert.IsTrue(motorMover.EstimatedOvershoot != 0, "Estimated overshoot was still 0 after a successful move.");
 		}
 
 		[TestMethod]
@@ -30,11 +31,14 @@ namespace WizardsChessTest.Mocks.Movement
 			int finalPos = motorMover.GoToPositionAsync(targetPos).Result;
 			Assert.AreEqual(motorLocator.Position, finalPos, $"Motor mover result {finalPos} does not match motorLocator position {motorLocator.Position}");
 			Assert.IsTrue(finalPos > targetPos, $"Motor final position {finalPos} did not make sense with target {targetPos}.");
+			Assert.IsTrue(motorMover.EstimatedOvershoot != 0, "Estimated overshoot was still 0 after a successful move.");
+			var previousOvershoot = motorMover.EstimatedOvershoot;
 
 			targetPos = -12;
 			finalPos = motorMover.GoToPositionAsync(targetPos).Result;
 			Assert.AreEqual(motorLocator.Position, finalPos, $"Motor mover result {finalPos} does not match motorLocator position {motorLocator.Position}");
 			Assert.IsTrue(finalPos < targetPos, $"Motor final position {finalPos} did not make sense with target {targetPos}.");
+			Assert.IsTrue(motorMover.EstimatedOvershoot > previousOvershoot, "Estimated overshoot did not increase after a second successful move.");
 		}
 
 		[TestMethod]
@@ -55,6 +59,7 @@ namespace WizardsChessTest.Mocks.Movement
 			int finalPos = moveTask.Result;
 			Assert.AreEqual(motorLocator.Position, finalPos, $"Motor mover result {finalPos} does not match motorLocator position {motorLocator.Position}");
 			Assert.IsTrue(finalPos < targetPos, $"Motor final position {finalPos} did not make sense with target {targetPos}.");
+			Assert.AreEqual(0, motorMover.EstimatedOvershoot, "EstimatedOvershoot should not update if a move is canceled.");
 		}
 
 		[TestMethod]
@@ -75,6 +80,28 @@ namespace WizardsChessTest.Mocks.Movement
 			Assert.IsTrue(finalPos != targetPos, "Counted all the way to the target position instead of stalling.");
 			Assert.AreEqual(motorLocator.Position, finalPos, "MotorLocator position did not match finalPos");
 			Assert.AreEqual(MoveDirection.Stopped, mockMotor.Direction, "Motor was not stopped after move stalled.");
+			Assert.AreEqual(0, motorMover.EstimatedOvershoot, "EstimatedOvershoot shouldn't be updated with a stall.");
+		}
+
+		[TestMethod]
+		public void TestOverlappingMotorMoves()
+		{
+			constructMotorMover();
+
+			int initialTargetPos = 300;
+			var moveTask = motorMover.GoToPositionAsync(initialTargetPos);
+			Task.Delay(60).Wait();
+			int targetPos = motorLocator.Position + 10;
+			var startTime = DateTime.Now;
+			var secondMoveTask = motorMover.GoToPositionAsync(targetPos);
+			int finalPos = secondMoveTask.Result;
+			var timeDifference = DateTime.Now - startTime;
+			Assert.IsTrue(timeDifference < TimeSpan.FromMilliseconds(700), "Interrupting move took longer than expected");
+			Assert.IsTrue(moveTask.IsCompleted, "First move did not complete.");
+			Task.Delay(15).Wait();
+			Assert.AreEqual(motorLocator.Position, finalPos, "Motor locator did not match finalPos");
+			Assert.IsTrue(motorLocator.Position < initialTargetPos, $"Motor went past or met the initial target position of {initialTargetPos} to {motorLocator.Position}/");
+			Assert.IsTrue((finalPos - targetPos) > motorMover.EstimatedOvershoot, "Estimated offset was over its expected value.");
 		}
 
 		private IMotorMover motorMover;
