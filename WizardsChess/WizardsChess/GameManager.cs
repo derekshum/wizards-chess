@@ -63,23 +63,26 @@ namespace WizardsChess
 			var bottomInterrupterY = new PhotoInterrupter(22, -1, -150);
 			var motorCalibratorY = new MotorCalibrator(-17, 17, motorMoverY, motorInformationY, topInterrupterY, bottomInterrupterY);
 
+			var preciseMoverX = new PreciseMotorMover(motorMoverX, motorCalibratorX);
+			var gridMoverX = new GridMotorMover(preciseMoverX);
+
+			var preciseMoverY = new PreciseMotorMover(motorMoverY, motorCalibratorY);
+			var gridMoverY = new GridMotorMover(preciseMoverY);
+
 			var magnetDriver = new MagnetDrv(26);
 
-			//			var movePerformer = new MovePerformer(calXMover, calYMover, magnetDriver);
-			//			var motorCalibrationTask = movePerformer.CalibrateAsync();
+			var movePerformer = new MovePerformer(gridMoverX, gridMoverY, magnetDriver);
+			var motorCalibrationTask = movePerformer.CalibrateAsync();
+			var movePlanner = new MovePlanner(logic.Board);
+			var moveManager = new MoveManager(movePlanner, movePerformer);
 
-			//			var movePlanner = new MovePlanner(logic.Board);
+			GameManager manager = new GameManager(await commandInterpreterConstructor, logic, moveManager);
 
-			//			var moveManager = new MoveManager(movePlanner, movePerformer);
-
-			//			GameManager manager = new GameManager(await commandInterpreterConstructor, logic, moveManager);
-
-			//			await motorCalibrationTask;
-			//#if DEBUG
-			//			manager.DebugMovePerformer = movePerformer;
-			//#endif
-			//			return manager
-			return null;
+			await motorCalibrationTask;
+#if DEBUG
+				manager.DebugMovePerformer = movePerformer;
+#endif
+			return manager;
 		}
 
 		public async Task<GameState> PlayGameAsync()

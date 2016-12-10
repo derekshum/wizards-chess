@@ -83,6 +83,8 @@ namespace WizardsChess.VoiceControl
 		private static readonly string yesNoCommandsGrammarTag = "yesNoCommands";
 		private static readonly string pieceConfirmationGrammarTag = "pieceConfirmation";
 		private static readonly string cancelCommandGrammarTag = "cancelCommand";
+#if DEBUG
 		private static readonly string debugGrammarTag = "debugCommand";
+#endif
 	}
 }

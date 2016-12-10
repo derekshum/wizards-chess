@@ -30,7 +30,7 @@ namespace WizardsChessTest
 			Point2D moveW1End = new Point2D(4, 3);
 
 			List<IList<Point2D>> paths = new List<IList<Point2D>>();
-			String printString = "";
+			//String printString = "";
 			ChessBoard board = new ChessBoard();
 			MovePlanner planner = new MovePlanner(board);
 			paths = planner.PlanMove(moveW1Start, moveW1End);

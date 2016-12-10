@@ -54,6 +54,5 @@ namespace WizardsChess.VoiceControl
 
 		private SpeechSynthesizer speechSynth;
 		private MediaPlayer audioOut;
-		private Task waitForSpeechTask;
 	}
 }
