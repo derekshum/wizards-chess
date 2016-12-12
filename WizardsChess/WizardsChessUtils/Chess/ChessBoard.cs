@@ -101,6 +101,11 @@ namespace WizardsChess.Chess
 				System.Diagnostics.Debug.WriteLine("num in captured before capture on captured team " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
 				if (capturedPiecesByTeam[WhoseTurn].Count > 0)
 					System.Diagnostics.Debug.WriteLine("piece at count - 1 before this capture: " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1].ToShortString());
+				foreach (var piece in capturedPiecesByTeam[WhoseTurn])
+				{
+					System.Diagnostics.Debug.Write(piece.ToShortString() + ", ");
+				}
+				System.Diagnostics.Debug.WriteLine("are the pieces captured for " + WhoseTurn);
 				changeTurn();
 #endif
 				move.Capture = endPosition;
@@ -113,6 +118,11 @@ namespace WizardsChess.Chess
 				changeTurn();
 				System.Diagnostics.Debug.WriteLine("num in captured after capture on captured team " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
 				System.Diagnostics.Debug.WriteLine("piece at count - 1 after this capture: " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1].ToShortString());
+				foreach (var piece in capturedPiecesByTeam[WhoseTurn])
+				{
+					System.Diagnostics.Debug.Write(piece.ToShortString() + ", ");
+				}
+				System.Diagnostics.Debug.WriteLine("are the pieces captured for " + WhoseTurn);
 				changeTurn();
 #endif
 			} //TODO: else if en passant
@@ -220,9 +230,19 @@ namespace WizardsChess.Chess
 #if DEBUG
 				System.Diagnostics.Debug.WriteLine("num in captured before restore for " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
 				System.Diagnostics.Debug.WriteLine("restored captured piece: " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1].ToShortString());
+				foreach (var piece in capturedPiecesByTeam[WhoseTurn])
+				{
+					System.Diagnostics.Debug.Write(piece.ToShortString() + ", ");
+				}
+				System.Diagnostics.Debug.WriteLine("are the pieces captured for " + WhoseTurn);
 #endif
 				SetPieceAt((Position)lastMove.Capture, capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]); //restores captured piece to boardMatrix
-				capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam.Count - 1);   //removes restored captured piece from the list of capturedPiecesByTeam for WhoseTurn, which hasn't been changed yet
+#if DEBUG
+				System.Diagnostics.Debug.WriteLine("num in captured mid restore for " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
+				System.Diagnostics.Debug.WriteLine("piece being restored is " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]);
+				System.Diagnostics.Debug.Write(ToString());
+#endif
+				capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam[WhoseTurn].Count - 1);   //removes restored captured piece from the list of capturedPiecesByTeam for WhoseTurn, which hasn't been changed yet
 
 				// Add a captured piece to our valid pieceLocationsByType list
 				var listOfCapturedPieceType = pieceLocationsByType[internalPieceAt((Position)lastMove.Capture).Type];
@@ -231,6 +251,11 @@ namespace WizardsChess.Chess
 				System.Diagnostics.Debug.WriteLine("num in captured after restore for " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
 				if (capturedPiecesByTeam[WhoseTurn].Count > 0)
 					System.Diagnostics.Debug.WriteLine("piece at count - 1: " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1].ToShortString());
+				foreach (var piece in capturedPiecesByTeam[WhoseTurn])
+				{
+					System.Diagnostics.Debug.Write(piece.ToShortString() + ", ");
+				}
+				System.Diagnostics.Debug.WriteLine("are the pieces captured for " + WhoseTurn);
 #endif
 			}
 
