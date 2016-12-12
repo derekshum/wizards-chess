@@ -8,9 +8,6 @@ namespace WizardsChess.Movement
 {
 	public interface IPreciseMotorMover
 	{
-		int Position { get; }
-		float StepsPerGridUnit { get; }
 		Task GoToPositionAsync(int position);
-		Task CalibrateAsync();
 	}
 }
