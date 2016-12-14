@@ -4,7 +4,7 @@ using WizardsChessTest.Mocks.Movement.Drv;
 using WizardsChess.Movement;
 using WizardsChess.Movement.Drv;
 
-namespace WizardsChessTest.Mocks.Movement
+namespace WizardsChessTest.Movement
 {
 	[TestClass]
 	public class MotorCalibratorTest

@@ -5,7 +5,7 @@ using WizardsChess.Movement.Drv;
 using WizardsChessTest.Mocks.Movement.Drv;
 using System.Threading.Tasks;
 
-namespace WizardsChessTest.Mocks.Movement
+namespace WizardsChessTest.Movement
 {
 	[TestClass]
 	public class MotorMoverTest

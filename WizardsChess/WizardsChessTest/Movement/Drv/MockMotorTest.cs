@@ -3,8 +3,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using WizardsChess.Movement;
 using WizardsChess.Movement.Drv;
+using WizardsChessTest.Mocks.Movement.Drv;
 
-namespace WizardsChessTest.Mocks.Movement.Drv
+namespace WizardsChessTest.Movement.Drv
 {
 	[TestClass]
 	public class MockMotorTest
