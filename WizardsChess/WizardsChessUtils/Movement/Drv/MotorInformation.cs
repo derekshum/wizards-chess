@@ -51,7 +51,7 @@ namespace WizardsChess.Movement.Drv
 		private Timer stepTimer;
 		private volatile MoveDirection direction;
 		private volatile int ticksSinceLastStep;
-		private const int MAX_TICKS_BETWEEN_STEPS = 5;
+		private const int MAX_TICKS_BETWEEN_STEPS = 10;
 
 
 		private void pinValueChanged(object sender, GpioValueChangedEventArgs e)
@@ -59,7 +59,7 @@ namespace WizardsChess.Movement.Drv
 			ticksSinceLastStep = 0;
 			if (Direction == MoveDirection.Stopped)
 			{
-				System.Diagnostics.Debug.WriteLine("${Axis} motor moved when in Stopped State!");
+				System.Diagnostics.Debug.WriteLine($"{Axis} motor moved when in Stopped State!");
 			}
 		}
 
