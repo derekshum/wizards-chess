@@ -61,7 +61,6 @@
   <ItemGroup>
     <Compile Include="Chess\PieceTypeTest.cs" />
     <Compile Include="Chess\ChessLogicTest.cs" />
-    <Compile Include="Mocks\Movement\CalibratedMotorMoverTest.cs" />
     <Compile Include="Mocks\Movement\Drv\MockGpio.cs" />
     <Compile Include="Mocks\Movement\Drv\MockMagnet.cs" />
     <Compile Include="Mocks\Movement\Drv\MockMotorTest.cs" />
