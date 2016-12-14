@@ -31,6 +31,7 @@ namespace WizardsChess.Movement
 			if (isAtPosition(position))
 			{
 				// Cancel a move in case the motor is moving.
+				System.Diagnostics.Debug.WriteLine($"Motor is at desired position within error (target: {position}, actual: {mover.Locator.Position}).");
 				mover.CancelMove();
 				return;
 			}
@@ -42,7 +43,7 @@ namespace WizardsChess.Movement
 		private bool isAtPosition(int position)
 		{
 			var offset = mover.Locator.Position - position;
-			return Math.Abs(offset) < 5;
+			return Math.Abs(offset) < 4;
 		}
 
 		private int calcDrivePosition(int position)
