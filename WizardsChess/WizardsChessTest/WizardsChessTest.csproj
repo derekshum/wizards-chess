@@ -61,17 +61,19 @@
   <ItemGroup>
     <Compile Include="Chess\PieceTypeTest.cs" />
     <Compile Include="Chess\ChessLogicTest.cs" />
-    <Compile Include="Mocks\Movement\CalibratedMotorMoverTest.cs" />
     <Compile Include="Mocks\Movement\Drv\MockGpio.cs" />
     <Compile Include="Mocks\Movement\Drv\MockMagnet.cs" />
-    <Compile Include="Mocks\Movement\Drv\MockMotorTest.cs" />
+    <Compile Include="Mocks\Movement\MockMotorMover.cs" />
+    <Compile Include="Movement\Drv\MockMotorTest.cs" />
     <Compile Include="Mocks\Movement\Drv\MockPhotoInterrupter.cs" />
     <Compile Include="Mocks\Movement\Drv\MockMotor.cs" />
-    <Compile Include="Mocks\Movement\MotorCalibratorTest.cs" />
-    <Compile Include="Mocks\Movement\MotorLocatorTest.cs" />
-    <Compile Include="Mocks\Movement\MotorMoverTest.cs" />
-    <Compile Include="Mocks\Movement\PositionSignalerTest.cs" />
+    <Compile Include="Movement\Motor\MotorCalibratorTest.cs" />
+    <Compile Include="Movement\Motor\MotorLocatorTest.cs" />
+    <Compile Include="Movement\Motor\MotorMoverTest.cs" />
+    <Compile Include="Movement\Motor\PositionSignalerTest.cs" />
+    <Compile Include="Movement\Motor\PreciseMotorMoverTest.cs" />
     <Compile Include="Movement\MovementPlannerTest1.cs" />
+    <Compile Include="Movement\MovePerformerVisualizer.cs" />
     <Compile Include="Movement\MoveTesting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VoiceControl\Commands\CommandTest.cs" />

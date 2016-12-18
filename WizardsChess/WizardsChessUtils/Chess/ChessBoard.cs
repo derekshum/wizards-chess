@@ -96,12 +96,35 @@ namespace WizardsChess.Chess
 			var endPiece = internalPieceAt(endPosition);
 			if (endPiece != null)
 			{
+#if DEBUG
+				changeTurn();
+				System.Diagnostics.Debug.WriteLine("num in captured before capture on captured team " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
+				if (capturedPiecesByTeam[WhoseTurn].Count > 0)
+					System.Diagnostics.Debug.WriteLine("piece at count - 1 before this capture: " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1].ToShortString());
+				foreach (var piece in capturedPiecesByTeam[WhoseTurn])
+				{
+					System.Diagnostics.Debug.Write(piece.ToShortString() + ", ");
+				}
+				System.Diagnostics.Debug.WriteLine("are the pieces captured for " + WhoseTurn);
+				changeTurn();
+#endif
 				move.Capture = endPosition;
 				capturedPiecesByTeam[endPiece.Team].Add(endPiece);
 				
 				// Remove a killed piece from our valid pieceLocationsByType list
 				var listOfEndPieceType = pieceLocationsByType[endPiece.Type];
 				listOfEndPieceType.Remove(new Point2D(endPosition));
+#if DEBUG
+				changeTurn();
+				System.Diagnostics.Debug.WriteLine("num in captured after capture on captured team " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
+				System.Diagnostics.Debug.WriteLine("piece at count - 1 after this capture: " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1].ToShortString());
+				foreach (var piece in capturedPiecesByTeam[WhoseTurn])
+				{
+					System.Diagnostics.Debug.Write(piece.ToShortString() + ", ");
+				}
+				System.Diagnostics.Debug.WriteLine("are the pieces captured for " + WhoseTurn);
+				changeTurn();
+#endif
 			} //TODO: else if en passant
 
 			var movingPiece = internalPieceAt(startPosition);
@@ -152,7 +175,7 @@ namespace WizardsChess.Chess
 			listOfPieceType.Remove(initialRookPoint);
 			listOfPieceType.Add(new Point2D(finalRookPos));	//TODO: figure out if this creation is unnecessary and casting is done automatically.
 
-			MoveSpecification move = new MoveSpecification(new Position(initialRookPoint), finalRookPos, null, true);
+			MoveSpecification move = new MoveSpecification(new Position(initialRookPoint), finalRookPos, null, true, true);
 			pastMoves.Add(move);
 			changeTurn();
 		}
@@ -204,13 +227,38 @@ namespace WizardsChess.Chess
 
 			if (lastMove.Capture != null)   //if move being undone has a capture location, restore the most recently taken other team's piece to that location
 			{
+#if DEBUG
+				System.Diagnostics.Debug.WriteLine("num in captured before restore for " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
+				System.Diagnostics.Debug.WriteLine("restored captured piece: " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1].ToShortString());
+				foreach (var piece in capturedPiecesByTeam[WhoseTurn])
+				{
+					System.Diagnostics.Debug.Write(piece.ToShortString() + ", ");
+				}
+				System.Diagnostics.Debug.WriteLine("are the pieces captured for " + WhoseTurn);
+#endif
 				SetPieceAt((Position)lastMove.Capture, capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]); //restores captured piece to boardMatrix
-				capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam.Count - 1);   //removes restored captured piece from the list of capturedPiecesByTeam for WhoseTurn, which hasn't been changed yet
+#if DEBUG
+				System.Diagnostics.Debug.WriteLine("num in captured mid restore for " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
+				System.Diagnostics.Debug.WriteLine("piece being restored is " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1]);
+				System.Diagnostics.Debug.Write(ToString());
+#endif
+				capturedPiecesByTeam[WhoseTurn].RemoveAt(capturedPiecesByTeam[WhoseTurn].Count - 1);   //removes restored captured piece from the list of capturedPiecesByTeam for WhoseTurn, which hasn't been changed yet
 
 				// Add a captured piece to our valid pieceLocationsByType list
 				var listOfCapturedPieceType = pieceLocationsByType[internalPieceAt((Position)lastMove.Capture).Type];
 				listOfCapturedPieceType.Add((Position)lastMove.Capture);
+#if DEBUG
+				System.Diagnostics.Debug.WriteLine("num in captured after restore for " + WhoseTurn + " is " + capturedPiecesByTeam[WhoseTurn].Count);
+				if (capturedPiecesByTeam[WhoseTurn].Count > 0)
+					System.Diagnostics.Debug.WriteLine("piece at count - 1: " + capturedPiecesByTeam[WhoseTurn][capturedPiecesByTeam[WhoseTurn].Count - 1].ToShortString());
+				foreach (var piece in capturedPiecesByTeam[WhoseTurn])
+				{
+					System.Diagnostics.Debug.Write(piece.ToShortString() + ", ");
+				}
+				System.Diagnostics.Debug.WriteLine("are the pieces captured for " + WhoseTurn);
+#endif
 			}
+
 		}
 
 		//undoes castle moves
@@ -219,22 +267,22 @@ namespace WizardsChess.Chess
 			int rookSideDir = Math.Sign(lastMove.Start.Column - KingCol);    //calculates the direction of the rook from the king initially
 
 			//Move King back in BoardMatrix
-			Position movedKingPos = new Position(KingCol, lastMove.Start.Column);
+			Position movedKingPos = new Position(KingCol + 2 * rookSideDir, lastMove.Start.Row);
 			var king = internalPieceAt(movedKingPos);
-			Position unmovedKingPos = new Position(KingCol, lastMove.Start.Row);
-			SetPieceAt(unmovedKingPos, king);
+			Position unMovedKingPos = new Position(KingCol, lastMove.Start.Row);
+			SetPieceAt(unMovedKingPos, king);
 			SetPieceAtToNull(movedKingPos);
 
 			king.HasMoved = false;  //set King HasMoved to false
 									//Update King Location in pieceLocationsByType
 			var listOfPieceType = pieceLocationsByType[PieceType.King];
 			listOfPieceType.Remove(movedKingPos);
-			listOfPieceType.Add(unmovedKingPos);
+			listOfPieceType.Add(unMovedKingPos);
 
 			//Move Rook back
 			var rook = internalPieceAt(lastMove.End);
-			SetPieceAt(new Point2D(lastMove.End), king);
-			SetPieceAtToNull(new Point2D(lastMove.Start));
+			SetPieceAt(new Point2D(lastMove.Start), rook);
+			SetPieceAtToNull(new Point2D(lastMove.End));
 
 			rook.HasMoved = false;  //set Rook HasMoved to false
 									//Update Rook Location in pieceLocationsByType

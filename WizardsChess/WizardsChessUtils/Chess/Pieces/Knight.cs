@@ -38,8 +38,17 @@ namespace WizardsChess.Chess.Pieces
 
 		public override string ToShortString()
 		{
+			if (Team == ChessTeam.White)
 			{
-				return "Kn";
+				return "Nw";
+			}
+			else if (Team == ChessTeam.Black)
+			{
+				return "Nb";
+			}
+			else
+			{
+				return "N";
 			}
 		}
 

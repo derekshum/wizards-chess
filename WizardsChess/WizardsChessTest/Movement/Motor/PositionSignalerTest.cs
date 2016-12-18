@@ -9,7 +9,7 @@ using System.Text;
 using WizardsChess.Movement;
 using WizardsChess.Movement.Events;
 
-namespace WizardsChessTest.Mocks.Movement
+namespace WizardsChessTest.Movement
 {
 	[TestClass]
 	public class PositionSignalerTest

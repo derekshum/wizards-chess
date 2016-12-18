@@ -5,7 +5,7 @@ using WizardsChess.Movement.Drv;
 using WizardsChessTest.Mocks.Movement.Drv;
 using System.Threading.Tasks;
 
-namespace WizardsChessTest.Mocks.Movement
+namespace WizardsChessTest.Movement
 {
 	[TestClass]
 	public class MotorMoverTest
@@ -100,7 +100,7 @@ namespace WizardsChessTest.Mocks.Movement
 			var secondMoveTask = motorMover.GoToPositionAsync(targetPos);
 			int finalPos = secondMoveTask.Result;
 			var timeDifference = DateTime.Now - startTime;
-			Assert.IsTrue(timeDifference < TimeSpan.FromMilliseconds(700), "Interrupting move took longer than expected");
+			Assert.IsTrue(timeDifference < TimeSpan.FromMilliseconds(800), "Interrupting move took longer than expected");
 			Task.Delay(30).Wait();
 			Assert.IsTrue(moveTask.IsCompleted, "First move did not complete.");
 			Task.Delay(15).Wait();

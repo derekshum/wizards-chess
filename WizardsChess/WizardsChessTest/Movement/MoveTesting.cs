@@ -42,8 +42,8 @@ namespace WizardsChessTest.Movement
 			movePerformer.MovePieceAsync(list).Wait();
 			Assert.AreEqual(targetX, xGridMover.GridPosition,"The xMotor didn't end where expected.");
 			Assert.AreEqual(targetY, yGridMover.GridPosition, "The yMotor didn't end where expected.");
-			Assert.AreEqual(targetX, (int)Math.Round((float)xPreciseMover.Position / xPreciseMover.StepsPerGridUnit), "xPreciseMover was not where expected.");
-			Assert.AreEqual(targetY, (int)Math.Round((float)yPreciseMover.Position / yPreciseMover.StepsPerGridUnit), "yPreciseMover was not where expected.");
+			Assert.AreEqual(targetX, (int)Math.Round((float)xMover.Locator.Position / xCalibrator.StepsPerGridUnit), "xPreciseMover was not where expected.");
+			Assert.AreEqual(targetY, (int)Math.Round((float)yMover.Locator.Position / yCalibrator.StepsPerGridUnit), "yPreciseMover was not where expected.");
 
 		}
 
@@ -55,8 +55,8 @@ namespace WizardsChessTest.Movement
 			movePerformer.MovePieceAsync(new List<Point2D>() { new Point2D(1, 1) }).Wait();
 			Assert.AreEqual(0, xGridMover.GridPosition, "The xMotor didn't end where expected.");
 			Assert.AreEqual(0, yGridMover.GridPosition, "The yMotor didn't end where expected.");
-			Assert.AreEqual(0, (int)Math.Round((float)xPreciseMover.Position / xPreciseMover.StepsPerGridUnit), "xPreciseMover was not where expected.");
-			Assert.AreEqual(0, (int)Math.Round((float)yPreciseMover.Position / yPreciseMover.StepsPerGridUnit), "yPreciseMover was not where expected.");
+			Assert.AreEqual(0, (int)Math.Round((float)xMover.Locator.Position / xCalibrator.StepsPerGridUnit), "xPreciseMover was not where expected.");
+			Assert.AreEqual(0, (int)Math.Round((float)yMover.Locator.Position / yCalibrator.StepsPerGridUnit), "yPreciseMover was not where expected.");
 		}
 
 		[TestMethod]
@@ -67,8 +67,8 @@ namespace WizardsChessTest.Movement
 			movePerformer.MovePieceAsync(new List<Point2D>() { new Point2D(1, 1) }).Wait();
 			Assert.AreEqual(0, xGridMover.GridPosition, "The xMotor didn't end where expected.");
 			Assert.AreEqual(0, yGridMover.GridPosition, "The yMotor didn't end where expected.");
-			Assert.AreEqual(0, (int)Math.Round((float)xPreciseMover.Position / xPreciseMover.StepsPerGridUnit), "xPreciseMover was not where expected.");
-			Assert.AreEqual(0, (int)Math.Round((float)yPreciseMover.Position / yPreciseMover.StepsPerGridUnit), "yPreciseMover was not where expected.");
+			Assert.AreEqual(0, (int)Math.Round((float)xMover.Locator.Position / xCalibrator.StepsPerGridUnit), "xPreciseMover was not where expected.");
+			Assert.AreEqual(0, (int)Math.Round((float)yMover.Locator.Position / yCalibrator.StepsPerGridUnit), "yPreciseMover was not where expected.");
 		}
 
 		private IMotorMover xMover;
@@ -92,8 +92,8 @@ namespace WizardsChessTest.Movement
 			var topInterrupter = new MockPhotoInterrupter(1, 4, 6, locator, motor);
 			var bottomInterrupter = new MockPhotoInterrupter(-1, -6, -4, locator, motor);
 			calibrator = new MotorCalibrator(-5, 5, mover, motor.Information, topInterrupter, bottomInterrupter);
-			preciseMover = new PreciseMotorMover(mover, calibrator);
-			gridMover = new GridMotorMover(preciseMover);
+			preciseMover = new PreciseMotorMover(mover);
+			gridMover = new GridMotorMover(preciseMover, calibrator);
 		}
 	}
 }

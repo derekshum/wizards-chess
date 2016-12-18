@@ -35,7 +35,19 @@ namespace WizardsChess.Chess.Pieces {
 
 		public virtual string ToShortString()
 		{
-			return /*Team.ToString().Substring(0, 1) + "-" + */Type.ToString().Substring(0, 1);
+			string piece = Type.ToString().Substring(0, 1);
+			if (Team == ChessTeam.White)
+			{
+				return piece + "w";
+			}
+			else if (Team == ChessTeam.Black)
+			{
+				return piece + "b";
+			}
+			else
+			{
+				return piece;
+			}
 		}
 
 		public override string ToString()

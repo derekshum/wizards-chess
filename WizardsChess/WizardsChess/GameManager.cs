@@ -63,11 +63,11 @@ namespace WizardsChess
 			var bottomInterrupterY = new PhotoInterrupter(22, -1, -150);
 			var motorCalibratorY = new MotorCalibrator(-17, 17, motorMoverY, motorInformationY, topInterrupterY, bottomInterrupterY);
 
-			var preciseMoverX = new PreciseMotorMover(motorMoverX, motorCalibratorX);
-			var gridMoverX = new GridMotorMover(preciseMoverX);
+			var preciseMoverX = new PreciseMotorMover(motorMoverX);
+			var gridMoverX = new GridMotorMover(preciseMoverX, motorCalibratorX);
 
-			var preciseMoverY = new PreciseMotorMover(motorMoverY, motorCalibratorY);
-			var gridMoverY = new GridMotorMover(preciseMoverY);
+			var preciseMoverY = new PreciseMotorMover(motorMoverY);
+			var gridMoverY = new GridMotorMover(preciseMoverY, motorCalibratorY);
 
 			var magnetDriver = new MagnetDrv(26);
 

@@ -9,14 +9,12 @@ namespace WizardsChess.Movement
 {
 	public class PreciseMotorMover : IPreciseMotorMover
 	{
-		public PreciseMotorMover(IMotorMover motorMover, IMotorCalibrator motorCalibrator)
+		public PreciseMotorMover(IMotorMover motorMover)
 		{
 			mover = motorMover;
-			calibrator = motorCalibrator;
 		}
 
 		public int Position { get { return mover.Locator.Position; } }
-		public float StepsPerGridUnit { get { return calibrator.StepsPerGridUnit; } }
 
 		public async Task GoToPositionAsync(int position)
 		{
@@ -24,24 +22,17 @@ namespace WizardsChess.Movement
 			await goToPositionAsync(position);
 			// Run again to adjust for overshoot
 			await goToPositionAsync(position);
-			if (calibrator.State == CalibrationState.NeedsCalibrating)
-			{
-				throw new CalibrationException("Need to calibrate this motor after move.");
-			}
-		}
-
-		public async Task CalibrateAsync()
-		{
-			await calibrator.CalibrateAsync();
 		}
 
 		private IMotorMover mover;
-		private IMotorCalibrator calibrator;
 
 		private async Task goToPositionAsync(int position)
 		{
 			if (isAtPosition(position))
 			{
+				// Cancel a move in case the motor is moving.
+				System.Diagnostics.Debug.WriteLine($"Motor is at desired position within error (target: {position}, actual: {mover.Locator.Position}).");
+				mover.CancelMove();
 				return;
 			}
 
@@ -52,7 +43,7 @@ namespace WizardsChess.Movement
 		private bool isAtPosition(int position)
 		{
 			var offset = mover.Locator.Position - position;
-			return Math.Abs(offset) < 5;
+			return Math.Abs(offset) < 4;
 		}
 
 		private int calcDrivePosition(int position)

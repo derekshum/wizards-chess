@@ -1,0 +1,27 @@
+#!/bin/bash
+
+oldPath="$(pwd)"
+
+cd ~/vs-github/wizards-chess/WizardsChess/
+
+echo "" > file-names.txt
+echo "" > concatenated-code.txt
+
+for file in $(find ./ -depth -name '*.cs')
+do
+	filePath=$(dirname $file)
+	baseName=$(basename $file)
+	if [[ $filePath =~ ^.*/obj/.*$ ]] \
+		|| [[ $filePath =~ ^.*/bin/.*$ ]] \
+		|| [[ $baseName =~ ^.*xaml.*$ ]] \
+		|| [[ $file =~ ^.*/Properties/.*$ ]] \
+		|| [[ $file =~ ^.*WizardsChessApp.*$ ]] 
+	then
+		continue
+	else
+		echo $file >> file-names.txt
+		cat $file >> concatenated-code.txt
+	fi
+done
+
+cd "$oldPath"
