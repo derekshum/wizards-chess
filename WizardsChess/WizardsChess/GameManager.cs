@@ -115,8 +115,10 @@ namespace WizardsChess
 			switch (args.Command.Type)
 			{
 				case CommandType.Move:
+					System.Diagnostics.Debug.WriteLine($"Attempting Move.");
 					var moveCmd = args.Command as MoveCommand;
 					currentMoveCommand = moveCmd;
+					System.Diagnostics.Debug.WriteLine($"About to call preformMoveIfValidAsync.");
 					await performMoveIfValidAsync(moveCmd);
 					break;
 				case CommandType.Castle:
@@ -157,8 +159,10 @@ namespace WizardsChess
 
 		private async Task performMoveIfValidAsync(MoveCommand moveCmd)
 		{
+			System.Diagnostics.Debug.WriteLine($"preformMoveIfValidAsync called");
 			if (!moveCmd.Position.HasValue)	//checks command format
 			{
+				System.Diagnostics.Debug.WriteLine($"moveCmd.Position.HasValue == false");
 				var possibleStartPositions = chessLogic.FindPotentialPiecesForMove(moveCmd.Piece.Value, moveCmd.Destination);
 				if (possibleStartPositions.Count == 0)
 				{
@@ -168,16 +172,19 @@ namespace WizardsChess
 				}
 				else if (possibleStartPositions.Count == 1)
 				{
+					System.Diagnostics.Debug.WriteLine($"1 possible start position");
 					moveCmd.Position = possibleStartPositions.First();
 				}
 				else
 				{
+					System.Diagnostics.Debug.WriteLine($"multiple possible start positions");
 					await cmdInterpreter.ConfirmPieceSelectionAsync(moveCmd.Piece.Value, possibleStartPositions.ToList());
 					return;
 				}
 			}
 			else
 			{
+				System.Diagnostics.Debug.WriteLine($"moveCmd.Position.HasValue == true");
 				if (!chessLogic.IsMoveValid((Position)moveCmd.Position, moveCmd.Destination))
 				{
 					System.Diagnostics.Debug.WriteLine($"Specified move not valid.");
