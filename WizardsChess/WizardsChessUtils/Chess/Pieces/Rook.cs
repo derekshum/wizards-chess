@@ -15,7 +15,7 @@ namespace WizardsChess.Chess.Pieces
 
 			if (allowedMotionVectors.Count == 0)
 			{
-				for (int move = 1; move <= ChessBoard.Size; move++)
+				for (int move = 1; move < ChessBoard.Size; move++)  //1 to 7 squares in a given direction
 				{
 					allowedMotionVectors.Add(new Vector2D(move, 0));
 					allowedMotionVectors.Add(new Vector2D(-move, 0));

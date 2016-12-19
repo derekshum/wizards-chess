@@ -82,14 +82,15 @@ namespace WizardsChess.Chess
 				return false;
 			}
 
-			// It's not this pieces turn to move
+			// Piece can't move if it's not this pieces turn to move
 			if (startPiece.Team != board.WhoseTurn)
 			{
 				return false;
 			}
-
+			
+			//get places this piece could move ignoring obstructions
 			IReadOnlyList<Vector2D> pieceMovementVectors;
-			if (endPiece == null)
+			if (endPiece == null)	//replace with DoesMoveCapture when implementing En Passant
 			{
 				pieceMovementVectors = startPiece.GetAllowedMotionVectors();
 			}
@@ -103,9 +104,24 @@ namespace WizardsChess.Chess
 				pieceMovementVectors = startPiece.GetAttackMotionVectors();
 			}
 
-			var requestedMoveVector = (Point2D)endPosition - startPosition;
+			//checks if destination is in one of the positions this piece could move (ignoring obsturctions for now)
+			var requestedMoveVector = (Point2D)endPosition - (Point2D)startPosition;
+			bool onPieceVector = false;
+			foreach(var v in pieceMovementVectors)	//TODO: make more efficient
+			{
+				if (v == requestedMoveVector)
+				{
+					onPieceVector = true;
+					break;
+				}
+			}
+			if (!onPieceVector)
+			{
+				System.Diagnostics.Debug.WriteLine("Destination not on this piece's vectors.")
+				return false;
+			}
 
-			try
+			/*try
 			{
 				var matchingMove = pieceMovementVectors.Single(v => v == requestedMoveVector);
 			}
@@ -113,7 +129,7 @@ namespace WizardsChess.Chess
 			{
 				// Could not retrieve a matching vector from the allowed moves
 				return false;
-			}
+			}*/
 
 			// If the piece can jump, it doesn't matter if something is in the way
 			if (startPiece.CanJump)
@@ -164,6 +180,7 @@ namespace WizardsChess.Chess
 			{
 				if (board.PieceAt(nextPosition) != null)
 				{
+					System.Diagnostics.Debug.WriteLine("Obstruction on path.")
 					return false;
 				}
 				unitVector = (endPosition - nextPosition).GetUnitVector();
