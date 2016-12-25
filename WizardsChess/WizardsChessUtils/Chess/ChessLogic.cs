@@ -180,7 +180,7 @@ namespace WizardsChess.Chess
 			{
 				if (board.PieceAt(nextPosition) != null)
 				{
-					System.Diagnostics.Debug.WriteLine("Obstruction on path.")
+					System.Diagnostics.Debug.WriteLine("Obstruction on path.");
 					return false;
 				}
 				unitVector = (endPosition - nextPosition).GetUnitVector();
