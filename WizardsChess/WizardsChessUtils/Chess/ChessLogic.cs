@@ -117,7 +117,7 @@ namespace WizardsChess.Chess
 			}
 			if (!onPieceVector)
 			{
-				System.Diagnostics.Debug.WriteLine("Destination not on this piece's vectors.")
+				System.Diagnostics.Debug.WriteLine("Destination not on this piece's vectors.");
 				return false;
 			}
 
