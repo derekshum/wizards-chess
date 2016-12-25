@@ -60,6 +60,12 @@ namespace WizardsChess.VoiceControl
 				throw new FormatException($"Could not compile grammar constraints. Received error {grammarCompilationResult.Status}");
 			}
 
+			// Disable unnecessary grammars
+			SpeechConstraints.EnableGrammar(speechRecognizer.Constraints, GrammarMode.MoveCommands, true);
+			SpeechConstraints.EnableGrammar(speechRecognizer.Constraints, GrammarMode.PieceConfirmation, false);
+			SpeechConstraints.EnableGrammar(speechRecognizer.Constraints, GrammarMode.YesNoCommands, false);
+			SpeechConstraints.EnableGrammar(speechRecognizer.Constraints, GrammarMode.CancelCommand, false);
+
 			return interpreter;
 		}
 		#endregion
@@ -190,11 +196,9 @@ namespace WizardsChess.VoiceControl
 				return;
 			}
 
-			//await listener.StopListeningAsync();
 			commandHypothesis = e;
 			await changeStateAsync(ListeningState.Hypothesis);
 			await speakAsync($"Did you say: {e.CommandText}");
-			//await listener.StartListeningAsync();
 		}
 
 		private bool isCommandFamilyValid(CommandFamily family)
