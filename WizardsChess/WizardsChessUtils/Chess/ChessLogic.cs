@@ -332,7 +332,21 @@ namespace WizardsChess.Chess
 
 			var requestedMoveVector = endPoint - startPoint;
 
-			try
+			bool matchingVector = false;	// true if requested MoveVector matches a movement vector in pieceMovementVectors
+			foreach(var moveVector in pieceMovementVectors)
+			{
+				if (requestedMoveVector == moveVector)
+				{
+					matchingVector = true;
+					break;
+				}
+			}
+			if(!matchingVector)
+			{
+				System.Diagnostics.Debug.WriteLine("Move illegal because it no piece vectors match that vector");
+				return false;
+			}
+			/*try
 			{
 				var matchingMove = pieceMovementVectors.Single(v => v == requestedMoveVector);
 			}
@@ -340,7 +354,7 @@ namespace WizardsChess.Chess
 			{
 				// Could not retrieve a matching vector from the allowed moves
 				return false;
-			}
+			}*/	//TODO: Remove this code
 
 			// If the piece can jump, it doesn't matter if something is in the way
 			if (startPiece.CanJump)
