@@ -84,7 +84,6 @@ namespace WizardsChess.Chess
 
 		/// <summary>
 		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
-		/// Throws an InvalidOperationException if this is an invalid move.	//TODO: take this out once it's no longer done here
 		/// </summary>
 		/// <param name="startPosition"></param>
 		/// <param name="endPosition"></param>

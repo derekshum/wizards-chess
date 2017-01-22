@@ -35,13 +35,13 @@ namespace WizardsChess.Chess
 
 		/// <summary>
 		/// Moves the piece from startPosition to endPosition. Kills the piece at endPosition if it exists.
-		/// Throws an InvalidOperationException if this is an invalid move.
+		/// Writes "Performing illegal move." to debug if this is an invalid move.
 		/// </summary>
 		public void MovePiece (Position startPosition, Position endPosition)
 		{
 			if (!IsMoveValid(startPosition, endPosition))
 			{
-				System.Diagnostics.Debug.WriteLine($"Preforming illegal move.");
+				System.Diagnostics.Debug.WriteLine($"Performing illegal move.");
 				//throw new InvalidOperationException($"Cannot complete invalid move from {startPosition} to {endPosition}");
 			}
 
@@ -276,6 +276,7 @@ namespace WizardsChess.Chess
 			}
 			if (kingLocation == null)
 			{
+				System.Diagnostics.Debug.WriteLine("King missing somehow.");
 				throw new InvalidOperationException($"missing king");
 			}
 			return inCheck(kingLocation, board.WhoseTurn);
