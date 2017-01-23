@@ -8,8 +8,8 @@ namespace WizardsChess.VoiceControl.Commands
 {
     public enum CastleDirection
     {
-        Left,
-        Right
+        Long,
+        Short
     }
 
     public class CastleCommand : Command

@@ -42,20 +42,12 @@
     <item> castle </item>
     <one-of>
       <item>
-        left
-        <tag> out.direction = "left"; </tag>
+        long
+        <tag> out.direction = "long"; </tag>
       </item>
       <item>
-        right
-        <tag> out.direction = "right"; </tag>
-      </item>
-      <item>
-        with my left castle
-        <tag> out.direction = "left"; </tag>
-      </item>
-      <item>
-        with my right castle
-        <tag> out.direction = "right"; </tag>
+        short
+        <tag> out.direction = "short"; </tag>
       </item>
     </one-of>
     <tag> out.action = "castle"; </tag>
