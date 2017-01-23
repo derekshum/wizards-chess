@@ -190,7 +190,6 @@ namespace WizardsChess.Chess
 					System.Diagnostics.Debug.WriteLine("Obstruction on path.");
 					return false;
 				}
-				unitVector = (endPosition - nextPosition).GetUnitVector();
 				nextPosition = nextPosition + unitVector;
 			}
 
