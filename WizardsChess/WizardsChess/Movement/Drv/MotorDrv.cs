@@ -46,9 +46,9 @@ namespace WizardsChess.Movement.Drv
 				{
 					previousDirection = direction;
 					direction = value;
-				}
-				updatePins();
-			}
+                    updatePins();
+                }
+            }
 		}
 
 		public MoveDirection PreviousDirection
@@ -91,18 +91,17 @@ namespace WizardsChess.Movement.Drv
 
 		private void updatePins()
 		{
-            MoveDirection currentDir = direction;
-			switch (currentDir)
+			switch (direction)
 			{
 				case MoveDirection.Forward:
 					System.Diagnostics.Debug.WriteLine($"Moving the {information.Axis} motor forwards");
-					information.SetDirection(currentDir);
+					information.SetDirection(direction);
 					backwardPin.Write(GpioPinValue.Low);
 					forwardPin.Write(GpioPinValue.High);
 					break;
 				case MoveDirection.Backward:
 					System.Diagnostics.Debug.WriteLine($"Moving the {information.Axis} motor backwards");
-					information.SetDirection(currentDir);
+					information.SetDirection(direction);
 					forwardPin.Write(GpioPinValue.Low);
 					backwardPin.Write(GpioPinValue.High);
 					break;
