@@ -111,7 +111,6 @@ namespace WizardsChess
 		private async void CommandReceived(Object sender, CommandEventArgs args)
 		{
 			System.Diagnostics.Debug.WriteLine($"Received command of type {args.Command.Type}.");
-			//TODO: fill in comments below
 			switch (args.Command.Type)
 			{
 				case CommandType.Move:
@@ -137,13 +136,9 @@ namespace WizardsChess
 					//no output when undo not possible, basically ignore it
 					await performUndoIfPossible();
 					break;
-				//case yes
-				//case no
-				//case cancel?
-				//case MotorMove?
-				//case Magnet?
-				default:
-					//debug writing done above
+                // TODO: case CommandType.Reset:
+                default:
+                    System.Diagnostics.Debug.WriteLine($"GameManager ignored command of type {args.Command.Type}.");
 					break;
 			}
 			
