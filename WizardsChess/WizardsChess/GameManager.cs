@@ -121,8 +121,11 @@ namespace WizardsChess
 					System.Diagnostics.Debug.WriteLine($"About to call preformMoveIfValidAsync.");
 					await performMoveIfValidAsync(moveCmd);
 					break;
-				case CommandType.Castle:
-					await performCastleIfValid();
+				case CommandType.CastleShort:
+					await performShortCastleIfValidAsync();
+					break;
+				case CommandType.CastleLong:
+					await performLongCastleIfValidAsync();
 					break;
 				case CommandType.ConfirmPiece:
 					var pieceConfirmation = args.Command as ConfirmPieceCommand;
@@ -203,7 +206,35 @@ namespace WizardsChess
 			chessLogic.MovePiece((Position)moveCmd.Position, moveCmd.Destination);
 		}
 
-		private async Task performCastleIfValid()
+		private async Task performShortCastleIfValidAsync()
+		{
+			if(chessLogic.shortCastleLegal())
+			{
+				Point2D rookPos = chessLogic.shortCastleRookPos();
+				await moveManager.CastleAsync(rookPos, chessLogic.Board.GetKingCol());
+				chessLogic.Castle(rookPos);
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("short castle not legal");
+			}
+		}
+
+		private async Task performLongCastleIfValidAsync()
+		{
+			if (chessLogic.longCastleLegal())
+			{
+				Point2D rookPos = chessLogic.longCastleRookPos();
+				await moveManager.CastleAsync(rookPos, chessLogic.Board.GetKingCol());
+				chessLogic.Castle(rookPos);
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("long castle not legal");
+			}
+		}
+
+		/*private async Task performLeftCastleIfValid()
 		{
 			var validRookLocations = chessLogic.validRookLocationsForCastling();
 			if (validRookLocations.Count == 0)
@@ -224,7 +255,7 @@ namespace WizardsChess
 				return;
 
 			}
-		}
+		}*/
 
 		private async Task performUndoIfPossible()
 		{

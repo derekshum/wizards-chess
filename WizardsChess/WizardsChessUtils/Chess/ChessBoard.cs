@@ -355,7 +355,7 @@ namespace WizardsChess.Chess
 			return boardMatrix[pos.Row, pos.Column];
 		}
 
-		//piece accessor by x and y indexes
+		//piece accessor by x and y indexes (0-7)
 		public ChessPiece PieceAt(int x, int y)
         {
 			if (boardMatrix[y,x] != null)
