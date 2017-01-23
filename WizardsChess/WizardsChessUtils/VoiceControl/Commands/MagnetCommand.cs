@@ -30,20 +30,13 @@ namespace WizardsChess.VoiceControl.Commands
 		{
 			IReadOnlyList<string> paramsList;
 
-			if (Type == CommandType.Magnet)
+			if (commandParams.TryGetValue("enable", out paramsList))
 			{
-				if (commandParams.TryGetValue("enable", out paramsList))
-				{
-					EnableMagnet = Boolean.Parse(paramsList.FirstOrDefault());
-				}
-				else
-				{
-					System.Diagnostics.Debug.WriteLine("MagnetCommand did not receive an 'enable' value.");
-				}
+				EnableMagnet = Boolean.Parse(paramsList.FirstOrDefault());
 			}
 			else
 			{
-				throw new ArgumentException("Attempted to make a MagnetCommand from a different command type.");
+				System.Diagnostics.Debug.WriteLine("MagnetCommand did not receive an 'enable' value.");
 			}
 		}
 	}

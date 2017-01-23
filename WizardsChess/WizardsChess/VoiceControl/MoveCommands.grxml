@@ -9,6 +9,10 @@
 				<ruleref uri="#moveCommand"/>
 				<tag> out = rules.latest(); </tag>
 			</item>
+      <item>
+        <ruleref uri="#castleCommand"/>
+        <tag> out = rules.latest(); </tag>
+      </item>
 		</one-of>
 	</rule>
 	
@@ -33,6 +37,29 @@
 		<tag> out.destinationUsedNato = rules.latest().usedNato; </tag>
 		<tag> out.action = "move"; </tag>
 	</rule>
+
+  <rule id="castleCommand">
+    <item> castle </item>
+    <one-of>
+      <item>
+        left
+        <tag> out.direction = "left"; </tag>
+      </item>
+      <item>
+        right
+        <tag> out.direction = "right"; </tag>
+      </item>
+      <item>
+        with my left castle
+        <tag> out.direction = "left"; </tag>
+      </item>
+      <item>
+        with my right castle
+        <tag> out.direction = "right"; </tag>
+      </item>
+    </one-of>
+    <tag> out.action = "castle"; </tag>
+  </rule>
 	
 </grammar>
 

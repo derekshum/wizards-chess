@@ -107,7 +107,8 @@ namespace WizardsChess.VoiceControl
 						{
 							if (isPositionAmbiguous(moveCommand.Position.Value, args.Result.Confidence))
 							{
-								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
+                                // Throw the response away
+                                //onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
 								return;
 							}
 						}
@@ -115,7 +116,8 @@ namespace WizardsChess.VoiceControl
 						{
 							if (isPositionAmbiguous(moveCommand.Destination, args.Result.Confidence))
 							{
-								onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
+                                // Throw the response away
+                                //onCommandHypothesized(new CommandHypothesisEventArgs(command, args.Result.Text));
 								return;
 							}
 						}
@@ -154,6 +156,8 @@ namespace WizardsChess.VoiceControl
 					return new MotorMoveCommand(speech.SemanticInterpretation.Properties);
 				case CommandType.Magnet:
 					return new MagnetCommand(speech.SemanticInterpretation.Properties);
+                case CommandType.Castle:
+                    return new CastleCommand(speech.SemanticInterpretation.Properties);
 				default:
 					return new Command(speech.SemanticInterpretation.Properties);
 			}

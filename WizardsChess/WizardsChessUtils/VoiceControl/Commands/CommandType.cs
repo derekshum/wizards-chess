@@ -29,6 +29,7 @@ namespace WizardsChess.VoiceControl.Commands
 				case CommandType.Move:
 				case CommandType.Reset:
 				case CommandType.Undo:
+                case CommandType.Castle:
 					return CommandFamily.Move;
 				case CommandType.ConfirmPiece:
 					return CommandFamily.PieceConfirmation;
@@ -38,7 +39,6 @@ namespace WizardsChess.VoiceControl.Commands
 				case CommandType.MotorMove:
 				case CommandType.Magnet:
 					return CommandFamily.Debug;
-				case CommandType.Castle:
 				default:
 					return CommandFamily.Other;
 			}
