@@ -91,17 +91,18 @@ namespace WizardsChess.Movement.Drv
 
 		private void updatePins()
 		{
-			switch (direction)
+            MoveDirection currentDir = direction;
+			switch (currentDir)
 			{
 				case MoveDirection.Forward:
 					System.Diagnostics.Debug.WriteLine($"Moving the {information.Axis} motor forwards");
-					information.SetDirection(direction);
+					information.SetDirection(currentDir);
 					backwardPin.Write(GpioPinValue.Low);
 					forwardPin.Write(GpioPinValue.High);
 					break;
 				case MoveDirection.Backward:
 					System.Diagnostics.Debug.WriteLine($"Moving the {information.Axis} motor backwards");
-					information.SetDirection(direction);
+					information.SetDirection(currentDir);
 					forwardPin.Write(GpioPinValue.Low);
 					backwardPin.Write(GpioPinValue.High);
 					break;
