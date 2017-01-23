@@ -48,6 +48,11 @@ namespace WizardsChess.Chess
 			board.MovePiece(startPosition, endPosition);
 		}
 
+		public void Castle(Point2D rookPos)
+		{
+			board.Castle(rookPos);
+		}
+
 		public void UndoMove ()
 		{
 			if (board.PastMoves.Count == 0)
@@ -169,6 +174,8 @@ namespace WizardsChess.Chess
 			
 		}
 
+		//Checks to see if all the squares between two points are clear along their connecting vector
+		//TODO: see if this code can be simplified, I think it can be
 		private bool isPathClear(Point2D startPosition, Point2D endPosition)
 		{
 			var requestedMoveVector = endPosition - startPosition;
@@ -192,11 +199,98 @@ namespace WizardsChess.Chess
 
 		//TODO: detect Checkmate
 
-		public void Castle(Point2D rookPos)
+		//return whether or not castling on the short side for the current turn is legal. Directions are hard coded.
+		public bool shortCastleLegal()
 		{
-			board.Castle(rookPos);
+			if(board.WhoseTurn == ChessTeam.White &&	//white's turn 
+				board.PieceAt(board.GetKingCol(), board.GetWhiteBackRow()).HasMoved == false &&		//king is unmoved
+				board.PieceAt(board.GetLeftRookCol(), board.GetWhiteBackRow()).HasMoved == false &&	//rook is unmoved
+				isPathClear(new Point2D(board.GetKingCol(), board.GetWhiteBackRow()), new Point2D(board.GetLeftRookCol(), board.GetWhiteBackRow())))	//path is clear
+			{
+				if(pathAlongRowInCheck(board.GetKingCol() - 2, board.GetKingCol(), board.GetWhiteBackRow()))    //checks if any squares the king traverses are in check
+				{
+					return false;
+				}
+				return true;
+			}
+			else if(board.PieceAt(board.GetKingCol(), board.GetBlackBackRow()).HasMoved == false &&	//king is unmoved, also it's black turn since it's not white
+				board.PieceAt(board.GetLeftRookCol(), board.GetBlackBackRow()).HasMoved == false &&	//rook is unmoved
+				isPathClear(new Point2D(board.GetKingCol(), board.GetBlackBackRow()), new Point2D(board.GetLeftRookCol(), board.GetBlackBackRow())))	//path is clear
+			{
+				if (pathAlongRowInCheck(board.GetKingCol() - 2, board.GetKingCol(), board.GetBlackBackRow()))   //checks if any squares the king traverses are in check
+				{
+					return false;
+				}
+				return true;
+			}
+			return false;
 		}
 
+		public bool longCastleLegal()
+		{
+			if (board.WhoseTurn == ChessTeam.White &&   //white's turn 
+				board.PieceAt(board.GetKingCol(), board.GetWhiteBackRow()).HasMoved == false &&         //king is unmoved
+				board.PieceAt(board.GetRightRookCol(), board.GetWhiteBackRow()).HasMoved == false &&    //rook is unmoved
+				isPathClear(new Point2D(board.GetKingCol(), board.GetWhiteBackRow()), new Point2D(board.GetRightRookCol(), board.GetWhiteBackRow())))    //path is clear
+			{
+				if (pathAlongRowInCheck(board.GetKingCol(), board.GetKingCol() + 2, board.GetWhiteBackRow()))  //checks if any squares the king traverses are in check
+				{
+					return false;
+				}
+				return true;
+			}
+			else if (board.PieceAt(board.GetKingCol(), board.GetBlackBackRow()).HasMoved == false &&    //king is unmoved, also it's black turn since it's not white
+				board.PieceAt(board.GetRightRookCol(), board.GetBlackBackRow()).HasMoved == false &&    //rook is unmoved
+				isPathClear(new Point2D(board.GetKingCol(), board.GetBlackBackRow()), new Point2D(board.GetRightRookCol(), board.GetBlackBackRow())))    //path is clear, note the
+			{
+				if (pathAlongRowInCheck(board.GetKingCol(), board.GetKingCol() + 2, board.GetBlackBackRow()))	//checks if any squares the king traverses are in check
+				{
+					return false;
+				}
+				return true;
+			}
+			else
+				return false;
+		}
+
+		//used by left/right castling legality checkers to see if any squares specified, inclusive, are in check
+		public bool pathAlongRowInCheck(int leftCol, int rightCol, int row)
+		{
+			for (int i = leftCol; i <= rightCol; i++)
+			{
+				if(inCheck(new Point2D(i, row), board.WhoseTurn))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public Point2D shortCastleRookPos()
+		{
+			if (board.WhoseTurn == ChessTeam.White)
+			{
+				return new Point2D(board.GetLeftRookCol(), board.GetWhiteBackRow());
+			}
+			else //black's turn
+			{
+				return new Point2D(board.GetLeftRookCol(), board.GetBlackBackRow());
+			}
+		}
+
+		public Point2D longCastleRookPos()
+		{
+			if(board.WhoseTurn == ChessTeam.White)
+			{
+				return new Point2D(board.GetRightRookCol(), board.GetWhiteBackRow());
+			}
+			else //black's turn
+			{
+				return new Point2D(board.GetRightRookCol(), board.GetBlackBackRow());
+			}
+		}
+
+		//Unused in current build with Left/Right Castling differentiation
 		public List<Point2D> validRookLocationsForCastling()
 		{
 			List<Point2D> validRookLocations = new List<Point2D>();
