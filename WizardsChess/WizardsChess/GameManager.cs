@@ -169,6 +169,7 @@ namespace WizardsChess
 				{
 					System.Diagnostics.Debug.WriteLine($"1 possible start position");
 					moveCmd.Position = possibleStartPositions.First();
+					System.Diagnostics.Debug.WriteLine(chessLogic.Board.ToString());
 				}
 				else
 				{
@@ -237,6 +238,7 @@ namespace WizardsChess
 				Point2D rookPos = chessLogic.shortCastleRookPos();
 				await moveManager.CastleAsync(rookPos, chessLogic.Board.GetKingCol());
 				chessLogic.Castle(rookPos);
+				System.Diagnostics.Debug.WriteLine(chessLogic.Board.ToString());
 			}
 			else
 			{
@@ -251,6 +253,7 @@ namespace WizardsChess
 				Point2D rookPos = chessLogic.longCastleRookPos();
 				await moveManager.CastleAsync(rookPos, chessLogic.Board.GetKingCol());
 				chessLogic.Castle(rookPos);
+				System.Diagnostics.Debug.WriteLine(chessLogic.Board.ToString());
 			}
 			else
 			{
@@ -262,6 +265,7 @@ namespace WizardsChess
 		{
 			await moveManager.UndoMoveAsync();
 			chessLogic.UndoMove();
+			System.Diagnostics.Debug.WriteLine(chessLogic.Board.ToString());
 		}
 
 		private ICommandInterpreter cmdInterpreter;
