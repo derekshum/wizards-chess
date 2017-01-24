@@ -31,11 +31,13 @@ namespace WizardsChess.Movement.Drv
 		public void TurnOn()
 		{
 			pin.Write(GpioPinValue.High);
+			System.Diagnostics.Debug.WriteLine("Turned the magnet on.");
 		}
 
 		public void TurnOff()
 		{
 			pin.Write(GpioPinValue.Low);
+			System.Diagnostics.Debug.WriteLine("Turned the magnet off.");
 		}
 	}
 }
