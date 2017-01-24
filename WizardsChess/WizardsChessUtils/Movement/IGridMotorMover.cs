@@ -10,6 +10,6 @@ namespace WizardsChess.Movement
 	{
 		int GridPosition { get; }
 		Task GoToPositionAsync(int gridPos);
-		Task CalibrateAsync();
+		Task CalibrateAsync(MoveDirection initialDirection=MoveDirection.Forward);
 	}
 }

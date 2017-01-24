@@ -118,7 +118,9 @@ namespace WizardsChess
 					var moveCmd = args.Command as MoveCommand;
 					currentMoveCommand = moveCmd;
 					System.Diagnostics.Debug.WriteLine($"About to call preformMoveIfValidAsync.");
+					await cmdInterpreter.StopAsync();
 					await performMoveIfValidAsync(moveCmd);
+					await cmdInterpreter.StartAsync();
 					break;
 				case CommandType.Castle:
 					await performCastleIfValid(args);

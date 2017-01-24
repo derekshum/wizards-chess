@@ -19,6 +19,6 @@ namespace WizardsChess.Movement
 		float StepsPerGridUnit { get; }
 		CalibrationState State { get; }
 
-		Task CalibrateAsync();
+		Task CalibrateAsync(MoveDirection initialDir);
 	}
 }

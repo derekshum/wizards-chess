@@ -101,6 +101,17 @@ namespace WizardsChess.VoiceControl
 			isStarted = true;
 		}
 
+		public async Task StopAsync()
+		{
+			if (!isStarted)
+			{
+				return;
+			}
+
+			await listener.StopListeningAsync();
+			isStarted = false;
+		}
+
 		#region Private Members
 		private bool isStarted;
 		private ListeningState listeningState;

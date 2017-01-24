@@ -28,9 +28,9 @@ namespace WizardsChess.Movement
 			}
 		}
 
-		public async Task CalibrateAsync()
+		public async Task CalibrateAsync(MoveDirection initialDir=MoveDirection.Forward)
 		{
-			await calibrator.CalibrateAsync();
+			await calibrator.CalibrateAsync(initialDir);
 		}
 
 		private IPreciseMotorMover mover;

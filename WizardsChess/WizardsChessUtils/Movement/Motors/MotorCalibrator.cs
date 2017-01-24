@@ -34,13 +34,19 @@ namespace WizardsChess.Movement
 		public float StepsPerGridUnit { get; private set; }
 		public CalibrationState State { get; private set; }
 
-		public async Task CalibrateAsync()
+		public async Task CalibrateAsync(MoveDirection initialDir)
 		{
 			State = CalibrationState.PreparingToCalibrate;
 			clearUpperAndLowerPos();
 
 			var maxMoveDistance = convertGridUnitToSteps(gridMax - gridMin);
-			var finalPos = await mover.GoToPositionAsync(locator.Position + maxMoveDistance / 2);
+
+			int initialMove = locator.Position + maxMoveDistance / 2;
+			if (initialDir == MoveDirection.Backward)
+			{
+				initialMove = locator.Position - maxMoveDistance / 2;
+			}
+			var finalPos = await mover.GoToPositionAsync(initialMove);
 
 			if (hasAllPositionEstimates())
 			{
@@ -48,7 +54,13 @@ namespace WizardsChess.Movement
 				return;
 			}
 
-			await mover.GoToPositionAsync(locator.Position - maxMoveDistance);
+			int secondMove = locator.Position - maxMoveDistance;
+			if (initialDir == MoveDirection.Backward)
+			{
+				secondMove = locator.Position + maxMoveDistance;
+			}
+			await mover.GoToPositionAsync(secondMove);
+			
 
 			await calibrateFirstAndSecondPassAsync();
 		}

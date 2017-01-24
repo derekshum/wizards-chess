@@ -13,6 +13,7 @@ namespace WizardsChess.VoiceControl
 		event CommandEventHandler CommandReceived;
 
 		Task StartAsync();
+		Task StopAsync();
 		Task ConfirmPieceSelectionAsync(PieceType pieceType, IReadOnlyList<Position> possiblePositions);
 	}
 }

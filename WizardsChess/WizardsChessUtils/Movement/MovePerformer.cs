@@ -95,11 +95,12 @@ namespace WizardsChess.Movement
 
 		private async Task calibrateAndRetry(IGridMotorMover mover, int previousPos, int desiredGridPos)
 		{
-			if (magnet.IsOn)
+			bool magnetWasOn = magnet.IsOn;
+			if (magnetWasOn)
 			{
 				magnet.TurnOff();
 			}
-			await mover.CalibrateAsync();
+			await mover.CalibrateAsync(desiredGridPos > previousPos ? MoveDirection.Backward : MoveDirection.Forward);
 			try
 			{
 				await mover.GoToPositionAsync(previousPos);
@@ -109,7 +110,7 @@ namespace WizardsChess.Movement
 				System.Diagnostics.Debug.WriteLine("Threw another CalibrationException on move despite recalibrating.");
 			}
 
-			if (magnet.IsOn)
+			if (magnetWasOn)
 			{
 				magnet.TurnOn();
 			}
