@@ -75,7 +75,7 @@ namespace WizardsChess.Movement.Drv
 			if (ticksSinceLastStep > MAX_TICKS_BETWEEN_STEPS)
 			{
 				Direction = MoveDirection.Stopped;
-				stepTimer.Change(Timeout.Infinite, Timeout.Infinite);
+				stepTimer.Change(Timeout.Infinite, Timeout.Infinite);`
 			}
 		}
 
